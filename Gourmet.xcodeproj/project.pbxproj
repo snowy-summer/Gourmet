@@ -10,9 +10,9 @@
 		6BD986442C6CCAD900F563BE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BD986432C6CCAD900F563BE /* AppDelegate.swift */; };
 		6BD986462C6CCAD900F563BE /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BD986452C6CCAD900F563BE /* SceneDelegate.swift */; };
 		6BD986482C6CCAD900F563BE /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BD986472C6CCAD900F563BE /* ViewController.swift */; };
-		6BD9864B2C6CCAD900F563BE /* Base in Resources */ = {isa = PBXBuildFile; fileRef = 6BD9864A2C6CCAD900F563BE /* Base */; };
 		6BD9864D2C6CCADB00F563BE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6BD9864C2C6CCADB00F563BE /* Assets.xcassets */; };
 		6BD986502C6CCADB00F563BE /* Base in Resources */ = {isa = PBXBuildFile; fileRef = 6BD9864F2C6CCADB00F563BE /* Base */; };
+		6BD986582C6CCB5A00F563BE /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 6BD986572C6CCB5A00F563BE /* .gitignore */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -20,10 +20,10 @@
 		6BD986432C6CCAD900F563BE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		6BD986452C6CCAD900F563BE /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		6BD986472C6CCAD900F563BE /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		6BD9864A2C6CCAD900F563BE /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		6BD9864C2C6CCADB00F563BE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		6BD9864F2C6CCADB00F563BE /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		6BD986512C6CCADB00F563BE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		6BD986572C6CCB5A00F563BE /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -40,6 +40,7 @@
 		6BD986372C6CCAD900F563BE = {
 			isa = PBXGroup;
 			children = (
+				6BD986572C6CCB5A00F563BE /* .gitignore */,
 				6BD986422C6CCAD900F563BE /* Gourmet */,
 				6BD986412C6CCAD900F563BE /* Products */,
 			);
@@ -59,7 +60,6 @@
 				6BD986432C6CCAD900F563BE /* AppDelegate.swift */,
 				6BD986452C6CCAD900F563BE /* SceneDelegate.swift */,
 				6BD986472C6CCAD900F563BE /* ViewController.swift */,
-				6BD986492C6CCAD900F563BE /* Main.storyboard */,
 				6BD9864C2C6CCADB00F563BE /* Assets.xcassets */,
 				6BD9864E2C6CCADB00F563BE /* LaunchScreen.storyboard */,
 				6BD986512C6CCADB00F563BE /* Info.plist */,
@@ -126,8 +126,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				6BD9864D2C6CCADB00F563BE /* Assets.xcassets in Resources */,
+				6BD986582C6CCB5A00F563BE /* .gitignore in Resources */,
 				6BD986502C6CCADB00F563BE /* Base in Resources */,
-				6BD9864B2C6CCAD900F563BE /* Base in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -147,14 +147,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
-		6BD986492C6CCAD900F563BE /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				6BD9864A2C6CCAD900F563BE /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
 		6BD9864E2C6CCADB00F563BE /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -297,9 +289,9 @@
 				INFOPLIST_FILE = Gourmet/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UIMainStoryboardFile = Main;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -307,9 +299,13 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = beom.Gourmet;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -325,9 +321,9 @@
 				INFOPLIST_FILE = Gourmet/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UIMainStoryboardFile = Main;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -335,9 +331,13 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = beom.Gourmet;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
