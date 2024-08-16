@@ -22,6 +22,15 @@
 		6BE48B8B2C6F2630000B948A /* ProfileRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE48B8A2C6F2630000B948A /* ProfileRouter.swift */; };
 		6BE48B8D2C6F2636000B948A /* TokenRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE48B8C2C6F2636000B948A /* TokenRouter.swift */; };
 		6BE48B8F2C6F263C000B948A /* PostRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE48B8E2C6F263C000B948A /* PostRouter.swift */; };
+		6BE48B962C6F26CD000B948A /* UserDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE48B952C6F26CD000B948A /* UserDTO.swift */; };
+		6BE48B982C6F26D7000B948A /* SignUpDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE48B972C6F26D7000B948A /* SignUpDTO.swift */; };
+		6BE48B9A2C6F26E3000B948A /* LoginDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE48B992C6F26E3000B948A /* LoginDTO.swift */; };
+		6BE48B9C2C6F26F2000B948A /* RefreshAccessTokenDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE48B9B2C6F26F2000B948A /* RefreshAccessTokenDTO.swift */; };
+		6BE48B9E2C6F26FC000B948A /* ProfileDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE48B9D2C6F26FC000B948A /* ProfileDTO.swift */; };
+		6BE48BA02C6F2709000B948A /* UploadFileDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE48B9F2C6F2709000B948A /* UploadFileDTO.swift */; };
+		6BE48BA22C6F2711000B948A /* PostDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE48BA12C6F2711000B948A /* PostDTO.swift */; };
+		6BE48BA42C6F2719000B948A /* PostListDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE48BA32C6F2719000B948A /* PostListDTO.swift */; };
+		6BE48BA62C6F2728000B948A /* ComentsDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE48BA52C6F2728000B948A /* ComentsDTO.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,6 +47,16 @@
 		6BE48B8A2C6F2630000B948A /* ProfileRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileRouter.swift; sourceTree = "<group>"; };
 		6BE48B8C2C6F2636000B948A /* TokenRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenRouter.swift; sourceTree = "<group>"; };
 		6BE48B8E2C6F263C000B948A /* PostRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostRouter.swift; sourceTree = "<group>"; };
+		6BE48B952C6F26CD000B948A /* UserDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDTO.swift; sourceTree = "<group>"; };
+		6BE48B972C6F26D7000B948A /* SignUpDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpDTO.swift; sourceTree = "<group>"; };
+		6BE48B992C6F26E3000B948A /* LoginDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginDTO.swift; sourceTree = "<group>"; };
+		6BE48B9B2C6F26F2000B948A /* RefreshAccessTokenDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RefreshAccessTokenDTO.swift; sourceTree = "<group>"; };
+		6BE48B9D2C6F26FC000B948A /* ProfileDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileDTO.swift; sourceTree = "<group>"; };
+		6BE48B9F2C6F2709000B948A /* UploadFileDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadFileDTO.swift; sourceTree = "<group>"; };
+		6BE48BA12C6F2711000B948A /* PostDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostDTO.swift; sourceTree = "<group>"; };
+		6BE48BA32C6F2719000B948A /* PostListDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostListDTO.swift; sourceTree = "<group>"; };
+		6BE48BA52C6F2728000B948A /* ComentsDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComentsDTO.swift; sourceTree = "<group>"; };
+		6BE48BA72C6F27FE000B948A /* APIKey.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = APIKey.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -80,6 +99,7 @@
 				6BD986642C6DD6A900F563BE /* Network */,
 				6BD986632C6DD68B00F563BE /* Resource */,
 				6BD986512C6CCADB00F563BE /* Info.plist */,
+				6BE48BA72C6F27FE000B948A /* APIKey.xcconfig */,
 			);
 			path = Gourmet;
 			sourceTree = "<group>";
@@ -113,6 +133,7 @@
 		6BD986642C6DD6A900F563BE /* Network */ = {
 			isa = PBXGroup;
 			children = (
+				6BE48B902C6F2690000B948A /* DTO */,
 				6BE48B792C6F25B1000B948A /* Router */,
 			);
 			path = Network;
@@ -136,6 +157,54 @@
 				6BE48B7B2C6F25DA000B948A /* Routerable.swift */,
 			);
 			path = Protocol;
+			sourceTree = "<group>";
+		};
+		6BE48B902C6F2690000B948A /* DTO */ = {
+			isa = PBXGroup;
+			children = (
+				6BE48B912C6F2699000B948A /* UserDTO */,
+				6BE48B922C6F26A0000B948A /* TokenDTO */,
+				6BE48B942C6F26B5000B948A /* PostDTO */,
+				6BE48B932C6F26AC000B948A /* ProfileDTO */,
+			);
+			path = DTO;
+			sourceTree = "<group>";
+		};
+		6BE48B912C6F2699000B948A /* UserDTO */ = {
+			isa = PBXGroup;
+			children = (
+				6BE48B952C6F26CD000B948A /* UserDTO.swift */,
+				6BE48B972C6F26D7000B948A /* SignUpDTO.swift */,
+				6BE48B992C6F26E3000B948A /* LoginDTO.swift */,
+			);
+			path = UserDTO;
+			sourceTree = "<group>";
+		};
+		6BE48B922C6F26A0000B948A /* TokenDTO */ = {
+			isa = PBXGroup;
+			children = (
+				6BE48B9B2C6F26F2000B948A /* RefreshAccessTokenDTO.swift */,
+			);
+			path = TokenDTO;
+			sourceTree = "<group>";
+		};
+		6BE48B932C6F26AC000B948A /* ProfileDTO */ = {
+			isa = PBXGroup;
+			children = (
+				6BE48B9F2C6F2709000B948A /* UploadFileDTO.swift */,
+				6BE48BA12C6F2711000B948A /* PostDTO.swift */,
+				6BE48BA32C6F2719000B948A /* PostListDTO.swift */,
+				6BE48BA52C6F2728000B948A /* ComentsDTO.swift */,
+			);
+			path = ProfileDTO;
+			sourceTree = "<group>";
+		};
+		6BE48B942C6F26B5000B948A /* PostDTO */ = {
+			isa = PBXGroup;
+			children = (
+				6BE48B9D2C6F26FC000B948A /* ProfileDTO.swift */,
+			);
+			path = PostDTO;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -221,13 +290,22 @@
 			buildActionMask = 2147483647;
 			files = (
 				6BE48B8B2C6F2630000B948A /* ProfileRouter.swift in Sources */,
+				6BE48B9C2C6F26F2000B948A /* RefreshAccessTokenDTO.swift in Sources */,
 				6BE48B7C2C6F25DA000B948A /* Routerable.swift in Sources */,
 				6BE48B8F2C6F263C000B948A /* PostRouter.swift in Sources */,
 				6BD986482C6CCAD900F563BE /* ViewController.swift in Sources */,
+				6BE48BA42C6F2719000B948A /* PostListDTO.swift in Sources */,
 				6BD986442C6CCAD900F563BE /* AppDelegate.swift in Sources */,
 				6BD986462C6CCAD900F563BE /* SceneDelegate.swift in Sources */,
+				6BE48BA22C6F2711000B948A /* PostDTO.swift in Sources */,
+				6BE48B9A2C6F26E3000B948A /* LoginDTO.swift in Sources */,
+				6BE48B962C6F26CD000B948A /* UserDTO.swift in Sources */,
 				6BE48B8D2C6F2636000B948A /* TokenRouter.swift in Sources */,
+				6BE48BA02C6F2709000B948A /* UploadFileDTO.swift in Sources */,
 				6BE48B892C6F2621000B948A /* UserRouter.swift in Sources */,
+				6BE48B9E2C6F26FC000B948A /* ProfileDTO.swift in Sources */,
+				6BE48BA62C6F2728000B948A /* ComentsDTO.swift in Sources */,
+				6BE48B982C6F26D7000B948A /* SignUpDTO.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
