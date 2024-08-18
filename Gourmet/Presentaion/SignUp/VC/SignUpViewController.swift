@@ -67,9 +67,6 @@ extension SignUpViewController {
             }.disposed(by: disposeBag)
         
     }
-    
-    
-    
 }
 
 //MARK: - Configuration

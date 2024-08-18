@@ -86,5 +86,33 @@ struct NetworkManager {
         
     }
     
+    func login(email: String,
+               password: String) -> Single<Result<LoginDTO, Error>> {
+        
+        return Single.create { single -> Disposable in
+            
+            let body = LoginBodyModel(email: email,
+                                      password: password)
+            
+            session.request(UserRouter.login(body: body))
+                .validate(statusCode: 200..<300)
+                .responseDecodable(of: LoginDTO.self) { response in
+                    switch response.result {
+                    case .success(let data):
+                        single(.success(.success(data)))
+                        
+                    case .failure:
+                        if let statusCode = response.response?.statusCode,
+                           let loginError = LoginError(rawValue: statusCode) {
+                            single(.success(.failure(loginError)))
+                        } else {
+                            single(.success(.failure(LoginError.serverError)))
+                        }
+                    }
+                }
+            return Disposables.create()
+        }
+    }
+    
 }
 

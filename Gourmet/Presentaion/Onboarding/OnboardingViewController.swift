@@ -26,11 +26,6 @@ final class OnboardingViewController: UIViewController {
     
 }
 
-extension OnboardingViewController {
-
-    
-}
-
 //MARK: - Configuration
 extension OnboardingViewController: BaseViewProtocol {
     
@@ -85,19 +80,19 @@ extension OnboardingViewController: BaseViewProtocol {
             make.top.equalTo(view.safeAreaLayoutGuide)
         }
     }
-
+    
     func configureGestureAndButtonActions() {
         
         loginButton.rx.tap
             .bind(with: self) { owner, _ in
-//                owner.navigationController?.pushViewController(LoginViewController(),
-//                                                         animated: true)
+                owner.navigationController?.pushViewController(LoginViewController(),
+                                                               animated: true)
             }.disposed(by: disposeBag)
         
         signUpButton.rx.tap
             .bind(with: self) { owner, _ in
                 owner.navigationController?.pushViewController(SignUpViewController(),
-                                                         animated: true)
+                                                               animated: true)
             }.disposed(by: disposeBag)
         
         
