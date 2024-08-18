@@ -96,8 +96,8 @@ extension OnboardingViewController: BaseViewProtocol {
         
         signUpButton.rx.tap
             .bind(with: self) { owner, _ in
-//                owner.navigationController?.pushViewController(SignUpViewController(),
-//                                                         animated: true)
+                owner.navigationController?.pushViewController(SignUpViewController(),
+                                                         animated: true)
             }.disposed(by: disposeBag)
         
         

@@ -10,6 +10,11 @@
 		6B1B9F872C70AC9C00507FB5 /* BaseViewProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B1B9F862C70AC9C00507FB5 /* BaseViewProtocol.swift */; };
 		6B1B9F8A2C70ACD100507FB5 /* OnboardingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B1B9F892C70ACD100507FB5 /* OnboardingViewController.swift */; };
 		6B1B9F8D2C70B6A300507FB5 /* UILabel+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B1B9F8C2C70B6A300507FB5 /* UILabel+Extension.swift */; };
+		6B1B9F902C70B77900507FB5 /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B1B9F8F2C70B77900507FB5 /* SignUpViewController.swift */; };
+		6B1B9F922C70B7A200507FB5 /* UITextField+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B1B9F912C70B7A200507FB5 /* UITextField+Extension.swift */; };
+		6B1B9F972C70B9B600507FB5 /* SignUpViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B1B9F962C70B9B600507FB5 /* SignUpViewModel.swift */; };
+		6B1B9F992C70BA4600507FB5 /* ViewModelProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B1B9F982C70BA4600507FB5 /* ViewModelProtocol.swift */; };
+		6B1B9F9B2C70BDA200507FB5 /* EmailCheckBodyModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B1B9F9A2C70BDA200507FB5 /* EmailCheckBodyModel.swift */; };
 		6BD986442C6CCAD900F563BE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BD986432C6CCAD900F563BE /* AppDelegate.swift */; };
 		6BD986462C6CCAD900F563BE /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BD986452C6CCAD900F563BE /* SceneDelegate.swift */; };
 		6BD9864D2C6CCADB00F563BE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6BD9864C2C6CCADB00F563BE /* Assets.xcassets */; };
@@ -48,6 +53,11 @@
 		6B1B9F862C70AC9C00507FB5 /* BaseViewProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseViewProtocol.swift; sourceTree = "<group>"; };
 		6B1B9F892C70ACD100507FB5 /* OnboardingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewController.swift; sourceTree = "<group>"; };
 		6B1B9F8C2C70B6A300507FB5 /* UILabel+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UILabel+Extension.swift"; sourceTree = "<group>"; };
+		6B1B9F8F2C70B77900507FB5 /* SignUpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpViewController.swift; sourceTree = "<group>"; };
+		6B1B9F912C70B7A200507FB5 /* UITextField+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITextField+Extension.swift"; sourceTree = "<group>"; };
+		6B1B9F962C70B9B600507FB5 /* SignUpViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpViewModel.swift; sourceTree = "<group>"; };
+		6B1B9F982C70BA4600507FB5 /* ViewModelProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModelProtocol.swift; sourceTree = "<group>"; };
+		6B1B9F9A2C70BDA200507FB5 /* EmailCheckBodyModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailCheckBodyModel.swift; sourceTree = "<group>"; };
 		6BD986402C6CCAD900F563BE /* Gourmet.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Gourmet.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6BD986432C6CCAD900F563BE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		6BD986452C6CCAD900F563BE /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -100,6 +110,7 @@
 			isa = PBXGroup;
 			children = (
 				6B1B9F862C70AC9C00507FB5 /* BaseViewProtocol.swift */,
+				6B1B9F982C70BA4600507FB5 /* ViewModelProtocol.swift */,
 			);
 			path = BaseView;
 			sourceTree = "<group>";
@@ -116,8 +127,34 @@
 			isa = PBXGroup;
 			children = (
 				6B1B9F8C2C70B6A300507FB5 /* UILabel+Extension.swift */,
+				6B1B9F912C70B7A200507FB5 /* UITextField+Extension.swift */,
 			);
 			path = Extension;
+			sourceTree = "<group>";
+		};
+		6B1B9F8E2C70B76700507FB5 /* SignUp */ = {
+			isa = PBXGroup;
+			children = (
+				6B1B9F942C70B9A200507FB5 /* VC */,
+				6B1B9F932C70B99700507FB5 /* ViewModel */,
+			);
+			path = SignUp;
+			sourceTree = "<group>";
+		};
+		6B1B9F932C70B99700507FB5 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				6B1B9F962C70B9B600507FB5 /* SignUpViewModel.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		6B1B9F942C70B9A200507FB5 /* VC */ = {
+			isa = PBXGroup;
+			children = (
+				6B1B9F8F2C70B77900507FB5 /* SignUpViewController.swift */,
+			);
+			path = VC;
 			sourceTree = "<group>";
 		};
 		6BD986372C6CCAD900F563BE = {
@@ -165,6 +202,7 @@
 			children = (
 				6B1B9F852C70AC8600507FB5 /* BaseView */,
 				6B1B9F882C70ACBD00507FB5 /* Onboarding */,
+				6B1B9F8E2C70B76700507FB5 /* SignUp */,
 			);
 			path = Presentaion;
 			sourceTree = "<group>";
@@ -291,6 +329,7 @@
 			children = (
 				6BE48BB02C6F2915000B948A /* LoginBodyModel.swift */,
 				6BE48BB22C6F2926000B948A /* SignUpBodyModel.swift */,
+				6B1B9F9A2C70BDA200507FB5 /* EmailCheckBodyModel.swift */,
 			);
 			path = User;
 			sourceTree = "<group>";
@@ -418,14 +457,19 @@
 				6BE48BB32C6F2926000B948A /* SignUpBodyModel.swift in Sources */,
 				6BE48BA42C6F2719000B948A /* PostListDTO.swift in Sources */,
 				6BD986442C6CCAD900F563BE /* AppDelegate.swift in Sources */,
+				6B1B9F972C70B9B600507FB5 /* SignUpViewModel.swift in Sources */,
 				6BD986462C6CCAD900F563BE /* SceneDelegate.swift in Sources */,
 				6BE48BB92C6F3F08000B948A /* QueryOfFetchPost.swift in Sources */,
 				6B1B9F8A2C70ACD100507FB5 /* OnboardingViewController.swift in Sources */,
 				6BE48BA22C6F2711000B948A /* PostDTO.swift in Sources */,
 				6BE48B9A2C6F26E3000B948A /* LoginDTO.swift in Sources */,
+				6B1B9F9B2C70BDA200507FB5 /* EmailCheckBodyModel.swift in Sources */,
 				6BE48B962C6F26CD000B948A /* UserDTO.swift in Sources */,
 				6B1B9F872C70AC9C00507FB5 /* BaseViewProtocol.swift in Sources */,
+				6B1B9F992C70BA4600507FB5 /* ViewModelProtocol.swift in Sources */,
+				6B1B9F922C70B7A200507FB5 /* UITextField+Extension.swift in Sources */,
 				6BE48B8D2C6F2636000B948A /* TokenRouter.swift in Sources */,
+				6B1B9F902C70B77900507FB5 /* SignUpViewController.swift in Sources */,
 				6BE48BAD2C6F28F2000B948A /* UploadPostBodyModel.swift in Sources */,
 				6BE48BAF2C6F2907000B948A /* EditProfileBodyModel.swift in Sources */,
 				6BE48BA02C6F2709000B948A /* UploadFileDTO.swift in Sources */,
@@ -457,6 +501,7 @@
 /* Begin XCBuildConfiguration section */
 		6BD986522C6CCADB00F563BE /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 6BE48BA72C6F27FE000B948A /* APIKey.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
