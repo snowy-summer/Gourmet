@@ -46,7 +46,8 @@ extension LoginViewController {
             .bind(with: self) { owner, value in
                 
                 if value {
-//                    owner.navigationController?.pushViewController(<#T##viewController: UIViewController##UIViewController#>, animated: <#T##Bool#>)
+                    owner.navigationController?.pushViewController(NormalPostListViewController(),
+                                                                   animated: true)
                 } else {
                     owner.failLabel.isHidden = false
                 }

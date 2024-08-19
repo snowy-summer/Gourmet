@@ -33,6 +33,11 @@ struct NetworkManager {
             }
     }
     
+}
+
+//MARK: - Network User
+extension NetworkManager {
+    
     func checkEmail(email: String) -> Single<Bool> {
         
         return Single.create { single -> Disposable in
@@ -101,7 +106,8 @@ struct NetworkManager {
                     case .success(let data):
                         single(.success(.success(data)))
                         
-                    case .failure:
+                    case .failure(let error):
+                        print(error)
                         if let statusCode = response.response?.statusCode,
                            let loginError = LoginError(rawValue: statusCode) {
                             single(.success(.failure(loginError)))
@@ -114,5 +120,63 @@ struct NetworkManager {
         }
     }
     
+    func refreshAccessToken() -> Single<Bool> {
+        
+        let keychainManager = KeychainManager.shared
+        
+        return Single.create { single -> Disposable in
+            
+            session.request(TokenRouter.refreshAccessToken)
+                .validate(statusCode: 200..<300)
+                .responseDecodable(of: RefreshAccessTokenDTO.self) { response in
+                    switch response.result {
+                    case .success(let data):
+                        keychainManager.save(data.accessToken,
+                                             forKey: KeychainKey.accessToken.rawValue)
+                        
+                        single(.success(true))
+                    case .failure(let error):
+                        if let statusCode = response.response?.statusCode,
+                           let tokenError = TokenError(rawValue: statusCode) {
+                            if tokenError == .expiredRefreshToken {
+                                single(.success(false))
+                            }
+                        } else {
+                            print(error)
+                        }
+                    }
+                }
+            return Disposables.create()
+        }
+    }
 }
 
+extension NetworkManager {
+    
+    func fetchNormalPost(next: String?) -> Single<Result<PostListDTO,PostError>> {
+        
+        return Single.create { single -> Disposable in
+            
+            session.request(PostRouter.fetchPost(next: next,
+                                                 limit: 10,
+                                                 productId: "Gourmet_normal"))
+            .validate(statusCode: 200..<300)
+            .responseDecodable(of: PostListDTO.self) { response in
+                switch response.result {
+                case .success(let data):
+                    single(.success(.success(data)))
+                    
+                case .failure(let error):
+                    print(error)
+                    if let statusCode = response.response?.statusCode,
+                       let postError = PostError(rawValue: statusCode) {
+                        single(.success(.failure(postError)))
+                    } else {
+                        single(.success(.failure(PostError.serverError)))
+                    }
+                }
+            }
+            return Disposables.create()
+        }
+    }
+}

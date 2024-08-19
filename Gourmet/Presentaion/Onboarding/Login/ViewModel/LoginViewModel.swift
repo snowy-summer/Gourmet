@@ -36,11 +36,13 @@ final class LoginViewModel: ViewModelProtocol {
                 self?.networkManager.login(email: email,
                                            password: password) ?? .just(.failure(LoginError.serverError))
             }
-            .bind { value in
+            .bind(with: self) { owner,value in
                 
                 switch value {
                 case .success(let data):
                     isLoginSuccess.onNext(true)
+                    owner.storeTokens(accessToken: data.accessToken,
+                                      refreshToken: data.refreshToken)
                     
                 case .failure(let error):
                     isLoginSuccess.onNext(false)
@@ -49,5 +51,19 @@ final class LoginViewModel: ViewModelProtocol {
             .disposed(by: disposeBag)
         
         return Output(isLoginSuccess: isLoginSuccess)
+    }
+}
+
+extension LoginViewModel {
+    
+    func storeTokens(accessToken: String,
+                     refreshToken: String) {
+        let keychain = KeychainManager.shared
+        
+        let accessTokenKey = "accessToken"
+        let refreshTokenKey = "refreshToken"
+        
+        keychain.save(accessToken, forKey: accessTokenKey)
+        keychain.save(refreshToken, forKey: refreshTokenKey)
     }
 }
