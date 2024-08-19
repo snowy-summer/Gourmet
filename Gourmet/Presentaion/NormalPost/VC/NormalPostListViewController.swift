@@ -24,6 +24,11 @@ final class NormalPostListViewController: UIViewController {
         bindOutput()
     }
     
+}
+
+//MARK: - Logic
+extension NormalPostListViewController {
+    
     private func bindOutput() {
         
         let input = NormalViewModel.Input(reload: Observable.just(()))
@@ -34,9 +39,16 @@ final class NormalPostListViewController: UIViewController {
                                               cellType: PostCollectionViewCell.self)) { row, item, cell in
                 cell.updateContent(item: item)
             }
+                                              .disposed(by: disposeBag)
+        
+        output.needReLogin
+            .bind(with: self) { owner, value in
+                if value {
+                    owner.resetViewController(vc: LoginViewController())
+                }
+            }
             .disposed(by: disposeBag)
     }
-    
     
 }
 
@@ -74,9 +86,9 @@ extension NormalPostListViewController: BaseViewProtocol {
                                                        subitems: [item])
         
         group.contentInsets = NSDirectionalEdgeInsets(top: 0,
-                                                        leading: 0,
-                                                        bottom: 16,
-                                                        trailing: 0)
+                                                      leading: 0,
+                                                      bottom: 16,
+                                                      trailing: 0)
         
         let section = NSCollectionLayoutSection(group: group)
         

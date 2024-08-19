@@ -142,6 +142,7 @@ extension NetworkManager {
                                 single(.success(false))
                             }
                         } else {
+                            single(.success(false))
                             print(error)
                         }
                     }

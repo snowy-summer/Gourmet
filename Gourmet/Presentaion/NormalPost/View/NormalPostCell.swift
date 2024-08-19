@@ -58,7 +58,11 @@ extension PostCollectionViewCell: BaseViewProtocol {
     
     func configureUI() {
         
-        profileImageView.backgroundColor = .gray
+        profileImageView.image = UIImage(systemName: "person.fill")
+        profileImageView.tintColor = .gray.withAlphaComponent(0.8)
+        
+        nicknameLabel.font = .systemFont(ofSize: 16,
+                                         weight: .bold)
         
         likeView.configureIcon(icon: .like)
         commentsView.configureIcon(icon: .comments)
