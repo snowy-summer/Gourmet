@@ -21,8 +21,13 @@ final class LoginViewModel: ViewModelProtocol {
         let isLoginSuccess: PublishSubject<Bool>
     }
     
-    private let networkManager = NetworkManager.shared
+    private let networkManager: NetworkManagerProtocol
     private let disposeBag = DisposeBag()
+    
+    init(networkManager: NetworkManagerProtocol) {
+        self.networkManager = networkManager
+    }
+    
     
     func transform(_ input: Input) -> Output {
         

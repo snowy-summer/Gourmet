@@ -9,24 +9,39 @@ import UIKit
 
 final class TabBarController: UITabBarController {
     
+    private var components = [UIViewController]()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-//        tabBar.tintColor = .baseFont
-//        tabBar.unselectedItemTintColor = .sub
+        configure()
+        addViewController(vc: NormalPostListViewController(),
+                          selectImage: UIImage(systemName: "star"),
+                          unselectImage: UIImage(systemName: "star.fill"))
+        
+        setViewControllers(components,
+                           animated: false)
+    }
     
-        // 일반 홈
-        // 검색
-        // 일반 커뮤
-        //
-//        let topicPhotoVC = TopicPhotoViewController()
-//        let topicPhotoNC = UINavigationController(rootViewController: topicPhotoVC)
-//        topicPhotoNC.tabBarItem = UITabBarItem(title: nil,
-//                                               image: UIImage(systemName: "star"),
-//                                               selectedImage: UIImage(systemName: "star.fill"))
-//        
-//        setViewControllers([ topicPhotoNC,
-//                           ],
-//                           animated: false)
+}
+
+extension TabBarController {
+    
+    private func configure() {
+        tabBar.tintColor = .black
+        tabBar.unselectedItemTintColor = .lightGray
+    }
+    
+    private func addViewController(vc: UIViewController,
+                                   selectImage: UIImage?,
+                                   unselectImage: UIImage?) {
+        
+        let vc = NormalPostListViewController()
+        let nc = UINavigationController(rootViewController: vc)
+        nc.tabBarItem = UITabBarItem(title: nil,
+                                     image: unselectImage,
+                                     selectedImage: selectImage)
+        
+        components.append(nc)
     }
 }

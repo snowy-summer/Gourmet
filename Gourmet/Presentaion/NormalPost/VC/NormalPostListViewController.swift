@@ -14,7 +14,7 @@ final class NormalPostListViewController: UIViewController {
     
     private lazy var collectionView = UICollectionView(frame: .zero,
                                                        collectionViewLayout: createLayout())
-    private let viewModel = NormalViewModel()
+    private let viewModel = NormalViewModel(networkManager: NetworkManager.shared)
     private let disposeBag = DisposeBag()
     
     override func viewDidLoad() {

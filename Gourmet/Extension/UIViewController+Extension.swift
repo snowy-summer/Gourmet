@@ -17,4 +17,11 @@ extension UIViewController {
         sceneDelegate?.window?.rootViewController = navigationController
         sceneDelegate?.window?.makeKeyAndVisible()
     }
+    
+    func resetToTabBar() {
+        let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene
+        let sceneDelegate = windowScene?.delegate as? SceneDelegate
+        sceneDelegate?.window?.rootViewController = TabBarController()
+        sceneDelegate?.window?.makeKeyAndVisible()
+    }
 }

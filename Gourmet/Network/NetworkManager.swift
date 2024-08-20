@@ -9,10 +9,6 @@ import Foundation
 import Alamofire
 import RxSwift
 
-protocol NetworkManagerProtocol {
-    var session: Session { get }
-}
-
 final class NetworkManager: NetworkManagerProtocol {
     
     static let shared = NetworkManager()
@@ -23,7 +19,7 @@ final class NetworkManager: NetworkManagerProtocol {
     func fetchData<T: Decodable>(_ object: T.Type,
                                  router: URLRequestConvertible,
                                  completionHandler: @escaping (Result<T,Error>) -> Void) {
-    
+        
         session.request(router)
             .validate(statusCode: 200..<300)
             .responseDecodable(of: T.self) { response in
@@ -95,7 +91,7 @@ extension NetworkManager {
     }
     
     func login(email: String,
-               password: String) -> Single<Result<LoginDTO, Error>> {
+               password: String) -> Single<Result<LoginDTO, LoginError>> {
         
         return Single.create { [weak self] single -> Disposable in
             
@@ -123,7 +119,7 @@ extension NetworkManager {
     }
     
     func refreshAccessToken() -> Single<Bool> {
-    
+        
         let keychainManager = KeychainManager.shared
         
         return Single.create { [weak self] single -> Disposable in
@@ -137,15 +133,10 @@ extension NetworkManager {
                                              forKey: KeychainKey.accessToken.rawValue)
                         
                         single(.success(true))
-                    case .failure(let error):
                         
+                    case .failure(let error):
+                        print(error)
                         single(.success(false))
-                        //                        if let statusCode = response.response?.statusCode,
-                        //                           let tokenError = TokenError(rawValue: statusCode) {
-                        //                            single(.success(false))
-                        //                        } else {
-                        //                            single(.success(false))
-                        //                        }
                     }
                 }
             return Disposables.create()
@@ -156,7 +147,7 @@ extension NetworkManager {
 extension NetworkManager {
     
     func fetchNormalPost(next: String?) -> Single<Result<PostListDTO,PostError>> {
-
+        
         return Single.create { [weak self] single -> Disposable in
             
             self?.session.request(PostRouter.fetchPost(next: next,

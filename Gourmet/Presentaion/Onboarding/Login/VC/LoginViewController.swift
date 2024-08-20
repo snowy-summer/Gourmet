@@ -19,7 +19,7 @@ final class LoginViewController: UIViewController {
     private let loginButton = UIButton()
     private let failLabel = UILabel()
     
-    private let viewModel = LoginViewModel()
+    private let viewModel = LoginViewModel(networkManager: NetworkManager.shared)
     private let disposeBag = DisposeBag()
     
     override func viewDidLoad() {
@@ -48,6 +48,7 @@ extension LoginViewController {
                 if value {
                     owner.navigationController?.pushViewController(NormalPostListViewController(),
                                                                    animated: true)
+                    owner.resetToTabBar()
                 } else {
                     owner.failLabel.isHidden = false
                 }
