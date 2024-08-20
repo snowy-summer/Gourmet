@@ -20,7 +20,7 @@ final class NormalViewModel: ViewModelProtocol {
         let needReLogin: PublishSubject<Bool>
     }
     
-    private let networkManager = NetworkManager()
+    private let networkManager = NetworkManager.shared
     private var nextCursor = ""
     private let disposeBag = DisposeBag()
     

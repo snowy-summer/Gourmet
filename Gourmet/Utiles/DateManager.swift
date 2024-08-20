@@ -15,8 +15,8 @@ final class DateManager {
     private init() {}
     
     func stringToDate(value: String) -> Date? {
-        
-        dateFormatter.dateFormat = "yyyy-MM-dd"
+
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
         return dateFormatter.date(from: value)
     }
     

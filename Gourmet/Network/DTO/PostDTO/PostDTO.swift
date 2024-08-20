@@ -17,7 +17,7 @@ struct PostDTO: Decodable {
     let content3: String?
     let content4: String?
     let content5: String?
-    let createAt: String?
+    let createdAt: String
     let creator: CreatorDTO
     let files: [String]
     let likes: [String]
@@ -35,7 +35,7 @@ struct PostDTO: Decodable {
         case content3
         case content4
         case content5
-        case createAt, creator
+        case createdAt, creator
         case files, likes, hashTags, comments
         case likes2
     }

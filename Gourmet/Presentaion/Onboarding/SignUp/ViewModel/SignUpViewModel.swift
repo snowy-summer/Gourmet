@@ -27,7 +27,7 @@ final class SignUpViewModel: ViewModelProtocol {
     }
     
     private let disposeBag = DisposeBag()
-    private let networkManager = NetworkManager()
+    private let networkManager = NetworkManager.shared
     
     func transform(_ input: Input) -> Output {
         

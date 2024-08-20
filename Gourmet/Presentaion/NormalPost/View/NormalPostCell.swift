@@ -41,7 +41,7 @@ extension NormalPostCell {
         likeView.updateContent(content: "0")
         commentsView.updateContent(content: "0")
         
-        if let date = dateManager.stringToDate(value: item.createAt ?? "2024-08-20") {
+        if let date = dateManager.stringToDate(value: item.createdAt) {
             timeView.updateContent(content: dateManager.dateToString(date: date))
         }
     }
@@ -88,7 +88,7 @@ extension NormalPostCell: BaseViewProtocol {
             nicknameLabel.snp.makeConstraints { make in
                 make.centerY.equalTo(profileImageView.snp.centerY)
                 make.leading.equalTo(profileImageView.snp.trailing).offset(8)
-                make.width.equalTo(contentView.snp.width).multipliedBy(0.6)
+                make.width.equalTo(contentView.snp.width).multipliedBy(0.5)
             }
             
             timeView.snp.makeConstraints { make in
