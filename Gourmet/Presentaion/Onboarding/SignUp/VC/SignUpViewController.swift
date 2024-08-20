@@ -23,7 +23,7 @@ final class SignUpViewController: UIViewController {
     private let emailValidCheckButton = UIButton()
     private let signUpButton = UIButton()
     
-    private let viewModel = SignUpViewModel()
+    private let viewModel = SignUpViewModel(networkManager: NetworkManager.shared)
     private let disposeBag = DisposeBag()
     
     override func viewDidLoad() {
@@ -61,7 +61,7 @@ extension SignUpViewController {
             .bind(with: self) { owner, value in
                 
                 if value {
-//                    navigationController?.pushViewController(, animated: true)
+                    owner.resetToTabBar()
                 }
                 
             }.disposed(by: disposeBag)

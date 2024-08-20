@@ -9,13 +9,12 @@ import Foundation
 import Alamofire
 import RxSwift
 
-struct NetworkManager {
+final class NetworkManager: NetworkManagerProtocol {
     
-    private let session: Session
+    static let shared = NetworkManager()
+    var session: Session = .default
     
-    init(session: Session = .default) {
-        self.session = session
-    }
+    private init() {}
     
     func fetchData<T: Decodable>(_ object: T.Type,
                                  router: URLRequestConvertible,
@@ -33,10 +32,15 @@ struct NetworkManager {
             }
     }
     
+}
+
+//MARK: - Network User
+extension NetworkManager {
+    
     func checkEmail(email: String) -> Single<Bool> {
         
-        return Single.create { single -> Disposable in
-            session.request(UserRouter.checkValidEmail(email))
+        return Single.create { [weak self] single -> Disposable in
+            self?.session.request(UserRouter.checkValidEmail(email))
                 .validate(statusCode: 200..<300)
                 .response { response in
                     switch response.result {
@@ -57,7 +61,7 @@ struct NetworkManager {
                 password: String,
                 nickName: String) -> Single<Result<SignUpDTO, SignUpError>> {
         
-        return Single.create { single -> Disposable in
+        return Single.create { [weak self] single -> Disposable in
             
             let body = SignUpBodyModel(email: email,
                                        password: password,
@@ -65,7 +69,7 @@ struct NetworkManager {
                                        phoneNum: nil,
                                        birthDay: nil)
             
-            session.request(UserRouter.signUp(body: body))
+            self?.session.request(UserRouter.signUp(body: body))
                 .validate(statusCode: 200..<300)
                 .responseDecodable(of: SignUpDTO.self) { response in
                     switch response.result {
@@ -87,21 +91,21 @@ struct NetworkManager {
     }
     
     func login(email: String,
-               password: String) -> Single<Result<LoginDTO, Error>> {
+               password: String) -> Single<Result<LoginDTO, LoginError>> {
         
-        return Single.create { single -> Disposable in
+        return Single.create { [weak self] single -> Disposable in
             
             let body = LoginBodyModel(email: email,
                                       password: password)
             
-            session.request(UserRouter.login(body: body))
+            self?.session.request(UserRouter.login(body: body))
                 .validate(statusCode: 200..<300)
                 .responseDecodable(of: LoginDTO.self) { response in
                     switch response.result {
                     case .success(let data):
                         single(.success(.success(data)))
                         
-                    case .failure:
+                    case .failure(let error):
                         if let statusCode = response.response?.statusCode,
                            let loginError = LoginError(rawValue: statusCode) {
                             single(.success(.failure(loginError)))
@@ -114,5 +118,58 @@ struct NetworkManager {
         }
     }
     
+    func refreshAccessToken() -> Single<Bool> {
+        
+        let keychainManager = KeychainManager.shared
+        
+        return Single.create { [weak self] single -> Disposable in
+            
+            self?.session.request(TokenRouter.refreshAccessToken)
+                .validate(statusCode: 200..<300)
+                .responseDecodable(of: RefreshAccessTokenDTO.self) { response in
+                    switch response.result {
+                    case .success(let data):
+                        keychainManager.save(data.accessToken,
+                                             forKey: KeychainKey.accessToken.rawValue)
+                        
+                        single(.success(true))
+                        
+                    case .failure(let error):
+                        print(error)
+                        single(.success(false))
+                    }
+                }
+            return Disposables.create()
+        }
+    }
 }
 
+extension NetworkManager {
+    
+    func fetchNormalPost(next: String?) -> Single<Result<PostListDTO,PostError>> {
+        
+        return Single.create { [weak self] single -> Disposable in
+            
+            self?.session.request(PostRouter.fetchPost(next: next,
+                                                       limit: 10,
+                                                       productId: "Gourmet_normal"))
+            .validate(statusCode: 200..<300)
+            .responseDecodable(of: PostListDTO.self) { response in
+                switch response.result {
+                case .success(let data):
+                    single(.success(.success(data)))
+                    
+                case .failure(let error):
+                    if let statusCode = response.response?.statusCode,
+                       let postError = PostError(rawValue: statusCode) {
+                        single(.success(.failure(postError)))
+                    } else {
+                        print(error)
+                        single(.success(.failure(PostError.serverError)))
+                    }
+                }
+            }
+            return Disposables.create()
+        }
+    }
+}
