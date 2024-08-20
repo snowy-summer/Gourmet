@@ -8,7 +8,7 @@
 import UIKit
 import SnapKit
 
-final class PostCollectionViewCell: UICollectionViewCell {
+final class NormalPostCell: UICollectionViewCell {
     
     private let profileImageView = UIImageView()
     private let nicknameLabel = UILabel()
@@ -17,6 +17,8 @@ final class PostCollectionViewCell: UICollectionViewCell {
     private let likeView = IconLabelView()
     private let timeView = IconLabelView()
     private let commentsView = IconLabelView()
+    
+    private let dateManager = DateManager.shared
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -30,7 +32,7 @@ final class PostCollectionViewCell: UICollectionViewCell {
     
 }
 
-extension PostCollectionViewCell {
+extension NormalPostCell {
     
     func updateContent(item: PostDTO) {
         
@@ -38,13 +40,16 @@ extension PostCollectionViewCell {
         titleLabel.text = item.title
         likeView.updateContent(content: "0")
         commentsView.updateContent(content: "0")
-        timeView.updateContent(content: "0")
+        
+        if let date = dateManager.stringToDate(value: item.createAt ?? "2024-08-20") {
+            timeView.updateContent(content: dateManager.dateToString(date: date))
+        }
     }
 }
 
 
 //MARK: - configure
-extension PostCollectionViewCell: BaseViewProtocol {
+extension NormalPostCell: BaseViewProtocol {
     
     func configureHierarchy() {
         

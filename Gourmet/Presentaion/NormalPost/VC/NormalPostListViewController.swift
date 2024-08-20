@@ -35,11 +35,11 @@ extension NormalPostListViewController {
         let output = viewModel.transform(input)
         
         output.items
-            .bind(to: collectionView.rx.items(cellIdentifier: PostCollectionViewCell.identifier,
-                                              cellType: PostCollectionViewCell.self)) { row, item, cell in
+            .bind(to: collectionView.rx.items(cellIdentifier: NormalPostCell.identifier,
+                                              cellType: NormalPostCell.self)) { row, item, cell in
                 cell.updateContent(item: item)
             }
-                                              .disposed(by: disposeBag)
+            .disposed(by: disposeBag)
         
         output.needReLogin
             .bind(with: self) { owner, value in
@@ -60,8 +60,8 @@ extension NormalPostListViewController: BaseViewProtocol {
     }
     
     func configureUI() {
-        collectionView.register(PostCollectionViewCell.self,
-                                forCellWithReuseIdentifier: PostCollectionViewCell.identifier)
+        collectionView.register(NormalPostCell.self,
+                                forCellWithReuseIdentifier: NormalPostCell.identifier)
     }
     
     func configureLayout() {

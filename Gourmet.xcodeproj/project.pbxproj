@@ -30,6 +30,7 @@
 		6B1B9FC62C7369E300507FB5 /* SignUpError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B1B9FC52C7369E300507FB5 /* SignUpError.swift */; };
 		6B1B9FC82C7369FE00507FB5 /* EmailCheckError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B1B9FC72C7369FE00507FB5 /* EmailCheckError.swift */; };
 		6B1B9FCA2C73708C00507FB5 /* UIViewController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B1B9FC92C73708C00507FB5 /* UIViewController+Extension.swift */; };
+		6B1B9FCC2C73739E00507FB5 /* DateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B1B9FCB2C73739E00507FB5 /* DateManager.swift */; };
 		6BD986442C6CCAD900F563BE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BD986432C6CCAD900F563BE /* AppDelegate.swift */; };
 		6BD986462C6CCAD900F563BE /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BD986452C6CCAD900F563BE /* SceneDelegate.swift */; };
 		6BD9864D2C6CCADB00F563BE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6BD9864C2C6CCADB00F563BE /* Assets.xcassets */; };
@@ -88,6 +89,7 @@
 		6B1B9FC52C7369E300507FB5 /* SignUpError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpError.swift; sourceTree = "<group>"; };
 		6B1B9FC72C7369FE00507FB5 /* EmailCheckError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailCheckError.swift; sourceTree = "<group>"; };
 		6B1B9FC92C73708C00507FB5 /* UIViewController+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+Extension.swift"; sourceTree = "<group>"; };
+		6B1B9FCB2C73739E00507FB5 /* DateManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateManager.swift; sourceTree = "<group>"; };
 		6BD986402C6CCAD900F563BE /* Gourmet.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Gourmet.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6BD986432C6CCAD900F563BE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		6BD986452C6CCAD900F563BE /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -263,6 +265,7 @@
 			isa = PBXGroup;
 			children = (
 				6B1B9FBF2C73369D00507FB5 /* KeychainManager.swift */,
+				6B1B9FCB2C73739E00507FB5 /* DateManager.swift */,
 			);
 			path = Utiles;
 			sourceTree = "<group>";
@@ -590,6 +593,7 @@
 				6BE48BA22C6F2711000B948A /* PostDTO.swift in Sources */,
 				6B1B9FA02C71E66A00507FB5 /* LoginViewModel.swift in Sources */,
 				6BE48B9A2C6F26E3000B948A /* LoginDTO.swift in Sources */,
+				6B1B9FCC2C73739E00507FB5 /* DateManager.swift in Sources */,
 				6B1B9F9B2C70BDA200507FB5 /* EmailCheckBodyModel.swift in Sources */,
 				6BE48B962C6F26CD000B948A /* UserDTO.swift in Sources */,
 				6B1B9FB32C72231900507FB5 /* NormalViewModel.swift in Sources */,

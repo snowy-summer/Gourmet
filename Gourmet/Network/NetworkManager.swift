@@ -107,7 +107,6 @@ extension NetworkManager {
                         single(.success(.success(data)))
                         
                     case .failure(let error):
-                        print(error)
                         if let statusCode = response.response?.statusCode,
                            let loginError = LoginError(rawValue: statusCode) {
                             single(.success(.failure(loginError)))
@@ -136,15 +135,14 @@ extension NetworkManager {
                         
                         single(.success(true))
                     case .failure(let error):
-                        if let statusCode = response.response?.statusCode,
-                           let tokenError = TokenError(rawValue: statusCode) {
-                            if tokenError == .expiredRefreshToken {
-                                single(.success(false))
-                            }
-                        } else {
-                            single(.success(false))
-                            print(error)
-                        }
+                    
+                        single(.success(false))
+//                        if let statusCode = response.response?.statusCode,
+//                           let tokenError = TokenError(rawValue: statusCode) {
+//                            single(.success(false))
+//                        } else {
+//                            single(.success(false))
+//                        }
                     }
                 }
             return Disposables.create()
@@ -168,11 +166,11 @@ extension NetworkManager {
                     single(.success(.success(data)))
                     
                 case .failure(let error):
-                    print(error)
                     if let statusCode = response.response?.statusCode,
                        let postError = PostError(rawValue: statusCode) {
                         single(.success(.failure(postError)))
                     } else {
+                        print(error)
                         single(.success(.failure(PostError.serverError)))
                     }
                 }

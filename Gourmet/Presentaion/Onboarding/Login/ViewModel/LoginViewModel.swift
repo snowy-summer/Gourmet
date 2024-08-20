@@ -40,9 +40,9 @@ final class LoginViewModel: ViewModelProtocol {
                 
                 switch value {
                 case .success(let data):
-                    isLoginSuccess.onNext(true)
                     owner.storeTokens(accessToken: data.accessToken,
                                       refreshToken: data.refreshToken)
+                    isLoginSuccess.onNext(true)
                     
                 case .failure(let error):
                     isLoginSuccess.onNext(false)

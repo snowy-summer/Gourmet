@@ -38,18 +38,21 @@ final class NormalViewModel: ViewModelProtocol {
                 
                 switch value {
                 case .success(let data):
+                    
                     items.onNext(data.data)
                     owner.nextCursor = data.nextCursor
                     
                 case .failure(let error):
                     if error == .expiredAccessToken {
-                        let isSuccess = owner.networkManager.refreshAccessToken().asObservable()
+                
+                        let isSuccess = owner.networkManager.refreshAccessToken()
                         owner.refreshToken(isSuccess: isSuccess,
                                      items: items,
                                      needReLogin: needReLogin)
                         
                     } else {
-                        needReLogin.onNext(false)
+                        print(error)
+                        needReLogin.onNext(true)
                     }
                     
                 }
@@ -60,30 +63,28 @@ final class NormalViewModel: ViewModelProtocol {
                       needReLogin: needReLogin)
     }
     
-    private func refreshToken(isSuccess: Observable<Bool>,
+    private func refreshToken(isSuccess: Single<Bool>,
                               items: PublishSubject<[PostDTO]>,
                               needReLogin: PublishSubject<Bool>) {
         
-        isSuccess
-            .flatMapLatest { [weak self] value -> Single<Result<PostListDTO, PostError>> in
-                guard let self = self else { return .just(.failure(.forbidden)) }
-                if value {
-                    return networkManager.fetchNormalPost(next: nextCursor)
-                } else {
-                    return .just(.failure(.forbidden))
-                }
-                
-            }
-            .bind(with: self) { owner, value in
-                
-                switch value {
-                case .success(let data):
-                    items.onNext(data.data)
-                    owner.nextCursor = data.nextCursor
+        isSuccess.subscribe(with: self) { owner, value in
+            if value {
+                owner.networkManager.fetchNormalPost(next: owner.nextCursor)
+                    .subscribe(with: self) { owner, result in
+                        
+                        switch result {
+                        case .success(let data):
+                            owner.nextCursor = data.nextCursor
+                            items.onNext(data.data)
+                            
+                        case .failure:
+                            needReLogin.onNext(true)
+                        }
+                    }.disposed(by: owner.disposeBag)
                     
-                case .failure:
-                    needReLogin.onNext(true)
-                }
-            }.disposed(by: disposeBag)
+            } else {
+                needReLogin.onNext(true)
+            }
+        }.disposed(by: disposeBag)
     }
 }
