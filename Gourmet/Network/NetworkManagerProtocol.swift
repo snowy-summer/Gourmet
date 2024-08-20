@@ -13,12 +13,17 @@ protocol NetworkManagerProtocol {
     var session: Session { get }
     
     func checkEmail(email: String) -> Single<Bool>
+    
     func signUp(email: String,
                 password: String,
                 nickName: String) -> Single<Result<SignUpDTO, SignUpError>>
+    
     func login(email: String,
                password: String) -> Single<Result<LoginDTO, LoginError>>
+    
     func refreshAccessToken() -> Single<Bool>
-    func fetchNormalPost(next: String?) -> Single<Result<PostListDTO,PostError>>
+    
+    func fetchPost(next: String?,
+                   category: String) -> Single<Result<PostListDTO,PostError>>
 }
 

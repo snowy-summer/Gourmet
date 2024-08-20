@@ -36,7 +36,8 @@ final class NormalViewModel: ViewModelProtocol {
         input.reload
             .flatMapLatest { [weak self] _ -> Single<Result<PostListDTO, PostError>> in
                 guard let self = self else { return .just(.failure(.forbidden)) }
-                return networkManager.fetchNormalPost(next: nextCursor)
+                return networkManager.fetchPost(next: nextCursor,
+                                                category: "Gourmet_normal")
             }
             .bind(with: self) { owner, value in
                 
@@ -73,7 +74,8 @@ final class NormalViewModel: ViewModelProtocol {
         
         isSuccess.subscribe(with: self) { owner, value in
             if value {
-                owner.networkManager.fetchNormalPost(next: owner.nextCursor)
+                owner.networkManager.fetchPost(next: owner.nextCursor,
+                                               category: "Gourmet_normal")
                     .subscribe(with: self) { owner, result in
                         
                         switch result {
