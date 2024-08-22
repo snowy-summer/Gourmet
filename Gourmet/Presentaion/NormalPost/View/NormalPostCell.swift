@@ -104,15 +104,15 @@ extension NormalPostCell: BaseViewProtocol {
             }
             
             likeView.snp.makeConstraints { make in
-                make.top.equalTo(titleLabel.snp.bottom).offset(16)
+                make.top.equalTo(titleLabel.snp.bottom).offset(8)
                 make.leading.equalTo(contentView.snp.leading).offset(16)
-                make.bottom.equalTo(contentView.snp.bottom).inset(16)
+                make.bottom.equalTo(contentView.snp.bottom).inset(8)
             }
             
             commentsView.snp.makeConstraints { make in
-                make.top.equalTo(titleLabel.snp.bottom).offset(16)
+                make.top.equalTo(titleLabel.snp.bottom).offset(8)
                 make.leading.equalTo(likeView.snp.trailing).offset(16)
-                make.bottom.equalTo(contentView.snp.bottom).inset(16)
+                make.bottom.equalTo(contentView.snp.bottom).inset(8)
             }
         }
 }
