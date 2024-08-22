@@ -102,37 +102,73 @@ extension HomeViewController: BaseViewProtocol {
     
     private func createLayout() -> UICollectionViewLayout {
         
-        let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.4),
-                                              heightDimension: .fractionalHeight(1.0))
-        let item = NSCollectionLayoutItem(layoutSize: itemSize)
-        
-        
-        let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
-                                               heightDimension: .fractionalHeight(0.3))
-        let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize,
-                                                       subitems: [item])
-
-        
-        let section = NSCollectionLayoutSection(group: group)
-        
-        section.contentInsets = NSDirectionalEdgeInsets(top: 0,
-                                                        leading: 16,
-                                                        bottom: 16,
-                                                        trailing: 16)
-        
-        let headerSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
-                                                heightDimension: .absolute(44))
-        let header = NSCollectionLayoutBoundarySupplementaryItem(
-            layoutSize: headerSize,
-            elementKind: UICollectionView.elementKindSectionHeader,
-            alignment: .top
-        )
-        
-        section.boundarySupplementaryItems = [header]
-        
-        let layout = UICollectionViewCompositionalLayout(section: section)
-        
-        return layout
+        return UICollectionViewCompositionalLayout { sectionIndex, layoutEnvironment -> NSCollectionLayoutSection? in
+            
+            if sectionIndex == 0 {
+                let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
+                                                      heightDimension: .fractionalHeight(1.0))
+                let item = NSCollectionLayoutItem(layoutSize: itemSize)
+                
+                
+                let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.8),
+                                                       heightDimension: .fractionalHeight(0.35))
+                let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize,
+                                                               subitems: [item])
+                
+                let section = NSCollectionLayoutSection(group: group)
+                section.orthogonalScrollingBehavior = .continuous
+                section.contentInsets = NSDirectionalEdgeInsets(top: 0,
+                                                                leading: 16,
+                                                                bottom: 16,
+                                                                trailing: 0)
+                
+                let headerSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
+                                                        heightDimension: .absolute(44))
+                let header = NSCollectionLayoutBoundarySupplementaryItem(
+                    layoutSize: headerSize,
+                    elementKind: UICollectionView.elementKindSectionHeader,
+                    alignment: .top
+                )
+                
+                section.boundarySupplementaryItems = [header]
+                return section
+                
+            } else {
+                
+                let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
+                                                      heightDimension: .fractionalHeight(1.0))
+                let item = NSCollectionLayoutItem(layoutSize: itemSize)
+                
+                
+                let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalHeight(0.2),
+                                                       heightDimension: .fractionalHeight(0.2))
+                let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize,
+                                                               subitems: [item])
+                
+                let section = NSCollectionLayoutSection(group: group)
+                section.interGroupSpacing = 16
+                section.contentInsets = NSDirectionalEdgeInsets(top: 0,
+                                                                leading: 16,
+                                                                bottom: 16,
+                                                                trailing: 16)
+                section.orthogonalScrollingBehavior = .continuous
+                
+                let headerSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
+                                                        heightDimension: .absolute(44))
+                let header = NSCollectionLayoutBoundarySupplementaryItem(
+                    layoutSize: headerSize,
+                    elementKind: UICollectionView.elementKindSectionHeader,
+                    alignment: .top
+                )
+                
+                section.boundarySupplementaryItems = [header]
+                
+                return section
+                
+            }
+            
+        }
+    
     }
     
 }

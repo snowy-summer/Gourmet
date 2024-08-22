@@ -23,7 +23,6 @@ protocol NetworkManagerProtocol {
     
     func refreshAccessToken() -> Single<Bool>
     
-    func fetchPost(next: String?,
-                   category: String) -> Single<Result<PostListDTO,PostError>>
+    func fetchPost(category: Category) -> Single<Result<PostListDTO,PostError>>
 }
 
