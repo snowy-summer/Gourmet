@@ -21,7 +21,7 @@ final class NormalViewModel: ViewModelProtocol {
     }
     
     private let networkManager: NetworkManagerProtocol
-    private var nextCursor = ""
+    private var category = Category(id: .normal)
     private let disposeBag = DisposeBag()
     
     init(networkManager: NetworkManagerProtocol) {
@@ -36,7 +36,7 @@ final class NormalViewModel: ViewModelProtocol {
         input.reload
             .flatMapLatest { [weak self] _ -> Single<Result<PostListDTO, PostError>> in
                 guard let self = self else { return .just(.failure(.forbidden)) }
-                return networkManager.fetchNormalPost(next: nextCursor)
+                return networkManager.fetchPost(category: category)
             }
             .bind(with: self) { owner, value in
                 
@@ -44,7 +44,7 @@ final class NormalViewModel: ViewModelProtocol {
                 case .success(let data):
                     
                     items.onNext(data.data)
-                    owner.nextCursor = data.nextCursor
+                    owner.category.nextCursor = data.nextCursor
                     
                 case .failure(let error):
                     if error == .expiredAccessToken {
@@ -73,12 +73,12 @@ final class NormalViewModel: ViewModelProtocol {
         
         isSuccess.subscribe(with: self) { owner, value in
             if value {
-                owner.networkManager.fetchNormalPost(next: owner.nextCursor)
+                owner.networkManager.fetchPost(category: owner.category)
                     .subscribe(with: self) { owner, result in
                         
                         switch result {
                         case .success(let data):
-                            owner.nextCursor = data.nextCursor
+                            owner.category.nextCursor = data.nextCursor
                             items.onNext(data.data)
                             
                         case .failure:

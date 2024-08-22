@@ -146,13 +146,13 @@ extension NetworkManager {
 
 extension NetworkManager {
     
-    func fetchNormalPost(next: String?) -> Single<Result<PostListDTO,PostError>> {
+    func fetchPost(category: Category) -> Single<Result<PostListDTO,PostError>> {
         
         return Single.create { [weak self] single -> Disposable in
             
-            self?.session.request(PostRouter.fetchPost(next: next,
+            self?.session.request(PostRouter.fetchPost(next: category.nextCursor,
                                                        limit: 10,
-                                                       productId: "Gourmet_normal"))
+                                                       productId: category.id.productId))
             .validate(statusCode: 200..<300)
             .responseDecodable(of: PostListDTO.self) { response in
                 switch response.result {

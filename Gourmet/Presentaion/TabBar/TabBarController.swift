@@ -15,6 +15,10 @@ final class TabBarController: UITabBarController {
         super.viewDidLoad()
         
         configure()
+        
+        addViewController(vc: HomeViewController(),
+                          selectImage: UIImage(systemName: "star"),
+                          unselectImage: UIImage(systemName: "star.fill"))
         addViewController(vc: NormalPostListViewController(),
                           selectImage: UIImage(systemName: "star"),
                           unselectImage: UIImage(systemName: "star.fill"))
@@ -36,7 +40,6 @@ extension TabBarController {
                                    selectImage: UIImage?,
                                    unselectImage: UIImage?) {
         
-        let vc = NormalPostListViewController()
         let nc = UINavigationController(rootViewController: vc)
         nc.tabBarItem = UITabBarItem(title: nil,
                                      image: unselectImage,
