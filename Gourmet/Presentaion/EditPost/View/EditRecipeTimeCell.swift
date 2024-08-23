@@ -11,6 +11,7 @@ import SnapKit
 final class EditRecipeTimeCell: UICollectionViewCell {
     
     private let timeLabel = UILabel()
+    private let addImageView = UIImageView()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -22,11 +23,19 @@ final class EditRecipeTimeCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        addImageView.isHidden = true
+    }
+    
 }
 
 extension EditRecipeTimeCell {
     
     func updateContent(item: String) {
+        
+        addImageView.isHidden = item.isEmpty ? false : true
         timeLabel.text = item
     }
 }
@@ -35,7 +44,9 @@ extension EditRecipeTimeCell {
 extension EditRecipeTimeCell: BaseViewProtocol {
     
     func configureHierarchy() {
+        
         contentView.addSubview(timeLabel)
+        contentView.addSubview(addImageView)
     }
     
     func configureUI() {
@@ -43,6 +54,10 @@ extension EditRecipeTimeCell: BaseViewProtocol {
         contentView.backgroundColor = .lightGray
         contentView.layer.cornerRadius = 8
         contentView.clipsToBounds = true
+        
+        addImageView.image = UIImage(systemName: "plus")
+        addImageView.tintColor = .main
+        addImageView.isHidden = true
     }
     
     func configureLayout() {
@@ -50,6 +65,11 @@ extension EditRecipeTimeCell: BaseViewProtocol {
         timeLabel.snp.makeConstraints { make in
             make.directionalVerticalEdges.equalTo(contentView.snp.directionalVerticalEdges)
             make.directionalHorizontalEdges.equalTo(contentView.snp.directionalHorizontalEdges).inset(8)
+        }
+        
+        addImageView.snp.makeConstraints { make in
+            make.size.equalTo(20)
+            make.center.equalTo(contentView.snp.center)
         }
     }
     

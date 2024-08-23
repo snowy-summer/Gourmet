@@ -24,5 +24,7 @@ protocol NetworkManagerProtocol {
     func refreshAccessToken() -> Single<Bool>
     
     func fetchPost(category: Category) -> Single<Result<PostListDTO,PostError>>
+    
+    func uploadPost(item: UploadPostBodyModel) -> Single<Result<Bool, PostError>>
 }
 

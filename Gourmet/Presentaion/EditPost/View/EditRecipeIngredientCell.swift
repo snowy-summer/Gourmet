@@ -12,6 +12,7 @@ final class EditRecipeIngredientCell: UICollectionViewCell {
     
     private let nameLabel = UILabel()
     private let valueLabel = UILabel()
+    private let addImageView = UIImageView()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -23,11 +24,24 @@ final class EditRecipeIngredientCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        addImageView.isHidden = true
+    }
+    
 }
 
 extension EditRecipeIngredientCell {
     
     func updateContent(item: RecipeIngredient) {
+        
+        if item.isAddCell {
+            addImageView.isHidden = false
+            nameLabel.isHidden = true
+            valueLabel.isHidden = true
+            return
+        }
         
         nameLabel.text = item.name
         valueLabel.text = item.value
@@ -41,6 +55,7 @@ extension EditRecipeIngredientCell: BaseViewProtocol {
         
         contentView.addSubview(nameLabel)
         contentView.addSubview(valueLabel)
+        contentView.addSubview(addImageView)
     }
     
     func configureUI() {
@@ -52,6 +67,10 @@ extension EditRecipeIngredientCell: BaseViewProtocol {
         contentView.backgroundColor = .systemBackground
         contentView.layer.cornerRadius = 8
         contentView.clipsToBounds = true
+        
+        addImageView.image = UIImage(systemName: "plus")
+        addImageView.tintColor = .main
+        addImageView.isHidden = true
     }
     
     func configureLayout() {
@@ -66,6 +85,11 @@ extension EditRecipeIngredientCell: BaseViewProtocol {
             make.verticalEdges.equalTo(contentView.snp.verticalEdges)
             make.leading.equalTo(contentView.snp.leading).offset(8)
             make.trailing.equalTo(valueLabel.snp.leading)
+        }
+        
+        addImageView.snp.makeConstraints { make in
+            make.size.equalTo(20)
+            make.center.equalTo(contentView.snp.center)
         }
     
     }

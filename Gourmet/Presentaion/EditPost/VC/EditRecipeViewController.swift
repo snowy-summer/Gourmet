@@ -12,18 +12,10 @@ import RxCocoa
 
 final class EditRecipeViewController: UIViewController {
     
-    enum Item: Hashable {
-        case title(String?)
-        case ingredient(RecipeIngredient)
-        case content(RecipeContent)
-        case neededTime(String)
-        case price(Int)
-    }
-    
     private let viewModel = EditPostViewModel(networkManager: NetworkManager.shared)
     private let disposeBag = DisposeBag()
     
-    private var dataSource: UICollectionViewDiffableDataSource<EditRecipeSection, Item>!
+    private var dataSource: UICollectionViewDiffableDataSource<EditRecipeSection, EditPostViewModel.Item>!
     private lazy var collectionView = UICollectionView(frame: .zero,
                                                        collectionViewLayout: createLayout())
     
@@ -40,6 +32,11 @@ final class EditRecipeViewController: UIViewController {
 extension EditRecipeViewController {
     
     private func bindingOutput() {
+        guard let saveButton = navigationItem.rightBarButtonItem else { return }
+        
+        let input = EditPostViewModel.Input(saveButtonTap: saveButton.rx.tap)
+        
+        let ouput = viewModel.transform(input)
         
     }
     
@@ -123,6 +120,9 @@ extension EditRecipeViewController {
                 let cell = collectionView.dequeueConfiguredReusableCell(using: ingredientRegistration,
                                                                         for: indexPath,
                                                                         item: ingredient)
+                
+                guard let ingredient = ingredient else { return cell }
+                
                 cell.updateContent(item: ingredient)
                 return cell
                 
@@ -130,6 +130,8 @@ extension EditRecipeViewController {
                 let cell = collectionView.dequeueConfiguredReusableCell(using: contentRegistration,
                                                                         for: indexPath,
                                                                         item: content)
+                guard let content = content else { return cell }
+                
                 cell.updateContent(item: content)
                 return cell
                 
@@ -159,24 +161,17 @@ extension EditRecipeViewController {
     
     private func updateSnapshot() {
         
-        var snapshot = NSDiffableDataSourceSnapshot<EditRecipeSection,Item>()
+        var snapshot = NSDiffableDataSourceSnapshot<EditRecipeSection,EditPostViewModel.Item>()
         snapshot.appendSections(EditRecipeSection.allCases)
-        snapshot.appendItems([.title("")],
+        snapshot.appendItems(viewModel.generateItems(from: .title(nil)),
                              toSection: .title)
-        snapshot.appendItems([
-            .ingredient(RecipeIngredient(name: "양갈비", value: "250g")),
-            .ingredient(RecipeIngredient(name: "버섯", value: "50g")),
-        ],
+        snapshot.appendItems(viewModel.generateItems(from: .ingredient(nil)),
                              toSection: .ingredient)
-        snapshot.appendItems([
-            .content(RecipeContent(thumbnailImage: UIImage(systemName: "star"), contet: "아주 잘 굽는다")),
-            .content(RecipeContent(thumbnailImage: nil, contet: "", isAddCell: true)),
-        ],
+        snapshot.appendItems(viewModel.generateItems(from: .content(nil)),
                              toSection: .content)
-        snapshot.appendItems([.neededTime("30 min")],
+        snapshot.appendItems(viewModel.generateItems(from: .neededTime("")),
                              toSection: .time)
-        snapshot.appendItems([],
-                             toSection: .price)
+        
         dataSource.apply(snapshot)
     }
     
@@ -192,6 +187,17 @@ extension EditRecipeViewController {
 }
 //MARK: - Configuration
 extension EditRecipeViewController: BaseViewProtocol {
+    
+    func configureNavigationBar() {
+        
+        let saveItem = UIBarButtonItem(title: "저장",
+                                       style: .plain,
+                                       target: self,
+                                       action: nil)
+        
+        navigationItem.rightBarButtonItem = saveItem
+        
+    }
     
     func configureHierarchy() {
         view.addSubview(collectionView)
@@ -265,17 +271,27 @@ fileprivate enum EditRecipeSection: Int, CaseIterable {
             return section
             
         case .ingredient:
-            var configuration = UICollectionLayoutListConfiguration(appearance: .insetGrouped)
-            configuration.backgroundColor = .main
+            let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
+                                                  heightDimension: .fractionalHeight(1.0))
+            let item = NSCollectionLayoutItem(layoutSize: itemSize)
             
-            let section = NSCollectionLayoutSection.list(using: configuration,
-                                                         layoutEnvironment: layoutEnvironment)
             
-            section.interGroupSpacing = 4
+            let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
+                                                   heightDimension: .absolute(44))
+            let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize,
+                                                           subitems: [item])
+            group.contentInsets = NSDirectionalEdgeInsets(top: 0,
+                                                          leading: 0,
+                                                          bottom: 4,
+                                                          trailing: 0)
+            
+            let section = NSCollectionLayoutSection(group: group)
+            
             section.contentInsets = NSDirectionalEdgeInsets(top: 0,
                                                             leading: 16,
                                                             bottom: 8,
                                                             trailing: 16)
+            
             let headerSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
                                                     heightDimension: .absolute(44))
             let header = NSCollectionLayoutBoundarySupplementaryItem(
@@ -298,10 +314,6 @@ fileprivate enum EditRecipeSection: Int, CaseIterable {
                                                    heightDimension: .absolute(44))
             let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize,
                                                            subitems: [item])
-            group.contentInsets = NSDirectionalEdgeInsets(top: 0,
-                                                          leading: 0,
-                                                          bottom: 8,
-                                                          trailing: 0)
             
             let section = NSCollectionLayoutSection(group: group)
             

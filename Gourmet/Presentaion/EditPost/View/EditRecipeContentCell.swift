@@ -13,7 +13,7 @@ final class EditRecipeContentCell: UICollectionViewCell {
     private let stackView = UIStackView()
     private let thumbnailImageView = UIImageView()
     private let contentTextView = UITextView()
-    private let addButton = UIButton()
+    private let addImageView = UIImageView()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -28,7 +28,7 @@ final class EditRecipeContentCell: UICollectionViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         
-        addButton.isHidden = true
+        addImageView.isHidden = true
         stackView.isHidden = false
     }
 }
@@ -38,7 +38,7 @@ extension EditRecipeContentCell {
     func updateContent(item: RecipeContent) {
         
         if item.isAddCell {
-            addButton.isHidden = false
+            addImageView.isHidden = false
             stackView.isHidden = true
             return
         }
@@ -65,7 +65,7 @@ extension EditRecipeContentCell: BaseViewProtocol {
         stackView.addArrangedSubview(thumbnailImageView)
         stackView.addArrangedSubview(contentTextView)
         
-        contentView.addSubview(addButton)
+        contentView.addSubview(addImageView)
     }
     
     func configureUI() {
@@ -82,8 +82,9 @@ extension EditRecipeContentCell: BaseViewProtocol {
         contentView.layer.cornerRadius = 16
         contentView.clipsToBounds = true
         
-        addButton.backgroundColor = .mantis
-        addButton.isHidden = true
+        addImageView.image = UIImage(systemName: "plus")
+        addImageView.tintColor = .main
+        addImageView.isHidden = true
     }
     
     func configureLayout() {
@@ -96,8 +97,8 @@ extension EditRecipeContentCell: BaseViewProtocol {
             make.width.equalTo(stackView.snp.height)
         }
         
-        addButton.snp.makeConstraints { make in
-            make.size.equalTo(60)
+        addImageView.snp.makeConstraints { make in
+            make.size.equalTo(44)
             make.center.equalTo(contentView.snp.center)
         }
     

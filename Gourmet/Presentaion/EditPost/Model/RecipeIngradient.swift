@@ -11,4 +11,13 @@ struct RecipeIngredient: Hashable {
     let id = UUID()
     let name: String
     let value: String
+    let isAddCell: Bool
+    
+    init(name: String,
+         value: String,
+         isAddCell: Bool = false) {
+        self.name = name
+        self.value = value
+        self.isAddCell = isAddCell
+    }
 }

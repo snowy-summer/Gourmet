@@ -172,4 +172,29 @@ extension NetworkManager {
             return Disposables.create()
         }
     }
+    
+    func uploadPost(item: UploadPostBodyModel) -> Single<Result<Bool, PostError>> {
+        
+        return Single.create { [weak self] single -> Disposable in
+            
+            self?.session.request(PostRouter.uploadPost(item))
+            .validate(statusCode: 200..<300)
+            .responseDecodable(of: PostDTO.self) { response in
+                switch response.result {
+                case .success:
+                    single(.success(.success(true)))
+                    
+                case .failure(let error):
+                    if let statusCode = response.response?.statusCode,
+                       let postError = PostError(rawValue: statusCode) {
+                        single(.success(.failure(postError)))
+                    } else {
+                        print(error)
+                        single(.success(.failure(PostError.serverError)))
+                    }
+                }
+            }
+            return Disposables.create()
+        }
+    }
 }

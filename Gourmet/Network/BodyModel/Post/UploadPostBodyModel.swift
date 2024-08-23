@@ -9,9 +9,9 @@ import Foundation
 
 struct UploadPostBodyModel: Encodable {
     let title: String?
-    let content: String? // 본문 영역 #키워드는 해시태그 자동 등록
-    let content1: String?
-    let content2: String?
+    let content: String? // 재료
+    let content1: String? // 내용
+    let content2: String? // 시간
     let content3: String?
     let content4: String?
     let content5: String?
