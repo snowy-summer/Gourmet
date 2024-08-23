@@ -9,8 +9,8 @@ import Foundation
 
 struct RecipeIngredient: Hashable {
     let id = UUID()
-    let name: String
-    let value: String
+    var name: String
+    var value: String
     let isAddCell: Bool
     
     init(name: String,

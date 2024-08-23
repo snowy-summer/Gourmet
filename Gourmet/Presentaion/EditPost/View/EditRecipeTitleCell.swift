@@ -28,9 +28,8 @@ extension EditRecipeTitleCell {
     
     func updateContent(item: String?) {
         
-        if let title = item {
-            titleTextField.text = item
-        }
+        titleTextField.text = item
+        
     }
 }
 
@@ -42,7 +41,7 @@ extension EditRecipeTitleCell: BaseViewProtocol {
     }
     
     func configureUI() {
-
+        
         titleTextField.placeholder = "제목을 입력해주세요"
         titleTextField.font = .systemFont(ofSize: 24, weight: .bold)
         contentView.backgroundColor = .lightGray
@@ -51,7 +50,7 @@ extension EditRecipeTitleCell: BaseViewProtocol {
     }
     
     func configureLayout() {
-    
+        
         titleTextField.snp.makeConstraints { make in
             make.directionalVerticalEdges.equalTo(contentView.snp.directionalVerticalEdges)
             make.directionalHorizontalEdges.equalTo(contentView.snp.directionalHorizontalEdges).inset(8)

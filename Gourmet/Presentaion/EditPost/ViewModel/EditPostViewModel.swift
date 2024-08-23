@@ -11,11 +11,16 @@ import RxCocoa
 
 final class EditPostViewModel: ViewModelProtocol {
     
-    struct Input {
-        let saveButtonTap: ControlEvent<Void>
+    enum Input {
+//        case saveButtonTap: ControlEvent<Void>
+        case noValue
+        case addIngredient(RecipeIngredient)
     }
     
-    struct Output { }
+    enum Output {
+        case noValue
+        case applySnapShot
+    }
     
     enum Item: Hashable {
         case title(String?)
@@ -28,6 +33,8 @@ final class EditPostViewModel: ViewModelProtocol {
     private let networkManager: NetworkManagerProtocol
     private let disposeBag = DisposeBag()
     
+    private(set)var output = BehaviorSubject(value: Output.noValue)
+    
     private let category = FoodCategory.main
     private(set) var title = ""
     private(set) var ingredients = [RecipeIngredient]()
@@ -39,14 +46,37 @@ final class EditPostViewModel: ViewModelProtocol {
         self.networkManager = networkManager
     }
     
-    func transform(_ input: Input) -> Output {
-        input.saveButtonTap
-            .bind(with: self) { owner, _ in
-                owner.uploadPost()
-            }
-            .disposed(by: disposeBag)
+    func apply(_ input: Input) {
         
-        return Output()
+        switch input {
+        case .noValue:
+            output.onNext(.noValue)
+            
+        case .addIngredient(let recipeIngredient):
+            
+            let addCell = ingredients.removeLast()
+            
+            if let index = ingredients.firstIndex(where: { $0.id == recipeIngredient.id }) {
+                ingredients[index] = recipeIngredient
+            } else {
+                ingredients.append(recipeIngredient)
+            }
+            
+            ingredients.append(addCell)
+            
+            output.onNext(.applySnapShot)
+        }
+        
+    }
+    
+    func transform(_ input: Input) -> Output {
+//        input.saveButtonTap
+//            .bind(with: self) { owner, _ in
+//                owner.uploadPost()
+//            }
+//            .disposed(by: disposeBag)
+//        
+        return .noValue
     }
     
     private func uploadPost() {
@@ -82,14 +112,25 @@ final class EditPostViewModel: ViewModelProtocol {
             return [.title(title)]
             
         case .ingredient:
-            return ingredients.map { .ingredient($0) } + [.ingredient(RecipeIngredient(name: "",
-                                                                                       value: "",
-                                                                                       isAddCell: true))]
+            
+            if ingredients.isEmpty {
+                ingredients.append(RecipeIngredient(name: "",
+                                                    value: "",
+                                                    isAddCell: true))
+            }
+            
+            return ingredients.map { .ingredient($0) }
             
         case .content:
-            return contents.map { .content($0) } + [.content(RecipeContent(thumbnailImage: nil,
-                                                                           contet: "",
-                                                                           isAddCell: true))]
+            
+            
+            if contents.isEmpty {
+                contents.append(RecipeContent(thumbnailImage: nil,
+                                              contet: "",
+                                              isAddCell: true))
+            }
+            
+            return contents.map { .content($0) }
             
         case .neededTime:
             return [.neededTime(time)]

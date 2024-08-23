@@ -32,18 +32,37 @@ final class EditRecipeViewController: UIViewController {
 extension EditRecipeViewController {
     
     private func bindingOutput() {
-        guard let saveButton = navigationItem.rightBarButtonItem else { return }
+//        guard let saveButton = navigationItem.rightBarButtonItem else { return }
         
-        let input = EditPostViewModel.Input(saveButtonTap: saveButton.rx.tap)
+//        let input = EditPostViewModel.Input(saveButtonTap: saveButton.rx.tap)
         
-        let ouput = viewModel.transform(input)
+//        let ouput = viewModel.transform(input)
         
+        viewModel.output.bind(with: self) { owner, output in
+            switch output {
+            case .noValue:
+                return
+                
+            case .applySnapShot:
+                owner.updateSnapshot()
+
+            }
+        }.disposed(by: disposeBag)
     }
     
 }
 
+//MARK: - Edit View Delegate
+extension EditRecipeViewController: EditIngredientViewDelegate {
+    
+    func dismissView(item: RecipeIngredient) {
+//        viewModel.transform(.addIngredient(item))
+        viewModel.apply(.addIngredient(item))
+    }
+}
+
 //MARK: - CollectionView
-extension EditRecipeViewController {
+extension EditRecipeViewController: UICollectionViewDelegate {
     
     typealias registerationTitle = UICollectionView.CellRegistration<EditRecipeTitleCell, String?>
     typealias registerationIngredient = UICollectionView.CellRegistration<EditRecipeIngredientCell, RecipeIngredient>
@@ -51,6 +70,36 @@ extension EditRecipeViewController {
     typealias registerationTime = UICollectionView.CellRegistration<EditRecipeTimeCell, String>
     typealias header = UICollectionView.SupplementaryRegistration<TitleHeaderView>
     
+    
+    //MARK: - Delegate Method
+    func collectionView(_ collectionView: UICollectionView,
+                        didSelectItemAt indexPath: IndexPath) {
+        
+        switch EditRecipeSection(rawValue: indexPath.section) {
+        case .ingredient:
+            let ingredient = viewModel.ingredients[indexPath.item]
+            let vc = EditIngredientViewController(ingredient: ingredient)
+            vc.delegate = self
+            present(vc, animated: true)
+            
+            
+        case .content:
+            if viewModel.contents[indexPath.item].isAddCell {
+//                present(EditIngredientViewController(), animated: true)
+            }
+            
+        case .time:
+            if viewModel.ingredients[indexPath.item].isAddCell {
+//                present(EditIngredientViewController(), animated: true)
+            }
+            
+        default:
+            return
+        }
+        
+    }
+    
+    //MARK: - CollectoinView Configuraion
     private func registTitleCell() -> registerationTitle {
         
         let cellRegistration = registerationTitle { cell, indexPath, itemIdentifier in
@@ -185,6 +234,7 @@ extension EditRecipeViewController {
     }
     
 }
+
 //MARK: - Configuration
 extension EditRecipeViewController: BaseViewProtocol {
     
@@ -207,6 +257,7 @@ extension EditRecipeViewController: BaseViewProtocol {
         
         view.backgroundColor = .main
         collectionView.backgroundColor = .main
+        collectionView.delegate = self
     }
     
     func configureLayout() {

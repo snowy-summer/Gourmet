@@ -91,10 +91,10 @@ extension SignUpViewController: BaseViewProtocol {
         view.backgroundColor = .white
         
         emailLabel.text = "Email"
-        emailTextField.userInfoStyle(placeHolder: "이메일을  입력해주세요")
+        emailTextField.infoStyle(placeHolder: "이메일을  입력해주세요")
         
         passwordLabel.text = "비밀번호"
-        passwordTextField.userInfoStyle(placeHolder: "비밀번호를 입력해주세요")
+        passwordTextField.infoStyle(placeHolder: "비밀번호를 입력해주세요")
         let button = UIButton(type: .system)
         var configuration = UIButton.Configuration.plain()
         configuration.image = UIImage(systemName: "eye.fill")
@@ -110,7 +110,7 @@ extension SignUpViewController: BaseViewProtocol {
         passwordTextField.rightView = button
         passwordTextField.rightViewMode = .always
         nicknameLabel.text = "닉네임"
-        nicknameTextField.userInfoStyle(placeHolder: "닉네임을 입력해주세요")
+        nicknameTextField.infoStyle(placeHolder: "닉네임을 입력해주세요")
         
         emailValidCheckButton.normalStyle(title: "확인",
                                           back: .main,
