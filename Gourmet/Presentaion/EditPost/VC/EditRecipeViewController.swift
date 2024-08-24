@@ -32,11 +32,6 @@ final class EditRecipeViewController: UIViewController {
 extension EditRecipeViewController {
     
     private func bindingOutput() {
-//        guard let saveButton = navigationItem.rightBarButtonItem else { return }
-        
-//        let input = EditPostViewModel.Input(saveButtonTap: saveButton.rx.tap)
-        
-//        let ouput = viewModel.transform(input)
         
         viewModel.output.bind(with: self) { owner, output in
             switch output {
@@ -53,11 +48,14 @@ extension EditRecipeViewController {
 }
 
 //MARK: - Edit View Delegate
-extension EditRecipeViewController: EditIngredientViewDelegate {
+extension EditRecipeViewController: EditIngredientViewDelegate, EditContentViewDelegate {
     
     func dismissView(item: RecipeIngredient) {
-//        viewModel.transform(.addIngredient(item))
         viewModel.apply(.addIngredient(item))
+    }
+    
+    func dismissView(item: RecipeContent) {
+        viewModel.apply(.addContent(item))
     }
 }
 
@@ -84,9 +82,10 @@ extension EditRecipeViewController: UICollectionViewDelegate {
             
             
         case .content:
-            if viewModel.contents[indexPath.item].isAddCell {
-//                present(EditIngredientViewController(), animated: true)
-            }
+            let content = viewModel.contents[indexPath.item]
+            let vc = EditContentViewController(content: content)
+            vc.delegate = self
+            present(vc, animated: true)
             
         case .time:
             if viewModel.ingredients[indexPath.item].isAddCell {
@@ -195,7 +194,7 @@ extension EditRecipeViewController: UICollectionViewDelegate {
                 let cell = collectionView.dequeueConfiguredReusableCell(using: contentRegistration,
                                                                         for: indexPath,
                                                                         item: RecipeContent(thumbnailImage: nil,
-                                                                                            contet: ""))
+                                                                                            content: ""))
                 return cell
             }
             

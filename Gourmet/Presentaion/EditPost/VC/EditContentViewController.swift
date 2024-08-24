@@ -11,22 +11,23 @@ import RxSwift
 import RxCocoa
 
 protocol EditContentViewDelegate: AnyObject {
-    func dismissView(item: RecipeIngredient)
+    func dismissView(item: RecipeContent)
 }
 
 final class EditContentViewController: UIViewController {
- 
-    private let stackview = UIStackView()
-    private let imageView = UIImageView()
-    private let contentTextView = UITextView()
     
-    private var content: RecipeContent
+    private let stackview = UIStackView()
+    private let imageView = ImageComponent()
+    private let contentTextView = UITextView()
+    private let saveButton = UIButton()
+    
+    private var recipeContent: RecipeContent
     
     weak var delegate: EditContentViewDelegate?
     private let disposeBag = DisposeBag()
     
     init(content: RecipeContent) {
-        self.content = content.isAddCell ? RecipeContent(thumbnailImage: nil, contet: "") : content
+        self.recipeContent = content.isAddCell ? RecipeContent(thumbnailImage: nil, content: "") : content
         super.init(nibName: nil, bundle: nil)
         
     }
@@ -41,6 +42,28 @@ final class EditContentViewController: UIViewController {
         configureView()
     }
     
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        view.endEditing(true)
+    }
+    
+}
+
+extension EditContentViewController {
+    
+    @objc private func openPhotoPicker() {
+        
+        let picker = UIImagePickerController()
+        picker.sourceType = .photoLibrary
+        picker.delegate = self
+        present(picker, animated: true)
+    }
+    
+    @objc private func removeImageView() {
+        
+        imageView.updateContent(image: nil)
+        imageView.isHidden = true
+    }
+    
 }
 
 // MARK: - Configuration
@@ -48,12 +71,9 @@ extension EditContentViewController: BaseViewProtocol {
     
     func configureHierarchy() {
         
-        view.addSubview(nameLabel)
-        view.addSubview(nameTextField)
-        
-        view.addSubview(valueLabel)
-        view.addSubview(valueTextField)
-        
+        view.addSubview(stackview)
+        stackview.addArrangedSubview(imageView)
+        stackview.addArrangedSubview(contentTextView)
         view.addSubview(saveButton)
     }
     
@@ -61,10 +81,6 @@ extension EditContentViewController: BaseViewProtocol {
         
         view.backgroundColor = .white
         
-        nameTextField.infoStyle(placeHolder: "재료를 입력해주세요")
-        valueTextField.infoStyle(placeHolder: "용량을 입력해주세요 ex) 3개, 200g")
-        nameLabel.text = "재료"
-        valueLabel.text = "용량"
         saveButton.normalStyle(title: "저장",
                                back: .main,
                                fore: .white)
@@ -72,61 +88,107 @@ extension EditContentViewController: BaseViewProtocol {
                                                height: 4)
         saveButton.layer.shadowOpacity = 0.2
         
-        if !ingredient.isAddCell {
-            nameTextField.text = ingredient.name
-            valueTextField.text = ingredient.value
+        stackview.axis = .vertical
+        stackview.alignment = .leading
+        stackview.spacing = 8
+        
+        if recipeContent.thumbnailImage == nil {
+            imageView.isHidden = true
+        } else {
+            imageView.updateContent(image: recipeContent.thumbnailImage)
         }
+        
+        contentTextView.backgroundColor = .lightGray
+        contentTextView.layer.cornerRadius = 16
+        contentTextView.clipsToBounds = true
+        contentTextView.font = .systemFont(ofSize: 18)
+        contentTextView.autocorrectionType = .no
+        contentTextView.spellCheckingType = .no
+        
+        if !recipeContent.isAddCell {
+            contentTextView.text = recipeContent.content
+        }
+    }
+    
+    private func setupToolbar() {
+        let toolbar = UIToolbar()
+        
+        let photoButton = UIBarButtonItem(
+            image: UIImage(systemName: "photo.badge.plus"),
+            style: .plain,
+            target: self,
+            action: #selector(openPhotoPicker)
+        )
+        
+        toolbar.sizeToFit()
+        photoButton.tintColor = .black
+        
+        toolbar.items = [photoButton]
+        contentTextView.inputAccessoryView = toolbar
     }
     
     func configureLayout() {
         
-        nameLabel.snp.makeConstraints { make in
-            make.directionalHorizontalEdges.equalTo(view.safeAreaLayoutGuide).inset(30)
-            make.top.equalTo(view.safeAreaLayoutGuide).offset(60)
-        }
-        
-        nameTextField.snp.makeConstraints { make in
-            make.height.equalTo(44)
-            make.top.equalTo(nameLabel.snp.bottom).offset(8)
-            make.directionalHorizontalEdges.equalTo(view.safeAreaLayoutGuide).inset(20)
-        }
-        
-        valueLabel.snp.makeConstraints { make in
-            make.top.equalTo(nameTextField.snp.bottom).offset(20)
-            make.directionalHorizontalEdges.equalTo(view.safeAreaLayoutGuide).inset(30)
-        }
-        
-        valueTextField.snp.makeConstraints { make in
-            make.height.equalTo(44)
-            make.top.equalTo(valueLabel.snp.bottom).offset(8)
-            make.directionalHorizontalEdges.equalTo(view.safeAreaLayoutGuide).inset(20)
-        }
-        
         saveButton.snp.makeConstraints { make in
             make.height.equalTo(44)
-            make.top.equalTo(valueTextField.snp.bottom).offset(40)
+            make.bottom.equalTo(view.safeAreaLayoutGuide).inset(40)
             make.directionalHorizontalEdges.equalTo(view.safeAreaLayoutGuide).inset(20)
         }
+        
+        stackview.snp.makeConstraints { make in
+            make.top.equalTo(view.safeAreaLayoutGuide).offset(20)
+            make.bottom.equalTo(saveButton.snp.top).offset(-20)
+            make.directionalHorizontalEdges.equalTo(view.safeAreaLayoutGuide).inset(16)
+        }
+        
+        imageView.snp.makeConstraints { make in
+            make.size.equalTo(100)
+        }
+        
+        contentTextView.snp.makeConstraints { make in
+            make.width.equalTo(stackview.snp.width)
+        }
+        
+        setupToolbar()
         
     }
     
     func configureGestureAndButtonActions() {
         
+        imageView.addGestureRecognizer(UITapGestureRecognizer(target: self,
+                                                              action: #selector(removeImageView)))
+        
         saveButton.rx.tap
-            .withLatestFrom(Observable.combineLatest(nameTextField.rx.text.orEmpty,
-                                                     valueTextField.rx.text.orEmpty))
-            .bind(with: self) { owner, nameValue in
-                let (name, value) = nameValue
-                owner.ingredient.name = name
-                owner.ingredient.value = value
-                
+            .withLatestFrom(contentTextView.rx.text.orEmpty)
+            .bind(with: self) { owner, content in
+                owner.recipeContent.content = content
                 owner.dismiss(animated: true) {
-                    owner.delegate?.dismissView(item: owner.ingredient)
+                    owner.delegate?.dismissView(item: owner.recipeContent)
                 }
-            }
-            .disposed(by: disposeBag)
+                
+            }.disposed(by: disposeBag)
+        
+        
     }
     
+}
+
+//MARK: - ImagePicker
+extension EditContentViewController: UIImagePickerControllerDelegate,
+                                     UINavigationControllerDelegate {
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        if let selectedImage = info[.originalImage] as? UIImage {
+            imageView.updateContent(image: selectedImage)
+            imageView.isHidden = false
+            recipeContent.thumbnailImage = selectedImage
+        }
+        dismiss(animated: true, completion: nil)
+    }
+    
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        dismiss(animated: true, completion: nil)
+    }
 }
 
 

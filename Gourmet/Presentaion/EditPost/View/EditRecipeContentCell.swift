@@ -12,7 +12,7 @@ final class EditRecipeContentCell: UICollectionViewCell {
     
     private let stackView = UIStackView()
     private let thumbnailImageView = UIImageView()
-    private let contentTextView = UITextView()
+    private let contentLabel = UILabel()
     private let addImageView = UIImageView()
     
     override init(frame: CGRect) {
@@ -46,13 +46,10 @@ extension EditRecipeContentCell {
         if item.thumbnailImage == nil {
             thumbnailImageView.isHidden = true
         } else {
-            thumbnailImageView.image = UIImage(resource: .test1)
+            thumbnailImageView.image = item.thumbnailImage
         }
         
-        contentTextView.text = item.contet
-        
-        
-      
+        contentLabel.text = item.content
     }
 }
 
@@ -63,7 +60,7 @@ extension EditRecipeContentCell: BaseViewProtocol {
         
         contentView.addSubview(stackView)
         stackView.addArrangedSubview(thumbnailImageView)
-        stackView.addArrangedSubview(contentTextView)
+        stackView.addArrangedSubview(contentLabel)
         
         contentView.addSubview(addImageView)
     }
@@ -76,7 +73,8 @@ extension EditRecipeContentCell: BaseViewProtocol {
         thumbnailImageView.layer.cornerRadius = 16
         thumbnailImageView.clipsToBounds = true
         
-        contentTextView.font = .systemFont(ofSize: 20, weight: .semibold)
+        contentLabel.font = .systemFont(ofSize: 20, weight: .semibold)
+        contentLabel.numberOfLines = .zero
         
         contentView.backgroundColor = .systemBackground
         contentView.layer.cornerRadius = 16

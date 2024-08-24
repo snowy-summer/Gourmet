@@ -9,15 +9,15 @@ import UIKit
 
 struct RecipeContent: Hashable {
     let id = UUID()
-    let thumbnailImage: UIImage?
-    let contet: String
+    var thumbnailImage: UIImage?
+    var content: String
     let isAddCell: Bool
     
     init(thumbnailImage: UIImage?,
-         contet: String,
+         content: String,
          isAddCell: Bool = false) {
         self.thumbnailImage = thumbnailImage
-        self.contet = contet
+        self.content = content
         self.isAddCell = isAddCell
     }
 }

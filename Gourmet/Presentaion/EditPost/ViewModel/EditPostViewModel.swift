@@ -12,9 +12,9 @@ import RxCocoa
 final class EditPostViewModel: ViewModelProtocol {
     
     enum Input {
-//        case saveButtonTap: ControlEvent<Void>
         case noValue
         case addIngredient(RecipeIngredient)
+        case addContent(RecipeContent)
     }
     
     enum Output {
@@ -65,6 +65,20 @@ final class EditPostViewModel: ViewModelProtocol {
             ingredients.append(addCell)
             
             output.onNext(.applySnapShot)
+            
+        case .addContent(let recipeContent):
+            
+            let addCell = contents.removeLast()
+            
+            if let index = contents.firstIndex(where: { $0.id == recipeContent.id }) {
+                contents[index] = recipeContent
+            } else {
+                contents.append(recipeContent)
+            }
+            
+            contents.append(addCell)
+            
+            output.onNext(.applySnapShot)
         }
         
     }
@@ -91,7 +105,7 @@ final class EditPostViewModel: ViewModelProtocol {
         let ingredientStr = ingredients.enumerated().map { "\($0.offset).\($0.element.name) \($0.element.value)" }
             .joined(separator: "\n")
         
-        let recipeContent = contents.enumerated().map { "\($0.offset).\($0.element.contet)" }
+        let recipeContent = contents.enumerated().map { "\($0.offset).\($0.element.content)" }
             .joined(separator: "\n")
         
         return UploadPostBodyModel(title: title,
@@ -126,7 +140,7 @@ final class EditPostViewModel: ViewModelProtocol {
             
             if contents.isEmpty {
                 contents.append(RecipeContent(thumbnailImage: nil,
-                                              contet: "",
+                                              content: "",
                                               isAddCell: true))
             }
             
