@@ -9,7 +9,7 @@ import UIKit
 
 extension UITextField {
     
-    func userInfoStyle(placeHolder: String) {
+    func infoStyle(placeHolder: String) {
         
         let paddingView = UIView(frame: CGRect(x: 0,
                                                y: 0,

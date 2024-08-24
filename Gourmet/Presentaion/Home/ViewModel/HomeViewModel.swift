@@ -122,7 +122,7 @@ final class HomeViewModel: ViewModelProtocol {
             networkManager.refreshAccessToken()
                 .subscribe(with: self) { owner, success in
                     if success {
-                        print("토큰 재갱신 성공")
+                        print("토큰 갱신 성공")
                         owner.fetchSections(signal: Observable.just(()),
                                             needReLogin: needReLogin)
                             .bind(to: owner.sections)

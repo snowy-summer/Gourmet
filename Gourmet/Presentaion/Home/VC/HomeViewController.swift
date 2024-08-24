@@ -10,6 +10,7 @@ import SnapKit
 import RxSwift
 import RxCocoa
 import RxDataSources
+import Toast
 
 final class HomeViewController: UIViewController {
     
@@ -57,21 +58,40 @@ extension HomeViewController {
         dataSource = RxCollectionViewSectionedReloadDataSource<HomeViewSectionModel>(
             configureCell: { dataSource, collectionView, indexPath, item in
                 
-               guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: RecipeCollectionViewCell.identifier,
-                                                                   for: indexPath) as? RecipeCollectionViewCell else { return RecipeCollectionViewCell() }
+                guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: RecipeCollectionViewCell.identifier,
+                                                                    for: indexPath) as? RecipeCollectionViewCell else { return RecipeCollectionViewCell() }
                 cell.updateContent(item: item)
                 return cell
             },
             configureSupplementaryView: { dataSource, collectionView, kind, indexPath in
                 
                 guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind,
-                                                                             withReuseIdentifier: TitleHeaderView.identifier,
+                                                                                   withReuseIdentifier: TitleHeaderView.identifier,
                                                                                    for: indexPath) as? TitleHeaderView else { return TitleHeaderView() }
                 let title = dataSource.sectionModels[indexPath.section].header
                 header.updateText(title: title)
                 return header
             }
         )
+    }
+}
+
+extension HomeViewController: UICollectionViewDelegate, ChoiceCategoryViewDelegate {
+    func pushEditRecipeView() {
+        navigationController?.pushViewController(EditRecipeViewController(), animated: true)
+    }
+    
+    func pushEditNormalView() {
+//        navigationController?.pushViewController(EditRecipeViewController(), animated: true)
+    }
+    
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        
+        let vc = ChoiceCategoryView()
+        vc.delgate = self
+        vc.sheetPresentationController?.prefersGrabberVisible = true
+        present(vc, animated: true)
     }
 }
 
@@ -89,6 +109,7 @@ extension HomeViewController: BaseViewProtocol {
         collectionView.register(TitleHeaderView.self,
                                 forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
                                 withReuseIdentifier: TitleHeaderView.identifier)
+        collectionView.delegate = self
     }
     
     func configureLayout() {
@@ -110,17 +131,18 @@ extension HomeViewController: BaseViewProtocol {
                 let item = NSCollectionLayoutItem(layoutSize: itemSize)
                 
                 
-                let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.8),
+                let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.9),
                                                        heightDimension: .fractionalHeight(0.35))
                 let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize,
                                                                subitems: [item])
                 
                 let section = NSCollectionLayoutSection(group: group)
                 section.orthogonalScrollingBehavior = .continuous
+                section.interGroupSpacing = 8
                 section.contentInsets = NSDirectionalEdgeInsets(top: 0,
                                                                 leading: 16,
                                                                 bottom: 16,
-                                                                trailing: 0)
+                                                                trailing: 16)
                 
                 let headerSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
                                                         heightDimension: .absolute(44))
@@ -168,7 +190,7 @@ extension HomeViewController: BaseViewProtocol {
             }
             
         }
-    
+        
     }
     
 }
