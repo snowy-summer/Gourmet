@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import PhotosUI
 import SnapKit
 import RxSwift
 import RxCocoa
@@ -51,9 +52,11 @@ final class EditContentViewController: UIViewController {
 extension EditContentViewController {
     
     @objc private func openPhotoPicker() {
+        var configuration = PHPickerConfiguration()
+        configuration.selectionLimit = 1
+        configuration.filter = .images
         
-        let picker = UIImagePickerController()
-        picker.sourceType = .photoLibrary
+        let picker = PHPickerViewController(configuration: configuration)
         picker.delegate = self
         present(picker, animated: true)
     }
@@ -174,20 +177,24 @@ extension EditContentViewController: BaseViewProtocol {
 }
 
 //MARK: - ImagePicker
-extension EditContentViewController: UIImagePickerControllerDelegate,
-                                     UINavigationControllerDelegate {
+extension EditContentViewController: PHPickerViewControllerDelegate {
     
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        if let selectedImage = info[.originalImage] as? UIImage {
-            imageView.updateContent(image: selectedImage)
-            imageView.isHidden = false
-            recipeContent.thumbnailImage = selectedImage
+    func picker(_ picker: PHPickerViewController,
+                didFinishPicking results: [PHPickerResult]) {
+        
+        if results.isEmpty { return }
+        results[0].itemProvider.loadObject(ofClass: UIImage.self) { [weak self] (object, error) in
+            
+            if let image = object as? UIImage {
+                DispatchQueue.main.async { [weak self] in
+                    guard let self = self else { return }
+                    imageView.updateContent(image: image)
+                    imageView.isHidden = false
+                    recipeContent.thumbnailImage = image
+                }
+            }
         }
-        dismiss(animated: true, completion: nil)
-    }
-    
-    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-        dismiss(animated: true, completion: nil)
+        dismiss(animated: true)
     }
 }
 

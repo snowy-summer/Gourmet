@@ -44,7 +44,7 @@ extension EditRecipeTitleCell: BaseViewProtocol {
         
         titleTextField.placeholder = "제목을 입력해주세요"
         titleTextField.font = .systemFont(ofSize: 24, weight: .bold)
-        contentView.backgroundColor = .lightGray
+        contentView.backgroundColor = .systemBackground
         contentView.layer.cornerRadius = 8
         contentView.clipsToBounds = true
     }

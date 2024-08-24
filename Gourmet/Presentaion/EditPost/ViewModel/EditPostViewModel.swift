@@ -15,6 +15,7 @@ final class EditPostViewModel: ViewModelProtocol {
         case noValue
         case addIngredient(RecipeIngredient)
         case addContent(RecipeContent)
+        case saveContet
     }
     
     enum Output {
@@ -63,7 +64,6 @@ final class EditPostViewModel: ViewModelProtocol {
             }
             
             ingredients.append(addCell)
-            
             output.onNext(.applySnapShot)
             
         case .addContent(let recipeContent):
@@ -77,31 +77,47 @@ final class EditPostViewModel: ViewModelProtocol {
             }
             
             contents.append(addCell)
-            
             output.onNext(.applySnapShot)
+            
+        case .saveContet:
+            uploadPost()
         }
         
     }
     
     func transform(_ input: Input) -> Output {
-//        input.saveButtonTap
-//            .bind(with: self) { owner, _ in
-//                owner.uploadPost()
-//            }
-//            .disposed(by: disposeBag)
-//        
+        
         return .noValue
     }
     
     private func uploadPost() {
-        networkManager.uploadPost(item: createUploadPostBody())
-            .subscribe { result in
+        
+        var datas = [Data?]()
+        for i in contents {
+            let data = i.thumbnailImage?.jpegData(compressionQuality: 1.0)
+            datas.append(data)
+        }
+        
+        networkManager.uploadImage(datas) { [weak self] result in
+            guard let self = self else { return }
+            
+            switch result {
+            case .success(let success):
+            
+                networkManager.uploadPost(item: createUploadPostBody(files: success.files))
+                    .subscribe { result in
+            
+                    }
+                    .disposed(by: disposeBag)
                 
+            case .failure(let failure):
+                print(failure)
             }
-            .disposed(by: disposeBag)
+        }
+        
     }
     
-    private func createUploadPostBody() -> UploadPostBodyModel {
+    private func createUploadPostBody(files: [String]) -> UploadPostBodyModel {
         let ingredientStr = ingredients.enumerated().map { "\($0.offset).\($0.element.name) \($0.element.value)" }
             .joined(separator: "\n")
         
@@ -116,8 +132,7 @@ final class EditPostViewModel: ViewModelProtocol {
                                    content4: nil,
                                    content5: nil,
                                    productID: category.productId,
-                                   files: []
-        )
+                                   files: files)
     }
     
     func generateItems(from item: Item) -> [Item] {

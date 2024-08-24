@@ -26,5 +26,9 @@ protocol NetworkManagerProtocol {
     func fetchPost(category: Category) -> Single<Result<PostListDTO,PostError>>
     
     func uploadPost(item: UploadPostBodyModel) -> Single<Result<Bool, PostError>>
+    func uploadImage(_ images: [Data?],
+                     completion: @escaping (Result<UploadFileDTO, PostError>) -> Void)
+    func fetchImage(file: String,
+                    completion: @escaping (Data?) -> Void)
 }
 

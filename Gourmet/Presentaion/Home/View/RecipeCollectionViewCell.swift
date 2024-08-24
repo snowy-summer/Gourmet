@@ -22,11 +22,26 @@ final class RecipeCollectionViewCell: UICollectionViewCell {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        thumbnailImageView.image = nil
+        titleLabel.text = ""
+    }
 }
 
 extension RecipeCollectionViewCell {
     
     func updateContent(item: PostDTO) {
+        
+        if !item.files.isEmpty {
+            NetworkManager.shared.fetchImage(file: item.files.first!) { [weak self] data in
+                if let data = data {
+                    self?.thumbnailImageView.image = UIImage(data: data)
+                }
+            }
+        }
         
         titleLabel.text = item.title
     }

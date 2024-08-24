@@ -51,7 +51,7 @@ extension EditRecipeTimeCell: BaseViewProtocol {
     
     func configureUI() {
 
-        contentView.backgroundColor = .lightGray
+        contentView.backgroundColor = .systemBackground
         contentView.layer.cornerRadius = 8
         contentView.clipsToBounds = true
         

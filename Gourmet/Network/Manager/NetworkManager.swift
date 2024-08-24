@@ -197,4 +197,44 @@ extension NetworkManager {
             return Disposables.create()
         }
     }
+    
+    func uploadImage(_ images: [Data?],
+                     completion: @escaping (Result<UploadFileDTO, PostError>) -> Void) {
+
+            session.upload(multipartFormData: { multipart in
+                for index in 0..<images.count {
+                    if let image = images[index] {
+                        multipart.append(image,
+                                         withName: "files",
+                                         fileName: "\(index).jpeg",
+                                         mimeType: "image/jpeg")
+                    }
+                }
+            }, with: PostRouter.uploadFile)
+            .responseDecodable(of: UploadFileDTO.self) { response in
+                switch response.result {
+                case .success(let data):
+                    completion(.success(data))
+                    
+                case .failure(let error):
+                    completion(.failure(.forbidden))
+                }
+            }
+        }
+    
+    func fetchImage(file: String, completion: @escaping (Data?) -> Void) {
+        
+        session.request(PostRouter.fetchImage(file))
+            .validate(statusCode: 200..<300)
+            .response { response in
+                switch response.result {
+                case .success(let data):
+                    completion(data)
+                    
+                case .failure(let error):
+                    print("image에러",error)
+                    completion(nil)
+                }
+            }
+    }
 }

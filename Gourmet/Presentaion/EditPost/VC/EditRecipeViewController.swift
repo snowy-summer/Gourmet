@@ -246,6 +246,12 @@ extension EditRecipeViewController: BaseViewProtocol {
         
         navigationItem.rightBarButtonItem = saveItem
         
+        saveItem.rx.tap
+            .bind(with: self) { owner, _ in
+                owner.viewModel.apply(.saveContet)
+            }
+            .disposed(by: disposeBag)
+        
     }
     
     func configureHierarchy() {
@@ -260,6 +266,7 @@ extension EditRecipeViewController: BaseViewProtocol {
     }
     
     func configureLayout() {
+        
         collectionView.snp.makeConstraints { make in
             make.directionalEdges.equalTo(view.safeAreaLayoutGuide)
         }
