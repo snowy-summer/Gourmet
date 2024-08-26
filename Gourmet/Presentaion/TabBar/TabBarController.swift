@@ -19,6 +19,9 @@ final class TabBarController: UITabBarController {
         addViewController(vc: HomeViewController(),
                           selectImage: UIImage(systemName: "star"),
                           unselectImage: UIImage(systemName: "star.fill"))
+        addViewController(vc: PostListViewController(),
+                          selectImage: UIImage(systemName: "star"),
+                          unselectImage: UIImage(systemName: "star.fill"))
         addViewController(vc: NormalPostListViewController(),
                           selectImage: UIImage(systemName: "star"),
                           unselectImage: UIImage(systemName: "star.fill"))

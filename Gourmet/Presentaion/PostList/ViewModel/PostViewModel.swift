@@ -17,6 +17,7 @@ final class PostViewModel: ViewModelProtocol {
     
     struct Output {
         let items: PublishSubject<[PostDTO]>
+        let category: BehaviorSubject<[Category]>
         let needReLogin: PublishSubject<Bool>
     }
     
@@ -62,8 +63,15 @@ final class PostViewModel: ViewModelProtocol {
                 }
             }
             .disposed(by: disposeBag)
+        var categorys = [Category]()
+        
+        for i in FoodCategory.allCases {
+            let category = Category(id: i)
+            categorys.append(category)
+        }
         
         return Output(items: items,
+                      category: BehaviorSubject(value: categorys),
                       needReLogin: needReLogin)
     }
     

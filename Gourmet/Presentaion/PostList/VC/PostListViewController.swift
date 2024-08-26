@@ -12,8 +12,10 @@ import SnapKit
 
 final class PostListViewController: UIViewController {
     
-    private lazy var collectionView = UICollectionView(frame: .zero,
-                                                       collectionViewLayout: createLayout())
+    private lazy var categoryCollectionView = UICollectionView(frame: .zero,
+                                                       collectionViewLayout: categoryCreateLayout())
+    private lazy var recipeCollectionView = UICollectionView(frame: .zero,
+                                                       collectionViewLayout: recipeListCreateLayout())
     private let viewModel = PostViewModel(networkManager: NetworkManager.shared)
     private let disposeBag = DisposeBag()
     
@@ -35,8 +37,15 @@ extension PostListViewController {
         let output = viewModel.transform(input)
         
         output.items
-            .bind(to: collectionView.rx.items(cellIdentifier: NormalPostCell.identifier,
-                                              cellType: NormalPostCell.self)) { row, item, cell in
+            .bind(to: recipeCollectionView.rx.items(cellIdentifier: RecipeListCell.identifier,
+                                              cellType: RecipeListCell.self)) { row, item, cell in
+                cell.updateContent(item: item)
+            }
+            .disposed(by: disposeBag)
+        
+        output.category
+            .bind(to: categoryCollectionView.rx.items(cellIdentifier: CategoryCell.identifier,
+                                              cellType: CategoryCell.self)) { row, item, cell in
                 cell.updateContent(item: item)
             }
             .disposed(by: disposeBag)
@@ -56,24 +65,68 @@ extension PostListViewController {
 extension PostListViewController: BaseViewProtocol {
     
     func configureHierarchy() {
-        view.addSubview(collectionView)
+        
+        view.addSubview(categoryCollectionView)
+        view.addSubview(recipeCollectionView)
     }
     
     func configureUI() {
-        collectionView.register(NormalPostCell.self,
-                                forCellWithReuseIdentifier: NormalPostCell.identifier)
+        
+        categoryCollectionView.register(CategoryCell.self,
+                                forCellWithReuseIdentifier: CategoryCell.identifier)
+        recipeCollectionView.register(RecipeListCell.self,
+                                forCellWithReuseIdentifier: RecipeListCell.identifier)
     }
     
     func configureLayout() {
         
         view.backgroundColor = .systemBackground
         
-        collectionView.snp.makeConstraints { make in
-            make.directionalEdges.equalTo(view.safeAreaLayoutGuide)
+        categoryCollectionView.snp.makeConstraints { make in
+            make.top.equalTo(view.safeAreaLayoutGuide)
+            make.directionalHorizontalEdges.equalTo(view.safeAreaLayoutGuide)
+            make.height.equalTo(44)
+        }
+        
+        recipeCollectionView.snp.makeConstraints { make in
+            make.top.equalTo(categoryCollectionView.snp.bottom)
+            make.directionalHorizontalEdges.equalTo(view.safeAreaLayoutGuide)
+            make.bottom.equalTo(view.safeAreaLayoutGuide)
         }
     }
     
-    private func createLayout() -> UICollectionViewLayout {
+    private func categoryCreateLayout() -> UICollectionViewLayout {
+        
+        let itemSize = NSCollectionLayoutSize(widthDimension: .estimated(60),
+                                              heightDimension: .fractionalHeight(1.0))
+        let item = NSCollectionLayoutItem(layoutSize: itemSize)
+        
+        
+        let groupSize = NSCollectionLayoutSize(widthDimension: .estimated(60),
+                                               heightDimension: .absolute(44))
+        let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize,
+                                                       subitems: [item])
+        
+        group.contentInsets = NSDirectionalEdgeInsets(top: 0,
+                                                        leading: 0,
+                                                        bottom: 16,
+                                                        trailing: 0)
+        
+        let section = NSCollectionLayoutSection(group: group)
+        section.orthogonalScrollingBehavior = .continuous
+        section.interGroupSpacing = 8
+        
+        section.contentInsets = NSDirectionalEdgeInsets(top: 0,
+                                                        leading: 16,
+                                                        bottom: 0,
+                                                        trailing: 16)
+        
+        let layout = UICollectionViewCompositionalLayout(section: section)
+        
+        return layout
+    }
+    
+    private func recipeListCreateLayout() -> UICollectionViewLayout {
         
         let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
                                               heightDimension: .fractionalHeight(1.0))
@@ -81,7 +134,7 @@ extension PostListViewController: BaseViewProtocol {
         
         
         let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
-                                               heightDimension: .fractionalHeight(0.2))
+                                               heightDimension: .fractionalHeight(0.3))
         let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize,
                                                        subitems: [item])
         

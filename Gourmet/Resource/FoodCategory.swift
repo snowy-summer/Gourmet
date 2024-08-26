@@ -7,7 +7,13 @@
 
 import Foundation
 
-enum FoodCategory {
+enum FoodCategory: CaseIterable {
+    
+    case main
+    case dessert
+    case appetizer
+    case drink
+    
     case korean
     case japanese
     case chinese
@@ -27,11 +33,6 @@ enum FoodCategory {
     case bread
     case vegetarian
     case instant
-    
-    case main
-    case dessert
-    case appetizer
-    case drink
     
     case normal
     

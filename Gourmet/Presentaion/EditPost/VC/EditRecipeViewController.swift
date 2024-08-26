@@ -274,7 +274,7 @@ extension EditRecipeViewController: BaseViewProtocol {
     
 }
 
-fileprivate enum EditRecipeSection: Int, CaseIterable {
+private enum EditRecipeSection: Int, CaseIterable {
     case title
     case ingredient
     case content

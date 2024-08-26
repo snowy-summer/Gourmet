@@ -11,6 +11,7 @@ import RxCocoa
 
 struct Category {
     let id: FoodCategory
+    var isSelected = false
     var nextCursor = ""
 }
 
