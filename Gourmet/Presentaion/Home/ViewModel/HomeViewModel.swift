@@ -9,7 +9,7 @@ import Foundation
 import RxSwift
 import RxCocoa
 
-struct Category {
+struct Category: Hashable {
     let id: FoodCategory
     var isSelected = false
     var nextCursor = ""

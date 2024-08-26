@@ -11,73 +11,99 @@ import RxCocoa
 
 final class PostViewModel: ViewModelProtocol {
     
-    struct Input {
-        let reload: Observable<Void>
+    enum Input {
+        case noValue
+        case viewDidLoad
+        case selectCategory(Int)
+        case selectRecipe(Int)
     }
     
-    struct Output {
-        let items: PublishSubject<[PostDTO]>
-        let category: BehaviorSubject<[Category]>
-        let needReLogin: PublishSubject<Bool>
+    enum Output {
+        case noValue
+        case reloadCollectionView(categorys: [Category], recipeList: [PostDTO])
+        case needLogin
     }
     
     private let networkManager: NetworkManagerProtocol
-    private var category = Category(id: .normal)
+    
+    var categorys = [Category]()
+    var category = Category(id: .main)
+    
+    private(set)var output = BehaviorSubject(value: Output.noValue)
+    private var recipeList = PostListDTO(data: [], nextCursor: "")
     private let disposeBag = DisposeBag()
     
     init(networkManager: NetworkManagerProtocol) {
         self.networkManager = networkManager
+        
+        for category in FoodCategory.allCases {
+            let category = Category(id: category)
+            categorys.append(category)
+        }
+        categorys.removeLast()
+        categorys[0].isSelected = true
+        
+    }
+    
+    func apply(_ input: Input) {
+        
+        switch input {
+        case .noValue:
+            return
+            
+        case .viewDidLoad:
+            fetchPost()
+            
+        case .selectCategory(let item):
+            if category != categorys[item] {
+                category = categorys[item]
+                
+                for index in 0..<categorys.count {
+                    categorys[index].isSelected = (categorys[index].id == category.id)
+                }
+            }
+            
+            fetchPost()
+    
+        case .selectRecipe(let item):
+            return
+        }
     }
     
     func transform(_ input: Input) -> Output {
+       
+        return Output.noValue
+    }
+    
+    private func fetchPost() {
         
-        let items = PublishSubject<[PostDTO]>()
-        let needReLogin = PublishSubject<Bool>()
-        
-        input.reload
-            .flatMapLatest { [weak self] _ -> Single<Result<PostListDTO, PostError>> in
-                guard let self = self else { return .just(.failure(.forbidden)) }
-                return networkManager.fetchPost(category: category)
-            }
-            .bind(with: self) { owner, value in
+        networkManager.fetchPost(category: category)
+            .subscribe(with: self) { owner, result in
                 
-                switch value {
+                switch result {
                 case .success(let data):
-                    
-                    items.onNext(data.data)
+                    owner.recipeList = data
                     owner.category.nextCursor = data.nextCursor
+                    owner.output.onNext(.reloadCollectionView(categorys: owner.categorys,
+                                                              recipeList: owner.recipeList.data))
                     
                 case .failure(let error):
                     if error == .expiredAccessToken {
-                
+                        
                         let isSuccess = owner.networkManager.refreshAccessToken()
-                        owner.refreshToken(isSuccess: isSuccess,
-                                     items: items,
-                                     needReLogin: needReLogin)
+                        owner.refreshToken(isSuccess: isSuccess)
                         
                     } else {
                         print(error)
-                        needReLogin.onNext(true)
+                        owner.output.onNext(.needLogin)
                     }
                     
                 }
             }
             .disposed(by: disposeBag)
-        var categorys = [Category]()
-        
-        for i in FoodCategory.allCases {
-            let category = Category(id: i)
-            categorys.append(category)
-        }
-        
-        return Output(items: items,
-                      category: BehaviorSubject(value: categorys),
-                      needReLogin: needReLogin)
     }
     
-    private func refreshToken(isSuccess: Single<Bool>,
-                              items: PublishSubject<[PostDTO]>,
-                              needReLogin: PublishSubject<Bool>) {
+    private func refreshToken(isSuccess: Single<Bool>) {
         
         isSuccess.subscribe(with: self) { owner, value in
             if value {
@@ -87,15 +113,16 @@ final class PostViewModel: ViewModelProtocol {
                         switch result {
                         case .success(let data):
                             owner.category.nextCursor = data.nextCursor
-                            items.onNext(data.data)
-                            
+                            owner.recipeList = data
+                            owner.output.onNext(.reloadCollectionView(categorys: owner.categorys,
+                                                                      recipeList: owner.recipeList.data))
                         case .failure:
-                            needReLogin.onNext(true)
+                            owner.output.onNext(.needLogin)
                         }
                     }.disposed(by: owner.disposeBag)
-                    
+                
             } else {
-                needReLogin.onNext(true)
+                owner.output.onNext(.needLogin)
             }
         }.disposed(by: disposeBag)
     }

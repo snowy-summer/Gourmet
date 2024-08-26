@@ -16,6 +16,8 @@ final class PostListViewController: UIViewController {
                                                        collectionViewLayout: categoryCreateLayout())
     private lazy var recipeCollectionView = UICollectionView(frame: .zero,
                                                        collectionViewLayout: recipeListCreateLayout())
+    private var categoryDataSource: UICollectionViewDiffableDataSource<PostListSection, Category>!
+    private var recipeDataSource: UICollectionViewDiffableDataSource<PostListSection, PostDTO>!
     private let viewModel = PostViewModel(networkManager: NetworkManager.shared)
     private let disposeBag = DisposeBag()
     
@@ -23,7 +25,9 @@ final class PostListViewController: UIViewController {
         super.viewDidLoad()
         
         configureView()
+        configureDataSource()
         bindOutput()
+        viewModel.apply(.viewDidLoad)
     }
     
 }
@@ -33,36 +37,122 @@ extension PostListViewController {
     
     private func bindOutput() {
         
-        let input = PostViewModel.Input(reload: Observable.just(()))
-        let output = viewModel.transform(input)
-        
-        output.items
-            .bind(to: recipeCollectionView.rx.items(cellIdentifier: RecipeListCell.identifier,
-                                              cellType: RecipeListCell.self)) { row, item, cell in
-                cell.updateContent(item: item)
-            }
-            .disposed(by: disposeBag)
-        
-        output.category
-            .bind(to: categoryCollectionView.rx.items(cellIdentifier: CategoryCell.identifier,
-                                              cellType: CategoryCell.self)) { row, item, cell in
-                cell.updateContent(item: item)
-            }
-            .disposed(by: disposeBag)
-        
-        output.needReLogin
-            .bind(with: self) { owner, value in
-                if value {
+        viewModel.output
+            .bind(with: self) { owner, output in
+                
+                switch output {
+                case .noValue:
+                    return
+                    
+                case .reloadCollectionView(let categorys, let recipeList):
+                    owner.updateSnapshot(categorys: categorys, recipeList: recipeList)
+                    
+                case .needLogin:
                     owner.resetViewController(vc: LoginViewController())
                 }
-            }
-            .disposed(by: disposeBag)
+                
+            }.disposed(by: disposeBag)
+    
+    }
+    
+}
+
+//MARK: - CollectionView
+extension PostListViewController: UICollectionViewDelegate {
+    
+    typealias registerationCategory = UICollectionView.CellRegistration<CategoryCell, Category>
+    typealias registerationRecipe = UICollectionView.CellRegistration<RecipeListCell, PostDTO>
+    
+    
+    //MARK: - Delegate Method
+    func collectionView(_ collectionView: UICollectionView,
+                        didSelectItemAt indexPath: IndexPath) {
+        
+        if collectionView == categoryCollectionView {
+            viewModel.apply(.selectCategory(indexPath.item))
+        }
+    }
+
+    
+    //MARK: - CollectoinView Configuraion
+    private func registCategoryCell() -> registerationCategory {
+        
+        let cellRegistration = registerationCategory { cell, indexPath, itemIdentifier in
+        
+        }
+        
+        return cellRegistration
+    }
+    
+    private func registRecipeCell() -> registerationRecipe {
+        
+        let cellRegistration = registerationRecipe { cell, indexPath, itemIdentifier in
+            
+        }
+        
+        return cellRegistration
+    }
+    
+    private func configureDataSource() {
+        
+        let categoryRegistraion = registCategoryCell()
+        let recipeRegistration = registRecipeCell()
+        
+        categoryDataSource = UICollectionViewDiffableDataSource(collectionView: categoryCollectionView,
+                                                        cellProvider: { collectionView, indexPath, itemIdentifier in
+            
+            let cell = collectionView.dequeueConfiguredReusableCell(using: categoryRegistraion,
+                                                                    for: indexPath,
+                                                                    item: itemIdentifier)
+            cell.updateContent(item: itemIdentifier)
+            return cell
+            
+
+            
+        })
+        
+        recipeDataSource = UICollectionViewDiffableDataSource(collectionView: recipeCollectionView,
+                                                        cellProvider: { collectionView, indexPath, itemIdentifier in
+            
+            let cell = collectionView.dequeueConfiguredReusableCell(using: recipeRegistration,
+                                                                    for: indexPath,
+                                                                    item: itemIdentifier)
+            cell.updateContent(item: itemIdentifier)
+            return cell
+            
+
+            
+        })
+        
+    }
+    
+    private func updateSnapshot(categorys: [Category],
+                                recipeList: [PostDTO]) {
+        
+        var categorySnapshot = NSDiffableDataSourceSnapshot<PostListSection,Category>()
+        categorySnapshot.appendSections([.category])
+        categorySnapshot.appendItems(categorys,
+                             toSection: .category)
+        
+        categoryDataSource.apply(categorySnapshot)
+        
+        var recipeListSnapshot = NSDiffableDataSourceSnapshot<PostListSection,PostDTO>()
+        recipeListSnapshot.appendSections([.recipe])
+        recipeListSnapshot.appendItems(recipeList,
+                             toSection: .recipe)
+        
+        recipeDataSource.apply(recipeListSnapshot)
     }
     
 }
 
 // MARK: - Configuration
 extension PostListViewController: BaseViewProtocol {
+    
+    func configureNavigationBar() {
+        
+        navigationItem.title = "Recipe"
+    }
     
     func configureHierarchy() {
         
@@ -157,3 +247,7 @@ extension PostListViewController: BaseViewProtocol {
     
 }
 
+private enum PostListSection: CaseIterable {
+    case category
+    case recipe
+}

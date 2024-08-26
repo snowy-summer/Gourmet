@@ -22,6 +22,11 @@ final class CategoryCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        contentView.backgroundColor = .systemBackground
+    }
 }
 
 extension CategoryCell {
@@ -29,6 +34,9 @@ extension CategoryCell {
     func updateContent(item: Category) {
         
         nameLabel.text = item.id.name
+        if item.isSelected {
+            contentView.backgroundColor = .lightGray
+        }
     }
 }
 
@@ -43,8 +51,8 @@ extension CategoryCell: BaseViewProtocol {
     
     func configureUI() {
         
-        contentView.backgroundColor = .lightGray
         contentView.layer.cornerRadius = 8
+        contentView.layer.borderWidth = 1
     }
     
     func configureLayout() {

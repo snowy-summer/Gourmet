@@ -36,6 +36,14 @@ extension RecipeListCell {
         
         foodNameLabel.text = item.title
         descriptionLabel.text = item.content
+        
+        if !item.files.isEmpty {
+            NetworkManager.shared.fetchImage(file: item.files.first!) { [weak self] data in
+                if let data = data {
+                    self?.foodImageView.image = UIImage(data: data)
+                }
+            }
+        }
     }
 }
 

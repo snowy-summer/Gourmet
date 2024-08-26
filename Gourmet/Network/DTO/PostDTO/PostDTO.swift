@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct PostDTO: Decodable {
+struct PostDTO: Decodable, Hashable {
     let postId: String
     let productID: String?
     let title: String?
@@ -41,7 +41,7 @@ struct PostDTO: Decodable {
     }
 }
 
-struct CreatorDTO: Decodable {
+struct CreatorDTO: Decodable, Hashable {
     let userId: String
     let nick: String
     

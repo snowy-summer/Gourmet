@@ -48,7 +48,9 @@ extension EditRecipeViewController {
 }
 
 //MARK: - Edit View Delegate
-extension EditRecipeViewController: EditIngredientViewDelegate, EditContentViewDelegate {
+extension EditRecipeViewController: EditIngredientViewDelegate,
+                                    EditContentViewDelegate,
+                                    EditRecipeTitleCellDelegate {
     
     func dismissView(item: RecipeIngredient) {
         viewModel.apply(.addIngredient(item))
@@ -56,6 +58,10 @@ extension EditRecipeViewController: EditIngredientViewDelegate, EditContentViewD
     
     func dismissView(item: RecipeContent) {
         viewModel.apply(.addContent(item))
+    }
+    
+    func updateTitle(_ value: String) {
+        viewModel.apply(.updateTitle(value))
     }
 }
 
@@ -102,7 +108,7 @@ extension EditRecipeViewController: UICollectionViewDelegate {
     private func registTitleCell() -> registerationTitle {
         
         let cellRegistration = registerationTitle { cell, indexPath, itemIdentifier in
-            
+            cell.delegate = self
         }
         
         return cellRegistration

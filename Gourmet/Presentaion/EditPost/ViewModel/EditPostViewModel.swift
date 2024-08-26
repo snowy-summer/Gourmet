@@ -13,6 +13,7 @@ final class EditPostViewModel: ViewModelProtocol {
     
     enum Input {
         case noValue
+        case updateTitle(String)
         case addIngredient(RecipeIngredient)
         case addContent(RecipeContent)
         case saveContet
@@ -52,6 +53,9 @@ final class EditPostViewModel: ViewModelProtocol {
         switch input {
         case .noValue:
             output.onNext(.noValue)
+            
+        case .updateTitle(let text):
+            title = text
             
         case .addIngredient(let recipeIngredient):
             
