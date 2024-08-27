@@ -22,6 +22,7 @@ final class PostViewModel: ViewModelProtocol {
         case noValue
         case reloadCollectionView(categorys: [Category], recipeList: [PostDTO])
         case needLogin
+        case showDetailView(PostDTO)
     }
     
     private let networkManager: NetworkManagerProtocol
@@ -66,7 +67,8 @@ final class PostViewModel: ViewModelProtocol {
             fetchPost()
     
         case .selectRecipe(let item):
-            return
+            output.onNext(.showDetailView(recipeList.data[item]))
+
         }
     }
     

@@ -9,13 +9,6 @@ import Foundation
 import RxSwift
 import RxCocoa
 
-struct Category: Hashable {
-    let id: FoodCategory
-    var isSelected = false
-    var nextCursor = ""
-}
-
-
 final class HomeViewModel: ViewModelProtocol {
     
     struct Input {

@@ -92,7 +92,7 @@ extension RecipeListCell: BaseViewProtocol {
     func configureLayout() {
         
         foodImageView.snp.makeConstraints { make in
-            make.directionalVerticalEdges.leading.equalToSuperview().inset(8)
+            make.directionalVerticalEdges.leading.equalToSuperview().inset(16)
             make.width.equalTo(foodImageView.snp.height)
         }
         

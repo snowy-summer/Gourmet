@@ -49,6 +49,10 @@ extension PostListViewController {
                     
                 case .needLogin:
                     owner.resetViewController(vc: LoginViewController())
+                    
+                case .showDetailView(let recipe):
+                    owner.navigationController?.pushViewController(PostDetailViewController(recipe: recipe),
+                                                                   animated: true)
                 }
                 
             }.disposed(by: disposeBag)
@@ -70,6 +74,8 @@ extension PostListViewController: UICollectionViewDelegate {
         
         if collectionView == categoryCollectionView {
             viewModel.apply(.selectCategory(indexPath.item))
+        } else {
+            viewModel.apply(.selectRecipe(indexPath.item))
         }
     }
 
@@ -166,6 +172,9 @@ extension PostListViewController: BaseViewProtocol {
                                 forCellWithReuseIdentifier: CategoryCell.identifier)
         recipeCollectionView.register(RecipeListCell.self,
                                 forCellWithReuseIdentifier: RecipeListCell.identifier)
+        
+        categoryCollectionView.delegate = self
+        recipeCollectionView.delegate = self
     }
     
     func configureLayout() {
