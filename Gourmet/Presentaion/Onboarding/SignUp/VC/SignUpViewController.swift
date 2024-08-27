@@ -95,6 +95,7 @@ extension SignUpViewController: BaseViewProtocol {
         
         passwordLabel.text = "비밀번호"
         passwordTextField.infoStyle(placeHolder: "비밀번호를 입력해주세요")
+        passwordTextField.isSecureTextEntry = true
         let button = UIButton(type: .system)
         var configuration = UIButton.Configuration.plain()
         configuration.image = UIImage(systemName: "eye.fill")

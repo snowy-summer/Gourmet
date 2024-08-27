@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct ComentsDTO: Decodable {
+struct ComentsDTO: Decodable, Hashable {
     let commentId: String
     let content: String
     let createAt: String

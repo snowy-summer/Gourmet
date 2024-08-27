@@ -78,6 +78,7 @@ extension LoginViewController: BaseViewProtocol {
         
         emailTextField.infoStyle(placeHolder: "이메일을  입력해주세요")
         passwordTextField.infoStyle(placeHolder: "비밀번호를 입력해주세요")
+        passwordTextField.isSecureTextEntry = true
         emailLabel.text = "Email"
         passwordLabel.text = "비밀번호"
         loginButton.normalStyle(title: "로그인",

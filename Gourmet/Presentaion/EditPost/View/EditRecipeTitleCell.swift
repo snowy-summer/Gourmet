@@ -7,15 +7,28 @@
 
 import UIKit
 import SnapKit
+import RxSwift
+import RxCocoa
+
+protocol EditRecipeTitleCellDelegate: AnyObject {
+    func updateTitle(_ value: String)
+}
 
 final class EditRecipeTitleCell: UICollectionViewCell {
     
     private let titleTextField = UITextField()
+    weak var delegate: EditRecipeTitleCellDelegate?
+    private let disposeBag = DisposeBag()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
         
         configureView()
+        titleTextField.rx.text.orEmpty
+            .debounce(.milliseconds(50), scheduler: MainScheduler.instance)
+            .bind(with: self) { owner, text in
+                owner.delegate?.updateTitle(text)
+            }.disposed(by: disposeBag)
     }
     
     required init?(coder: NSCoder) {
@@ -29,7 +42,6 @@ extension EditRecipeTitleCell {
     func updateContent(item: String?) {
         
         titleTextField.text = item
-        
     }
 }
 
