@@ -106,6 +106,7 @@ extension NetworkManager {
                         single(.success(.success(data)))
                         
                     case .failure(let error):
+                        PrintDebugger.logError(error)
                         if let statusCode = response.response?.statusCode,
                            let loginError = LoginError(rawValue: statusCode) {
                             single(.success(.failure(loginError)))
@@ -117,32 +118,37 @@ extension NetworkManager {
             return Disposables.create()
         }
     }
-    
-    func refreshAccessToken() -> Single<Bool> {
+ 
+    func refreshAccessToken(completion: @escaping (Result<Bool, TokenError>) -> Void) {
         
         let keychainManager = KeychainManager.shared
         
-        return Single.create { [weak self] single -> Disposable in
-            
-            self?.session.request(TokenRouter.refreshAccessToken)
-                .validate(statusCode: 200..<300)
-                .responseDecodable(of: RefreshAccessTokenDTO.self) { response in
-                    switch response.result {
-                    case .success(let data):
-                        keychainManager.save(data.accessToken,
-                                             forKey: KeychainKey.accessToken.rawValue)
-                        
-                        single(.success(true))
-                        
-                    case .failure(let error):
-                        print(error)
-                        single(.success(false))
+        session.request(TokenRouter.refreshAccessToken)
+            .validate(statusCode: 200..<300)
+            .responseDecodable(of: RefreshAccessTokenDTO.self) { response in
+                switch response.result {
+                case .success(let data):
+                    keychainManager.save(data.accessToken,
+                                         forKey: KeychainKey.accessToken.rawValue)
+                    
+                    completion(.success(true))
+                    
+                case .failure(let error):
+                    PrintDebugger.logError(error)
+                    
+                    if let code = response.response?.statusCode,
+                       let tokenError = TokenError(rawValue: code) {
+                        if tokenError == .expiredRefreshToken {
+                            completion(.failure(tokenError))
+                        } else {
+                            PrintDebugger.logError(tokenError)
+                        }
                     }
                 }
-            return Disposables.create()
-        }
+            }
     }
 }
+
 
 extension NetworkManager {
     
@@ -164,7 +170,7 @@ extension NetworkManager {
                        let postError = PostError(rawValue: statusCode) {
                         single(.success(.failure(postError)))
                     } else {
-                        print(error)
+                        PrintDebugger.logError(error)
                         single(.success(.failure(PostError.serverError)))
                     }
                 }
@@ -178,49 +184,50 @@ extension NetworkManager {
         return Single.create { [weak self] single -> Disposable in
             
             self?.session.request(PostRouter.uploadPost(item))
-            .validate(statusCode: 200..<300)
-            .responseDecodable(of: PostDTO.self) { response in
-                switch response.result {
-                case .success:
-                    single(.success(.success(true)))
-                    
-                case .failure(let error):
-                    if let statusCode = response.response?.statusCode,
-                       let postError = PostError(rawValue: statusCode) {
-                        single(.success(.failure(postError)))
-                    } else {
-                        print(error)
-                        single(.success(.failure(PostError.serverError)))
+                .validate(statusCode: 200..<300)
+                .responseDecodable(of: PostDTO.self) { response in
+                    switch response.result {
+                    case .success:
+                        single(.success(.success(true)))
+                        
+                    case .failure(let error):
+                        if let statusCode = response.response?.statusCode,
+                           let postError = PostError(rawValue: statusCode) {
+                            single(.success(.failure(postError)))
+                        } else {
+                            PrintDebugger.logError(error)
+                            single(.success(.failure(PostError.serverError)))
+                        }
                     }
                 }
-            }
             return Disposables.create()
         }
     }
     
     func uploadImage(_ images: [Data?],
                      completion: @escaping (Result<UploadFileDTO, PostError>) -> Void) {
-
-            session.upload(multipartFormData: { multipart in
-                for index in 0..<images.count {
-                    if let image = images[index] {
-                        multipart.append(image,
-                                         withName: "files",
-                                         fileName: "\(index).jpeg",
-                                         mimeType: "image/jpeg")
-                    }
-                }
-            }, with: PostRouter.uploadFile)
-            .responseDecodable(of: UploadFileDTO.self) { response in
-                switch response.result {
-                case .success(let data):
-                    completion(.success(data))
-                    
-                case .failure(let error):
-                    completion(.failure(.forbidden))
+        
+        session.upload(multipartFormData: { multipart in
+            for index in 0..<images.count {
+                if let image = images[index] {
+                    multipart.append(image,
+                                     withName: "files",
+                                     fileName: "\(index).jpeg",
+                                     mimeType: "image/jpeg")
                 }
             }
+        }, with: PostRouter.uploadFile)
+        .responseDecodable(of: UploadFileDTO.self) { response in
+            switch response.result {
+            case .success(let data):
+                completion(.success(data))
+                
+            case .failure(let error):
+                PrintDebugger.logError(error)
+                completion(.failure(.forbidden))
+            }
         }
+    }
     
     func fetchImage(file: String, completion: @escaping (Data?) -> Void) {
         
@@ -232,7 +239,7 @@ extension NetworkManager {
                     completion(data)
                     
                 case .failure(let error):
-                    print("image에러",error)
+                    PrintDebugger.logError(error)
                     completion(nil)
                 }
             }

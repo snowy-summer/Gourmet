@@ -91,13 +91,9 @@ final class PostViewModel: ViewModelProtocol {
                     
                 case .failure(let error):
                     if error == .expiredAccessToken {
-                        
-                        let isSuccess = owner.networkManager.refreshAccessToken()
-                        owner.refreshToken(isSuccess: isSuccess)
-                        
+                        owner.refreshAccessToken()
                     } else {
-                        print(error)
-                        owner.output.onNext(.needLogin)
+                        PrintDebugger.logError(error)
                     }
                     
                 }
@@ -105,27 +101,19 @@ final class PostViewModel: ViewModelProtocol {
             .disposed(by: disposeBag)
     }
     
-    private func refreshToken(isSuccess: Single<Bool>) {
+    private func refreshAccessToken() {
         
-        isSuccess.subscribe(with: self) { owner, value in
-            if value {
-                owner.networkManager.fetchPost(category: owner.category)
-                    .subscribe(with: self) { owner, result in
-                        
-                        switch result {
-                        case .success(let data):
-                            owner.category.nextCursor = data.nextCursor
-                            owner.recipeList = data
-                            owner.output.onNext(.reloadCollectionView(categorys: owner.categorys,
-                                                                      recipeList: owner.recipeList.data))
-                        case .failure:
-                            owner.output.onNext(.needLogin)
-                        }
-                    }.disposed(by: owner.disposeBag)
+        networkManager.refreshAccessToken {[weak self] result in
+            guard let self = self else { return }
+            switch result {
+            case .success:
+                fetchPost()
+                return
                 
-            } else {
-                owner.output.onNext(.needLogin)
+            case .failure(let error):
+                PrintDebugger.logError(error)
+                output.onNext(.needLogin)
             }
-        }.disposed(by: disposeBag)
+        }
     }
 }

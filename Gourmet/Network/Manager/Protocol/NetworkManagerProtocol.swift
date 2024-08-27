@@ -21,7 +21,7 @@ protocol NetworkManagerProtocol {
     func login(email: String,
                password: String) -> Single<Result<LoginDTO, LoginError>>
     
-    func refreshAccessToken() -> Single<Bool>
+    func refreshAccessToken(completion: @escaping (Result<Bool, TokenError>) -> Void)
     
     func fetchPost(category: Category) -> Single<Result<PostListDTO,PostError>>
     

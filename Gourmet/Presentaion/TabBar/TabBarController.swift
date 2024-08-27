@@ -23,8 +23,8 @@ final class TabBarController: UITabBarController {
                           selectImage: UIImage(systemName: "star"),
                           unselectImage: UIImage(systemName: "star.fill"))
         addViewController(vc: NormalPostListViewController(),
-                          selectImage: UIImage(systemName: "star"),
-                          unselectImage: UIImage(systemName: "star.fill"))
+                          selectImage: UIImage(systemName: "rectangle.3.group.bubble"),
+                          unselectImage: UIImage(systemName: "rectangle.3.group.bubble"))
         
         setViewControllers(components,
                            animated: false)

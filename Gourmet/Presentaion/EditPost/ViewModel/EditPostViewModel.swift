@@ -133,8 +133,8 @@ final class EditPostViewModel: ViewModelProtocol {
                                    subTitle: "부제",
                                    ingredients: ingredientStr,
                                    recipe: recipeContent,
-                                   content4: time,
-                                   content5: nil,
+                                   time: time,
+                                   difficulty: nil,
                                    productID: category.productId,
                                    files: files)
     }

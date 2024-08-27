@@ -37,14 +37,40 @@ final class HomeViewModel: ViewModelProtocol {
         let needReLogin = PublishSubject<Bool>()
         
         // TODO: - 데이터 패치전에 토큰 갱신을 한 번 하고 진행으로 변경하기
-        fetchSections(signal: input.reload,
-                      needReLogin: needReLogin)
-        .bind(to: sections)
-        .disposed(by: disposeBag)
         
+        let group = DispatchGroup()
+        
+        group.enter()
+        refreshAccessToken(needReLogin: needReLogin,
+                           group: group)
+        
+        group.notify(queue: DispatchQueue.global()) { [weak self] in
+            guard let self = self else { return }
+            fetchSections(signal: input.reload,
+                          needReLogin: needReLogin)
+            .bind(to: sections)
+            .disposed(by: disposeBag)
+        }
         
         return Output(sections: sections.asObservable(),
                       needReLogin: needReLogin)
+    }
+    
+    private func refreshAccessToken(needReLogin: PublishSubject<Bool>,
+                                    group: DispatchGroup ) {
+        
+        networkManager.refreshAccessToken { result in
+            switch result {
+            case .success:
+                group.leave()
+                return
+                
+            case .failure(let error):
+                PrintDebugger.logError(error)
+                needReLogin.onNext(true)
+                group.leave()
+            }
+        }
     }
     
     private func fetchSections(signal: Observable<Void>,
@@ -55,7 +81,7 @@ final class HomeViewModel: ViewModelProtocol {
         let secondRequest = createPostRequest(signal: signal,
                                               category: secondCategory)
         let thirdRequest = createPostRequest(signal: signal,
-                                              category: thirdCategory)
+                                             category: thirdCategory)
         
         return Observable.zip(firstRequest, secondRequest, thirdRequest)
             .map { [weak self] firstResult, secondResult, thirdResult in
@@ -102,10 +128,9 @@ final class HomeViewModel: ViewModelProtocol {
                                                items: data.data)
             sections.append(section)
             category.nextCursor = data.nextCursor
-//            needReLogin.onNext(false)
             
         case .failure(let error):
-            print(error)
+            PrintDebugger.logError(error)
             handleFailure(error: error,
                           needReLogin: needReLogin)
         }
@@ -114,21 +139,22 @@ final class HomeViewModel: ViewModelProtocol {
     private func handleFailure(error: PostError,
                                needReLogin: PublishSubject<Bool>) {
         if error == .expiredAccessToken {
-            networkManager.refreshAccessToken()
-                .subscribe(with: self) { owner, success in
-                    if success {
-                        print("토큰 갱신 성공")
-                        owner.fetchSections(signal: Observable.just(()),
-                                            needReLogin: needReLogin)
-                            .bind(to: owner.sections)
-                            .disposed(by: owner.disposeBag)
-                    } else {
-//                        needReLogin.onNext(true)
-                    }
+            
+            networkManager.refreshAccessToken { [weak self] result in
+                guard let self = self else { return }
+                switch result {
+                case .success:
+                    fetchSections(signal: Observable.just(()),
+                                  needReLogin: needReLogin)
+                    .bind(to: sections)
+                    .disposed(by: disposeBag)
+                    return
+                    
+                case .failure(let error):
+                    PrintDebugger.logError(error)
+                    needReLogin.onNext(true)
                 }
-                .disposed(by: disposeBag)
-        } else {
-//            needReLogin.onNext(true)
+            }
         }
     }
 }

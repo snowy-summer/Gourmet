@@ -42,6 +42,10 @@ extension RecipeListCell {
         
         foodNameLabel.text = item.title
         descriptionLabel.text = item.content
+        likeView.updateContent(content: "\(item.likes.count)")
+        if let time = item.time {
+            timeView.updateContent(content: time)
+        }
         
         if !item.files.isEmpty {
             NetworkManager.shared.fetchImage(file: item.files.first!) { [weak self] data in
