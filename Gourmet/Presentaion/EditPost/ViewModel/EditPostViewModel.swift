@@ -122,18 +122,18 @@ final class EditPostViewModel: ViewModelProtocol {
     }
     
     private func createUploadPostBody(files: [String]) -> UploadPostBodyModel {
-        let ingredientStr = ingredients.enumerated().map { "\($0.offset).\($0.element.name) \($0.element.value)" }
+        let ingredientStr = ingredients.enumerated().map { "\($0.element.name) \($0.element.value)" }
             .joined(separator: "\n")
         
         let recipeContent = contents.enumerated().map { "\($0.offset).\($0.element.content)" }
             .joined(separator: "\n")
         
         return UploadPostBodyModel(title: title,
-                                   content: ingredientStr,
-                                   content1: recipeContent,
-                                   content2: time,
-                                   content3: nil,
-                                   content4: nil,
+                                   content: "#\(title)",
+                                   subTitle: "부제",
+                                   ingredients: ingredientStr,
+                                   recipe: recipeContent,
+                                   content4: time,
                                    content5: nil,
                                    productID: category.productId,
                                    files: files)

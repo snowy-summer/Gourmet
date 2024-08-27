@@ -12,9 +12,9 @@ struct PostDTO: Decodable, Hashable {
     let productID: String?
     let title: String?
     let content: String?
-    let content1: String?
-    let content2: String?
-    let content3: String?
+    let subTitle: String? // 서브 타이틀
+    let ingredients: String? // 재료
+    let recipe: String? // 레시피
     let content4: String?
     let content5: String?
     let createdAt: String
@@ -30,9 +30,9 @@ struct PostDTO: Decodable, Hashable {
         case productID = "product_id"
         case title
         case content
-        case content1
-        case content2
-        case content3
+        case subTitle = "content1"
+        case ingredients = "content2"
+        case recipe = "content3"
         case content4
         case content5
         case createdAt, creator

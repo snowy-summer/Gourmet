@@ -63,7 +63,7 @@ extension PostDetailImageCell: BaseViewProtocol {
     
     func configureUI() {
 
-        foodImageView.contentMode = .scaleAspectFill
+        foodImageView.contentMode = .scaleToFill
         
         containerView.layer.cornerRadius = 16
         containerView.layer.borderWidth = 1
@@ -78,29 +78,28 @@ extension PostDetailImageCell: BaseViewProtocol {
     }
 
     func configureLayout() {
-        
-        foodImageView.snp.makeConstraints { make in
-            make.top.equalTo(contentView.snp.top)
-            make.directionalHorizontalEdges.equalTo(contentView.snp.directionalHorizontalEdges)
-            make.height.equalTo(foodImageView.snp.width)
-        }
-        
+       
         containerView.snp.makeConstraints { make in
-            make.centerY.equalTo(foodImageView.snp.bottom)
+            make.bottom.equalTo(contentView.snp.bottom)
             make.directionalHorizontalEdges.equalTo(contentView.snp.directionalHorizontalEdges).inset(32)
         }
         
         foodNameLabel.snp.makeConstraints { make in
-            make.bottom.equalTo(containerView.snp.bottom).inset(16)
+            make.top.equalTo(containerView.snp.top).offset(8)
             make.directionalHorizontalEdges.equalTo(containerView.snp.directionalHorizontalEdges).inset(16)
         }
         
         contentStackView.snp.makeConstraints { make in
-            make.top.equalTo(containerView.snp.top).offset(16)
-            make.bottom.equalTo(foodNameLabel.snp.top).offset(-16)
+            make.top.equalTo(foodNameLabel.snp.bottom).offset(8)
+            make.bottom.equalTo(containerView.snp.bottom).offset(-16)
             make.directionalHorizontalEdges.equalTo(containerView.snp.directionalHorizontalEdges).inset(16)
         }
         
+        foodImageView.snp.makeConstraints { make in
+            make.top.equalTo(contentView.snp.top)
+            make.directionalHorizontalEdges.equalTo(contentView.snp.directionalHorizontalEdges)
+            make.bottom.equalTo(contentStackView.snp.top)
+        }
         
     }
 }

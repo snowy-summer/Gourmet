@@ -27,6 +27,12 @@ final class RecipeListCell: UICollectionViewCell {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        foodImageView.image = nil
+    }
 
 }
 
