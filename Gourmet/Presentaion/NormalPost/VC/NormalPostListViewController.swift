@@ -126,6 +126,20 @@ extension NormalPostListViewController: BaseViewProtocol {
     func configureUI() {
         collectionView.register(NormalPostCell.self,
                                 forCellWithReuseIdentifier: NormalPostCell.identifier)
+        configureRefreshControl()
+    }
+    
+    func configureRefreshControl () {
+        
+        let refreshControl = UIRefreshControl()
+        refreshControl.tintColor = .main
+        collectionView.refreshControl = refreshControl
+        refreshControl.rx.controlEvent(.valueChanged)
+            .subscribe(with: self) { owner, _ in
+                owner.viewModel.apply(.refreshData)
+                refreshControl.endRefreshing()
+            }
+            .disposed(by: disposeBag)
     }
     
     func configureLayout() {

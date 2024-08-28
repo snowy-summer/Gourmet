@@ -72,8 +72,11 @@ extension PostDetailImageCell: BaseViewProtocol {
         foodImageView.contentMode = .scaleToFill
         
         containerView.layer.cornerRadius = 16
-        containerView.layer.borderWidth = 1
         containerView.backgroundColor = .systemBackground
+        containerView.layer.shadowColor = UIColor.black.cgColor
+        containerView.layer.shadowOpacity = 0.3
+        containerView.layer.shadowOffset = CGSize(width: 0, height: 8)
+        containerView.layer.shadowRadius = 8
         
         foodNameLabel.font = .systemFont(ofSize: 20,
                                          weight: .bold)
@@ -81,6 +84,7 @@ extension PostDetailImageCell: BaseViewProtocol {
         
         contentStackView.axis = .horizontal
         contentStackView.distribution = .fillEqually
+        
     }
 
     func configureLayout() {
@@ -91,12 +95,12 @@ extension PostDetailImageCell: BaseViewProtocol {
         }
         
         foodNameLabel.snp.makeConstraints { make in
-            make.top.equalTo(containerView.snp.top).offset(8)
+            make.top.equalTo(containerView.snp.top).offset(16)
             make.directionalHorizontalEdges.equalTo(containerView.snp.directionalHorizontalEdges).inset(16)
         }
         
         contentStackView.snp.makeConstraints { make in
-            make.top.equalTo(foodNameLabel.snp.bottom).offset(8)
+            make.top.equalTo(foodNameLabel.snp.bottom).offset(16)
             make.bottom.equalTo(containerView.snp.bottom).offset(-16)
             make.directionalHorizontalEdges.equalTo(containerView.snp.directionalHorizontalEdges).inset(16)
         }

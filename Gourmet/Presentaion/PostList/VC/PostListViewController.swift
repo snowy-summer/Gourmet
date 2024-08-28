@@ -13,9 +13,9 @@ import SnapKit
 final class PostListViewController: UIViewController {
     
     private lazy var categoryCollectionView = UICollectionView(frame: .zero,
-                                                       collectionViewLayout: categoryCreateLayout())
+                                                               collectionViewLayout: categoryCreateLayout())
     private lazy var recipeCollectionView = UICollectionView(frame: .zero,
-                                                       collectionViewLayout: recipeListCreateLayout())
+                                                             collectionViewLayout: recipeListCreateLayout())
     private var categoryDataSource: UICollectionViewDiffableDataSource<PostListSection, Category>!
     private var recipeDataSource: UICollectionViewDiffableDataSource<PostListSection, PostDTO>!
     private let viewModel = PostViewModel(networkManager: NetworkManager.shared)
@@ -27,7 +27,7 @@ final class PostListViewController: UIViewController {
         configureView()
         configureDataSource()
         bindOutput()
-        viewModel.apply(.viewDidLoad)
+        viewModel.apply(.refreshData)
     }
     
 }
@@ -56,7 +56,7 @@ extension PostListViewController {
                 }
                 
             }.disposed(by: disposeBag)
-    
+        
     }
     
 }
@@ -78,13 +78,13 @@ extension PostListViewController: UICollectionViewDelegate {
             viewModel.apply(.selectRecipe(indexPath.item))
         }
     }
-
+    
     
     //MARK: - CollectoinView Configuraion
     private func registCategoryCell() -> registerationCategory {
         
         let cellRegistration = registerationCategory { cell, indexPath, itemIdentifier in
-        
+            
         }
         
         return cellRegistration
@@ -105,7 +105,7 @@ extension PostListViewController: UICollectionViewDelegate {
         let recipeRegistration = registRecipeCell()
         
         categoryDataSource = UICollectionViewDiffableDataSource(collectionView: categoryCollectionView,
-                                                        cellProvider: { collectionView, indexPath, itemIdentifier in
+                                                                cellProvider: { collectionView, indexPath, itemIdentifier in
             
             let cell = collectionView.dequeueConfiguredReusableCell(using: categoryRegistraion,
                                                                     for: indexPath,
@@ -113,12 +113,12 @@ extension PostListViewController: UICollectionViewDelegate {
             cell.updateContent(item: itemIdentifier)
             return cell
             
-
+            
             
         })
         
         recipeDataSource = UICollectionViewDiffableDataSource(collectionView: recipeCollectionView,
-                                                        cellProvider: { collectionView, indexPath, itemIdentifier in
+                                                              cellProvider: { collectionView, indexPath, itemIdentifier in
             
             let cell = collectionView.dequeueConfiguredReusableCell(using: recipeRegistration,
                                                                     for: indexPath,
@@ -126,7 +126,7 @@ extension PostListViewController: UICollectionViewDelegate {
             cell.updateContent(item: itemIdentifier)
             return cell
             
-
+            
             
         })
         
@@ -138,14 +138,14 @@ extension PostListViewController: UICollectionViewDelegate {
         var categorySnapshot = NSDiffableDataSourceSnapshot<PostListSection,Category>()
         categorySnapshot.appendSections([.category])
         categorySnapshot.appendItems(categorys,
-                             toSection: .category)
+                                     toSection: .category)
         
         categoryDataSource.apply(categorySnapshot)
         
         var recipeListSnapshot = NSDiffableDataSourceSnapshot<PostListSection,PostDTO>()
         recipeListSnapshot.appendSections([.recipe])
         recipeListSnapshot.appendItems(recipeList,
-                             toSection: .recipe)
+                                       toSection: .recipe)
         
         recipeDataSource.apply(recipeListSnapshot)
     }
@@ -169,12 +169,26 @@ extension PostListViewController: BaseViewProtocol {
     func configureUI() {
         
         categoryCollectionView.register(CategoryCell.self,
-                                forCellWithReuseIdentifier: CategoryCell.identifier)
+                                        forCellWithReuseIdentifier: CategoryCell.identifier)
         recipeCollectionView.register(RecipeListCell.self,
-                                forCellWithReuseIdentifier: RecipeListCell.identifier)
+                                      forCellWithReuseIdentifier: RecipeListCell.identifier)
         
         categoryCollectionView.delegate = self
         recipeCollectionView.delegate = self
+        configureRefreshControl()
+    }
+    
+    func configureRefreshControl () {
+        
+        let refreshControl = UIRefreshControl()
+        refreshControl.tintColor = .main
+        recipeCollectionView.refreshControl = refreshControl
+        refreshControl.rx.controlEvent(.valueChanged)
+            .subscribe(with: self) { owner, _ in
+                owner.viewModel.apply(.refreshData)
+                refreshControl.endRefreshing()
+            }
+            .disposed(by: disposeBag)
     }
     
     func configureLayout() {
@@ -207,9 +221,9 @@ extension PostListViewController: BaseViewProtocol {
                                                        subitems: [item])
         
         group.contentInsets = NSDirectionalEdgeInsets(top: 0,
-                                                        leading: 0,
-                                                        bottom: 16,
-                                                        trailing: 0)
+                                                      leading: 0,
+                                                      bottom: 16,
+                                                      trailing: 0)
         
         let section = NSCollectionLayoutSection(group: group)
         section.orthogonalScrollingBehavior = .continuous

@@ -14,8 +14,9 @@ final class EditPostViewModel: ViewModelProtocol {
     enum Input {
         case noValue
         case updateTitle(String)
-        case addIngredient(RecipeIngredient)
+        case addIngredient(IngredientContent)
         case addContent(RecipeContent)
+        case updateTime(String)
         case saveContet
     }
     
@@ -26,9 +27,11 @@ final class EditPostViewModel: ViewModelProtocol {
     
     enum Item: Hashable {
         case title(String?)
-        case ingredient(RecipeIngredient?)
+        case ingredient(String)
+        case ingredientContent(IngredientContent?)
         case content(RecipeContent?)
         case neededTime(String)
+        case difficulty(String)
         case price(Int)
     }
     
@@ -39,7 +42,8 @@ final class EditPostViewModel: ViewModelProtocol {
     
     private let category = FoodCategory.main
     private(set) var title = ""
-    private(set) var ingredients = [RecipeIngredient]()
+    private(set) var subTitle = "부제"
+    private(set) var ingredients = [IngredientContent]()
     private(set) var contents = [RecipeContent]()
     private(set) var time = ""
     private(set) var price = 0
@@ -59,15 +63,12 @@ final class EditPostViewModel: ViewModelProtocol {
             
         case .addIngredient(let recipeIngredient):
             
-            let addCell = ingredients.removeLast()
-            
             if let index = ingredients.firstIndex(where: { $0.id == recipeIngredient.id }) {
                 ingredients[index] = recipeIngredient
             } else {
                 ingredients.append(recipeIngredient)
             }
             
-            ingredients.append(addCell)
             output.onNext(.applySnapShot)
             
         case .addContent(let recipeContent):
@@ -82,6 +83,9 @@ final class EditPostViewModel: ViewModelProtocol {
             
             contents.append(addCell)
             output.onNext(.applySnapShot)
+            
+        case .updateTime(let time):
+            return
             
         case .saveContet:
             uploadPost()
@@ -130,7 +134,7 @@ final class EditPostViewModel: ViewModelProtocol {
         
         return UploadPostBodyModel(title: title,
                                    content: "#\(title)",
-                                   subTitle: "부제",
+                                   subTitle: subTitle,
                                    ingredients: ingredientStr,
                                    recipe: recipeContent,
                                    time: time,
@@ -142,17 +146,17 @@ final class EditPostViewModel: ViewModelProtocol {
     func generateItems(from item: Item) -> [Item] {
         switch item {
         case .title:
-            return [.title(title)]
+            return [
+                .title(title),
+//                .title(subTitle)
+            ]
             
-        case .ingredient:
-            
+        case .ingredientContent:
             if ingredients.isEmpty {
-                ingredients.append(RecipeIngredient(name: "",
-                                                    value: "",
-                                                    isAddCell: true))
+               return []
             }
             
-            return ingredients.map { .ingredient($0) }
+            return ingredients.map { .ingredientContent($0) }
             
         case .content:
             
@@ -168,7 +172,13 @@ final class EditPostViewModel: ViewModelProtocol {
         case .neededTime:
             return [.neededTime(time)]
             
+        case .difficulty:
+            return []
+            
         case .price:
+            return []
+            
+        default:
             return []
         }
     }

@@ -225,8 +225,8 @@ private enum PostDetailSection: Int, CaseIterable {
             let item = NSCollectionLayoutItem(layoutSize: itemSize)
             
             
-            let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
-                                                   heightDimension: .absolute(44))
+            let groupSize = NSCollectionLayoutSize(widthDimension: .absolute(80),
+                                                   heightDimension: .absolute(80))
             let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize,
                                                            subitems: [item])
             
@@ -236,6 +236,8 @@ private enum PostDetailSection: Int, CaseIterable {
                                                           trailing: 0)
             
             let section = NSCollectionLayoutSection(group: group)
+            section.interGroupSpacing = 16
+            section.orthogonalScrollingBehavior = .continuous
             section.contentInsets = NSDirectionalEdgeInsets(top: 0,
                                                             leading: 16,
                                                             bottom: 0,

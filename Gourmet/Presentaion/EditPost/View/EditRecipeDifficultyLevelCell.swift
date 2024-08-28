@@ -1,14 +1,14 @@
 //
-//  EditRecipeIngredientCell.swift
+//  EditRecipeDifficultyLevelCell.swift
 //  Gourmet
 //
-//  Created by 최승범 on 8/22/24.
+//  Created by 최승범 on 8/28/24.
 //
 
 import UIKit
 import SnapKit
 
-final class EditRecipeIngredientCell: UICollectionViewCell {
+final class EditRecipeDifficultyLevelCell: UICollectionViewCell {
     
     private let nameLabel = UILabel()
     private let valueLabel = UILabel()
@@ -32,24 +32,24 @@ final class EditRecipeIngredientCell: UICollectionViewCell {
     
 }
 
-extension EditRecipeIngredientCell {
+extension EditRecipeDifficultyLevelCell {
     
     func updateContent(item: RecipeIngredient) {
         
-        if item.isAddCell {
-            addImageView.isHidden = false
-            nameLabel.isHidden = true
-            valueLabel.isHidden = true
-            return
-        }
-        
-        nameLabel.text = item.name
-        valueLabel.text = item.value
+//        if item.isAddCell {
+//            addImageView.isHidden = false
+//            nameLabel.isHidden = true
+//            valueLabel.isHidden = true
+//            return
+//        }
+//        
+//        nameLabel.text = item.name
+//        valueLabel.text = item.value
     }
 }
 
 //MARK: - Configuraion
-extension EditRecipeIngredientCell: BaseViewProtocol {
+extension EditRecipeDifficultyLevelCell: BaseViewProtocol {
     
     func configureHierarchy() {
         
@@ -95,4 +95,5 @@ extension EditRecipeIngredientCell: BaseViewProtocol {
     }
     
 }
+
 

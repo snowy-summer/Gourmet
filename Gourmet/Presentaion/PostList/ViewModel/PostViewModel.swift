@@ -13,7 +13,7 @@ final class PostViewModel: ViewModelProtocol {
     
     enum Input {
         case noValue
-        case viewDidLoad
+        case refreshData
         case selectCategory(Int)
         case selectRecipe(Int)
     }
@@ -52,7 +52,7 @@ final class PostViewModel: ViewModelProtocol {
         case .noValue:
             return
             
-        case .viewDidLoad:
+        case .refreshData:
             fetchPost()
             
         case .selectCategory(let item):

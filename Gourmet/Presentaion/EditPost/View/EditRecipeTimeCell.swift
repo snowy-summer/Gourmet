@@ -8,10 +8,17 @@
 import UIKit
 import SnapKit
 
+protocol EditRecipeTimeDelegate: AnyObject {
+    func updateTime(_ value: String)
+}
+
 final class EditRecipeTimeCell: UICollectionViewCell {
     
-    private let timeLabel = UILabel()
-    private let addImageView = UIImageView()
+    private let timeTextField = UITextField()
+    weak var delegate: EditRecipeTimeDelegate?
+    
+    private let hours = Array(0...24)
+    private let minutes = Array(0...60)
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -23,21 +30,17 @@ final class EditRecipeTimeCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func prepareForReuse() {
-        super.prepareForReuse()
-        
-        addImageView.isHidden = true
-    }
-    
 }
 
 extension EditRecipeTimeCell {
     
     func updateContent(item: String) {
-        
-        addImageView.isHidden = item.isEmpty ? false : true
-        timeLabel.text = item
+        timeTextField.text = item
     }
+    
+    @objc private func doneButtonTapped() {
+            timeTextField.resignFirstResponder()
+        }
 }
 
 //MARK: - Configuraion
@@ -45,33 +48,85 @@ extension EditRecipeTimeCell: BaseViewProtocol {
     
     func configureHierarchy() {
         
-        contentView.addSubview(timeLabel)
-        contentView.addSubview(addImageView)
+        contentView.addSubview(timeTextField)
     }
     
     func configureUI() {
-
+        
         contentView.backgroundColor = .systemBackground
         contentView.layer.cornerRadius = 8
         contentView.clipsToBounds = true
-        
-        addImageView.image = UIImage(systemName: "plus")
-        addImageView.tintColor = .main
-        addImageView.isHidden = true
+        configureTimePicker()
     }
     
     func configureLayout() {
-    
-        timeLabel.snp.makeConstraints { make in
+        
+        timeTextField.snp.makeConstraints { make in
             make.directionalVerticalEdges.equalTo(contentView.snp.directionalVerticalEdges)
             make.directionalHorizontalEdges.equalTo(contentView.snp.directionalHorizontalEdges).inset(8)
         }
+    }
+    
+    func configureTimePicker() {
         
-        addImageView.snp.makeConstraints { make in
-            make.size.equalTo(20)
-            make.center.equalTo(contentView.snp.center)
+        let pickerView = UIPickerView()
+        pickerView.delegate = self
+        pickerView.dataSource = self
+        timeTextField.inputView = pickerView
+        
+        let toolbar = UIToolbar()
+        toolbar.sizeToFit()
+        
+        let doneButton = UIBarButtonItem(barButtonSystemItem: .done,
+                                         target: self,
+                                         action: #selector(doneButtonTapped))
+        let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace,
+                                            target: nil,
+                                            action: nil)
+        toolbar.setItems([flexibleSpace, doneButton], animated: false)
+        
+        timeTextField.inputAccessoryView = toolbar
+    }
+}
+
+extension EditRecipeTimeCell: UIPickerViewDelegate, UIPickerViewDataSource {
+    
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 2
+    }
+    
+    func pickerView(_ pickerView: UIPickerView,
+                    numberOfRowsInComponent component: Int) -> Int {
+        switch component {
+        case 0:
+            return hours.count
+        case 1:
+            return minutes.count
+        default:
+            return 0
         }
     }
     
+    func pickerView(_ pickerView: UIPickerView,
+                    titleForRow row: Int,
+                    forComponent component: Int) -> String? {
+        switch component {
+        case 0:
+            return "\(hours[row]) h"
+        case 1:
+            return "\(minutes[row]) m"
+        default:
+            return nil
+        }
+    }
+    
+    func pickerView(_ pickerView: UIPickerView,
+                    didSelectRow row: Int,
+                    inComponent component: Int) {
+        
+        let selectedHour = hours[pickerView.selectedRow(inComponent: 0)]
+        let selectedMinute = minutes[pickerView.selectedRow(inComponent: 1)]
+        
+        delegate?.updateTime("\(selectedHour)h \(selectedMinute)m")
+    }
 }
-

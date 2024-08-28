@@ -10,6 +10,7 @@ import SnapKit
 
 final class PostDetailIngredientCell: UICollectionViewCell {
     
+    private let imageView = UIImageView()
     private let nameLabel = UILabel()
     private let valueLabel = UILabel()
     
@@ -36,9 +37,6 @@ extension PostDetailIngredientCell {
     
     func updateContent(item: RecipeIngredient) {
         
-        // 0.고기 200g\n 
-        
-        
         nameLabel.text = item.name
         valueLabel.text = item.value
     }
@@ -49,34 +47,37 @@ extension PostDetailIngredientCell: BaseViewProtocol {
     
     func configureHierarchy() {
         
+        contentView.addSubview(imageView)
         contentView.addSubview(nameLabel)
         contentView.addSubview(valueLabel)
     }
     
     func configureUI() {
         
-        nameLabel.font = .systemFont(ofSize: 20, weight: .medium)
-        valueLabel.font = .systemFont(ofSize: 16, weight: .regular)
-        valueLabel.textAlignment = .right
-        
-//        contentView.backgroundColor = .systemBackground
-//        contentView.layer.cornerRadius = 8
-//        contentView.clipsToBounds = true
+        imageView.image = UIImage(systemName: "star")
+        nameLabel.font = .systemFont(ofSize: 16, weight: .medium)
+        valueLabel.font = .systemFont(ofSize: 14, weight: .regular)
+        valueLabel.textColor = .lightGray
     }
     
     func configureLayout() {
         
-        valueLabel.snp.makeConstraints { make in
-            make.verticalEdges.equalTo(contentView.snp.verticalEdges)
-            make.width.equalTo(contentView.snp.width).multipliedBy(0.3)
-            make.trailing.equalTo(contentView.snp.trailing).inset(8)
+        imageView.snp.makeConstraints { make in
+            make.top.equalTo(contentView.snp.top)
+            make.directionalHorizontalEdges.equalTo(contentView.snp.directionalHorizontalEdges)
+            make.height.equalTo(imageView.snp.width)
         }
         
         nameLabel.snp.makeConstraints { make in
-            make.verticalEdges.equalTo(contentView.snp.verticalEdges)
-            make.leading.equalTo(contentView.snp.leading).offset(8)
-            make.trailing.equalTo(valueLabel.snp.leading)
+            make.top.equalTo(imageView.snp.bottom)
+            make.directionalHorizontalEdges.equalTo(contentView.snp.directionalHorizontalEdges)
         }
+        
+        valueLabel.snp.makeConstraints { make in
+            make.top.equalTo(nameLabel.snp.bottom)
+            make.directionalHorizontalEdges.equalTo(contentView.snp.directionalHorizontalEdges)
+        }
+        
     }
     
 }
