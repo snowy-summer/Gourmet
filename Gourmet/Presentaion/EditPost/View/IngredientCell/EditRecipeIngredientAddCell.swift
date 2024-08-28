@@ -19,6 +19,8 @@ final class EditRecipeIngredientAddCell: UICollectionViewCell {
     private lazy var ingredientImageCollectionView = UICollectionView(frame: .zero,
                                                                       collectionViewLayout: createLayout())
     private var dataSource: UICollectionViewDiffableDataSource<IngredientImageSection, IngredientType>!
+    
+    private let headerView = HeaderView()
     private let containerView = UIView()
     private let nameLabel = UILabel()
     private let nameTextField = UITextField()
@@ -124,6 +126,7 @@ extension EditRecipeIngredientAddCell: BaseViewProtocol {
     
     func configureHierarchy() {
         
+        contentView.addSubview(headerView)
         contentView.addSubview(ingredientImageCollectionView)
         contentView.addSubview(containerView)
         
@@ -136,8 +139,7 @@ extension EditRecipeIngredientAddCell: BaseViewProtocol {
     
     func configureUI() {
         
-        contentView.layer.borderWidth = 1
-        contentView.layer.cornerRadius = 8
+        headerView.configureContent(type: .ingredientAdd)
         
         ingredientImageCollectionView.backgroundColor = .lightGray.withAlphaComponent(0.3)
         ingredientImageCollectionView.layer.cornerRadius = 8
@@ -151,7 +153,7 @@ extension EditRecipeIngredientAddCell: BaseViewProtocol {
         nameTextField.setUnderLine(color: .black)
         valueTextField.setUnderLine(color: .black)
         
-        addButton.backgroundColor = .lightGray
+        addButton.backgroundColor = .main
         addButton.setTitle("추가", for: .normal)
         addButton.layer.cornerRadius = 8
         addButton.layer.cornerCurve = .continuous
@@ -159,8 +161,14 @@ extension EditRecipeIngredientAddCell: BaseViewProtocol {
     
     func configureLayout() {
         
+        headerView.snp.makeConstraints { make in
+            make.top.equalTo(contentView.snp.top).offset(4)
+            make.directionalHorizontalEdges.equalTo(contentView.snp.directionalHorizontalEdges).inset(8)
+            make.height.equalTo(44)
+        }
+        
         ingredientImageCollectionView.snp.makeConstraints { make in
-            make.top.equalTo(contentView.snp.top).offset(16)
+            make.top.equalTo(headerView.snp.bottom).offset(8)
             make.directionalHorizontalEdges.equalTo(contentView.snp.directionalHorizontalEdges).inset(16)
         }
         

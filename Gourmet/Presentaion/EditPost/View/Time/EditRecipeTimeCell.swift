@@ -14,6 +14,7 @@ protocol EditRecipeTimeDelegate: AnyObject {
 
 final class EditRecipeTimeCell: UICollectionViewCell {
     
+    private let iconAndTitleView = HeaderView()
     private let timeTextField = UITextField()
     weak var delegate: EditRecipeTimeDelegate?
     
@@ -48,22 +49,31 @@ extension EditRecipeTimeCell: BaseViewProtocol {
     
     func configureHierarchy() {
         
+        contentView.addSubview(iconAndTitleView)
         contentView.addSubview(timeTextField)
     }
     
     func configureUI() {
         
-        contentView.backgroundColor = .systemBackground
-        contentView.layer.cornerRadius = 8
-        contentView.clipsToBounds = true
+        timeTextField.placeholder = "필요한 시간을 입력해주세요"
+        timeTextField.backgroundColor = .clear
+        timeTextField.textAlignment = .right
+        iconAndTitleView.configureContent(type: .time)
         configureTimePicker()
     }
     
     func configureLayout() {
         
+        iconAndTitleView.snp.makeConstraints { make in
+            make.leading.equalTo(contentView.snp.leading).inset(8)
+            make.verticalEdges.equalTo(contentView.snp.verticalEdges).inset(8)
+        }
+        
         timeTextField.snp.makeConstraints { make in
+            make.leading.equalTo(iconAndTitleView.snp.trailing)
             make.directionalVerticalEdges.equalTo(contentView.snp.directionalVerticalEdges)
-            make.directionalHorizontalEdges.equalTo(contentView.snp.directionalHorizontalEdges).inset(8)
+            make.trailing.equalTo(contentView.snp.trailing).inset(20)
+            make.width.equalTo(contentView.snp.width).multipliedBy(0.6)
         }
     }
     

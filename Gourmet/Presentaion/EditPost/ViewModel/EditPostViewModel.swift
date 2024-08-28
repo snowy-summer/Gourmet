@@ -47,6 +47,7 @@ final class EditPostViewModel: ViewModelProtocol {
     private(set) var ingredients = [IngredientContent]()
     private(set) var contents = [RecipeContent]()
     private(set) var time = ""
+    private(set) var difficultyLevel = ""
     private(set) var price = 0
     
     init(networkManager: NetworkManagerProtocol) {
@@ -82,8 +83,9 @@ final class EditPostViewModel: ViewModelProtocol {
             
             output.onNext(.applySnapShot)
             
-        case .updateTime(let time):
-            return
+        case .updateTime(let value):
+            time = value
+            output.onNext(.applySnapShot)
             
         case .saveContet:
             uploadPost()
@@ -167,7 +169,7 @@ final class EditPostViewModel: ViewModelProtocol {
             return [.neededTime(time)]
             
         case .difficulty:
-            return []
+            return [.difficulty(difficultyLevel)]
             
         case .price:
             return []

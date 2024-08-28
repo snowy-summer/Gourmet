@@ -91,6 +91,7 @@ extension EditRecipeViewController {
     typealias registerationContent = UICollectionView.CellRegistration<EditRecipeContentCell, RecipeContent>
     
     typealias registerationTime = UICollectionView.CellRegistration<EditRecipeTimeCell, String>
+    typealias registerationDifficultyLevel = UICollectionView.CellRegistration<EditRecipeDifficultyLevelCell, String>
     typealias header = UICollectionView.SupplementaryRegistration<TitleHeaderView>
     
     //MARK: - CollectoinView Configuraion
@@ -100,7 +101,7 @@ extension EditRecipeViewController {
             cell.delegate = self
             
             var backgroundConfig = UIBackgroundConfiguration.listGroupedCell()
-            backgroundConfig.backgroundColor = .lightGray.withAlphaComponent(0.3)
+            backgroundConfig.backgroundColor = .lightGray.withAlphaComponent(0.5)
             backgroundConfig.cornerRadius = 8
             cell.backgroundConfiguration = backgroundConfig
         }
@@ -110,9 +111,12 @@ extension EditRecipeViewController {
     
     private func registIngredientAddCell() -> registerationIngredientAddCell {
         
-        let cellRegistration = registerationIngredientAddCell { cell, indexPath, itemIdentifier in
+        let cellRegistration = registerationIngredientAddCell { [weak self] cell, indexPath, itemIdentifier in
             
+            guard let self = self else { return }
             cell.delegate = self
+            cellBackgroundConfigure(cell: cell,
+                                    color: .lightGray.withAlphaComponent(0.5))
         }
         
         return cellRegistration
@@ -120,12 +124,11 @@ extension EditRecipeViewController {
     
     private func registIngredientContentCell() -> registerationIngredientContent {
         
-        let cellRegistration = registerationIngredientContent { cell, indexPath, itemIdentifier in
+        let cellRegistration = registerationIngredientContent { [weak self] cell, indexPath, itemIdentifier in
             
-            var backgroundConfig = UIBackgroundConfiguration.listGroupedCell()
-            backgroundConfig.backgroundColor = .lightGray.withAlphaComponent(0.3)
-            backgroundConfig.cornerRadius = 8
-            cell.backgroundConfiguration = backgroundConfig
+            guard let self = self else { return }
+            cellBackgroundConfigure(cell: cell,
+                                    color: .lightGray.withAlphaComponent(0.5))
         }
         
         return cellRegistration
@@ -134,8 +137,12 @@ extension EditRecipeViewController {
     
     private func registContentAddCell() -> registerationContentAddCell {
         
-        let cellRegistration = registerationContentAddCell { cell, indexPath, itemIdentifier in
+        let cellRegistration = registerationContentAddCell { [weak self] cell, indexPath, itemIdentifier in
+            
+            guard let self = self else { return }
             cell.delegate = self
+            cellBackgroundConfigure(cell: cell,
+                                    color: .lightGray.withAlphaComponent(0.5))
         }
         
         return cellRegistration
@@ -143,12 +150,11 @@ extension EditRecipeViewController {
     
     private func registContentCell() -> registerationContent {
         
-        let cellRegistration = registerationContent { cell, indexPath, itemIdentifier in
+        let cellRegistration = registerationContent { [weak self] cell, indexPath, itemIdentifier in
             
-            var backgroundConfig = UIBackgroundConfiguration.listGroupedCell()
-            backgroundConfig.backgroundColor = .lightGray.withAlphaComponent(0.3)
-            backgroundConfig.cornerRadius = 8
-            cell.backgroundConfiguration = backgroundConfig
+            guard let self = self else { return }
+            cellBackgroundConfigure(cell: cell,
+                                    color: .lightGray.withAlphaComponent(0.5))
         }
         
         return cellRegistration
@@ -156,8 +162,24 @@ extension EditRecipeViewController {
     
     private func registTimeCell() -> registerationTime {
         
-        let cellRegistration = registerationTime { cell, indexPath, itemIdentifier in
+        let cellRegistration = registerationTime { [weak self] cell, indexPath, itemIdentifier in
             
+            guard let self = self else { return }
+            cell.delegate = self
+            cellBackgroundConfigure(cell: cell,
+                                    color: .lightGray.withAlphaComponent(0.5))
+        }
+        
+        return cellRegistration
+    }
+    
+    private func registDifficultyLevelCell() -> registerationDifficultyLevel {
+        
+        let cellRegistration = registerationDifficultyLevel { [weak self] cell, indexPath, itemIdentifier in
+            
+            guard let self = self else { return }
+            cellBackgroundConfigure(cell: cell,
+                                    color: .lightGray.withAlphaComponent(0.5))       
         }
         
         return cellRegistration
@@ -185,6 +207,7 @@ extension EditRecipeViewController {
         let contentRegistration = registContentCell()
         
         let timeRegistration = registTimeCell()
+        let levelRegistration = registDifficultyLevelCell()
         
         dataSource = UICollectionViewDiffableDataSource(collectionView: collectionView,
                                                         cellProvider: { collectionView, indexPath, itemIdentifier in
@@ -236,10 +259,10 @@ extension EditRecipeViewController {
                 
             case .difficulty(let level):
                 
-                let cell = collectionView.dequeueConfiguredReusableCell(using: timeRegistration,
+                let cell = collectionView.dequeueConfiguredReusableCell(using: levelRegistration,
                                                                         for: indexPath,
                                                                         item: level)
-                //                cell.updateContent(item: time)
+                cell.updateContent(item: level)
                 return cell
                 
             case .price(let price):
@@ -267,7 +290,7 @@ extension EditRecipeViewController {
                              toSection: .title)
         
         snapshot.appendItems([.ingredient("재료 추가 칸")],
-                             toSection: .ingredient)
+                             toSection: .ingredientAdd)
         snapshot.appendItems(viewModel.generateItems(from: .ingredientContent(nil)),
                              toSection: .ingredientContent)
         
@@ -278,6 +301,8 @@ extension EditRecipeViewController {
         
         snapshot.appendItems(viewModel.generateItems(from: .neededTime("")),
                              toSection: .time)
+        snapshot.appendItems(viewModel.generateItems(from: .difficulty("")),
+                             toSection: .difficulty)
         
         dataSource.apply(snapshot)
     }
@@ -291,6 +316,14 @@ extension EditRecipeViewController {
         }
     }
     
+    private func cellBackgroundConfigure(cell: UICollectionViewCell,
+                                         color: UIColor) {
+        
+        var backgroundConfig = UIBackgroundConfiguration.listGroupedCell()
+        backgroundConfig.backgroundColor = color
+        backgroundConfig.cornerRadius = 8
+        cell.backgroundConfiguration = backgroundConfig
+    }
 }
 
 //MARK: - Configuration
@@ -331,200 +364,4 @@ extension EditRecipeViewController: BaseViewProtocol {
         }
     }
     
-}
-
-private enum EditRecipeSection: Int, CaseIterable {
-    case title
-    case ingredient
-    case ingredientContent
-    case contentAdd
-    case content
-    case time
-    case difficulty
-    case price
-    
-    var headerTitle: String {
-        switch self {
-        case .title:
-            return "제목"
-            
-        case .ingredient:
-            return "재료"
-            
-        case .contentAdd:
-            return "내용"
-            
-        case .time:
-            return "시간"
-            
-        case .difficulty:
-            return "난이도"
-            
-        case .price:
-            return "가격"
-            
-        default:
-            return ""
-        }
-    }
-    
-    func layoutSection(with layoutEnvironment: NSCollectionLayoutEnvironment) -> NSCollectionLayoutSection {
-        
-        switch self {
-        case .title:
-            var configuration = UICollectionLayoutListConfiguration(appearance: .insetGrouped)
-            configuration.backgroundColor = .clear
-            let section = NSCollectionLayoutSection.list(using: configuration,
-                                                         layoutEnvironment: layoutEnvironment)
-            return section
-            
-        case .ingredient:
-            let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
-                                                  heightDimension: .fractionalHeight(1.0))
-            let item = NSCollectionLayoutItem(layoutSize: itemSize)
-            
-            
-            let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
-                                                   heightDimension: .estimated(180))
-            let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize,
-                                                           subitems: [item])
-            let section = NSCollectionLayoutSection(group: group)
-            
-            section.contentInsets = NSDirectionalEdgeInsets(top: 8,
-                                                            leading: 16,
-                                                            bottom: 8,
-                                                            trailing: 16)
-            
-            let headerSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
-                                                    heightDimension: .absolute(44))
-            let header = NSCollectionLayoutBoundarySupplementaryItem(
-                layoutSize: headerSize,
-                elementKind: UICollectionView.elementKindSectionHeader,
-                alignment: .top
-            )
-            
-            section.boundarySupplementaryItems = [header]
-            
-            return section
-            
-        case .ingredientContent:
-            var configuration = UICollectionLayoutListConfiguration(appearance: .insetGrouped)
-            configuration.backgroundColor = .clear
-            let section = NSCollectionLayoutSection.list(using: configuration,
-                                                         layoutEnvironment: layoutEnvironment)
-            
-            
-            section.contentInsets = NSDirectionalEdgeInsets(top: 8,
-                                                            leading: 16,
-                                                            bottom: 8,
-                                                            trailing: 16)
-            return section
-            
-        case .contentAdd:
-            let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
-                                                  heightDimension: .fractionalHeight(1.0))
-            let item = NSCollectionLayoutItem(layoutSize: itemSize)
-            
-            
-            let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
-                                                   heightDimension: .estimated(300))
-            let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize,
-                                                           subitems: [item])
-            let section = NSCollectionLayoutSection(group: group)
-            
-            section.contentInsets = NSDirectionalEdgeInsets(top: 8,
-                                                            leading: 16,
-                                                            bottom: 8,
-                                                            trailing: 16)
-            
-            let headerSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
-                                                    heightDimension: .absolute(44))
-            let header = NSCollectionLayoutBoundarySupplementaryItem(
-                layoutSize: headerSize,
-                elementKind: UICollectionView.elementKindSectionHeader,
-                alignment: .top
-            )
-            
-            section.boundarySupplementaryItems = [header]
-            
-            return section
-            
-        case .content:
-            var configuration = UICollectionLayoutListConfiguration(appearance: .insetGrouped)
-            configuration.backgroundColor = .clear
-            let section = NSCollectionLayoutSection.list(using: configuration,
-                                                         layoutEnvironment: layoutEnvironment)
-            
-            
-            section.contentInsets = NSDirectionalEdgeInsets(top: 8,
-                                                            leading: 16,
-                                                            bottom: 8,
-                                                            trailing: 16)
-            return section
-            
-        case .time:
-            let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
-                                                  heightDimension: .fractionalHeight(1.0))
-            let item = NSCollectionLayoutItem(layoutSize: itemSize)
-            
-            
-            let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
-                                                   heightDimension: .absolute(44))
-            let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize,
-                                                           subitems: [item])
-            
-            let section = NSCollectionLayoutSection(group: group)
-            
-            section.contentInsets = NSDirectionalEdgeInsets(top: 0,
-                                                            leading: 16,
-                                                            bottom: 8,
-                                                            trailing: 16)
-            
-            let headerSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
-                                                    heightDimension: .absolute(44))
-            let header = NSCollectionLayoutBoundarySupplementaryItem(
-                layoutSize: headerSize,
-                elementKind: UICollectionView.elementKindSectionHeader,
-                alignment: .top
-            )
-            
-            section.boundarySupplementaryItems = [header]
-            
-            return section
-            
-        default:
-            let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
-                                                  heightDimension: .fractionalHeight(1.0))
-            let item = NSCollectionLayoutItem(layoutSize: itemSize)
-            
-            
-            let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
-                                                   heightDimension: .fractionalHeight(0.2))
-            let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize,
-                                                           subitems: [item])
-            group.contentInsets = NSDirectionalEdgeInsets(top: 0,
-                                                          leading: 0,
-                                                          bottom: 8,
-                                                          trailing: 0)
-            
-            let section = NSCollectionLayoutSection(group: group)
-            
-            section.contentInsets = NSDirectionalEdgeInsets(top: 0,
-                                                            leading: 16,
-                                                            bottom: 8,
-                                                            trailing: 16)
-            
-            let headerSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
-                                                    heightDimension: .absolute(44))
-            let header = NSCollectionLayoutBoundarySupplementaryItem(
-                layoutSize: headerSize,
-                elementKind: UICollectionView.elementKindSectionHeader,
-                alignment: .top
-            )
-            
-            section.boundarySupplementaryItems = [header]
-            
-            return section
-        }
-    }
 }

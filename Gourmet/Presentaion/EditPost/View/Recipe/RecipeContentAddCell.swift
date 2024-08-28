@@ -18,6 +18,7 @@ protocol EditRecipeContentAddCellDelegate: AnyObject {
 
 final class RecipeContentAddCell: UICollectionViewCell {
     
+    private let headerView = HeaderView()
     private let stackview = UIStackView()
     private let imageView = ImageComponent()
     private let contentTextView = UITextView()
@@ -64,6 +65,7 @@ extension RecipeContentAddCell: BaseViewProtocol {
     
     func configureHierarchy() {
         
+        contentView.addSubview(headerView)
         contentView.addSubview(stackview)
         stackview.addArrangedSubview(imageView)
         stackview.addArrangedSubview(contentTextView)
@@ -71,6 +73,8 @@ extension RecipeContentAddCell: BaseViewProtocol {
     }
     
     func configureUI() {
+        
+        headerView.configureContent(type: .contentAdd)
         
         saveButton.normalStyle(title: "저장",
                                back: .main,
@@ -92,8 +96,6 @@ extension RecipeContentAddCell: BaseViewProtocol {
         contentTextView.autocorrectionType = .no
         contentTextView.spellCheckingType = .no
         
-        contentView.layer.borderWidth = 1
-        contentView.layer.cornerRadius = 8
     }
     
     private func setupToolbar() {
@@ -115,6 +117,12 @@ extension RecipeContentAddCell: BaseViewProtocol {
     
     func configureLayout() {
         
+        headerView.snp.makeConstraints { make in
+            make.top.equalTo(contentView.snp.top).offset(4)
+            make.directionalHorizontalEdges.equalTo(contentView.snp.directionalHorizontalEdges).inset(8)
+            make.height.equalTo(44)
+        }
+        
         saveButton.snp.makeConstraints { make in
             make.height.equalTo(44)
             make.bottom.equalTo(contentView.snp.bottom).inset(16)
@@ -122,9 +130,9 @@ extension RecipeContentAddCell: BaseViewProtocol {
         }
         
         stackview.snp.makeConstraints { make in
-            make.top.equalTo(contentView.snp.top).offset(20)
+            make.top.equalTo(headerView.snp.bottom).offset(8)
             make.bottom.equalTo(saveButton.snp.top).offset(-20)
-            make.directionalHorizontalEdges.equalTo(contentView.snp.directionalHorizontalEdges).inset(20)
+            make.directionalHorizontalEdges.equalTo(contentView.snp.directionalHorizontalEdges).inset(16)
         }
         
         imageView.snp.makeConstraints { make in
