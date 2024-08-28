@@ -11,13 +11,10 @@ struct RecipeContent: Hashable {
     let id = UUID()
     var thumbnailImage: UIImage?
     var content: String
-    let isAddCell: Bool
     
     init(thumbnailImage: UIImage?,
-         content: String,
-         isAddCell: Bool = false) {
+         content: String) {
         self.thumbnailImage = thumbnailImage
         self.content = content
-        self.isAddCell = isAddCell
     }
 }

@@ -29,6 +29,7 @@ final class EditPostViewModel: ViewModelProtocol {
         case title(String?)
         case ingredient(String)
         case ingredientContent(IngredientContent?)
+        case contentAdd(String)
         case content(RecipeContent?)
         case neededTime(String)
         case difficulty(String)
@@ -73,15 +74,12 @@ final class EditPostViewModel: ViewModelProtocol {
             
         case .addContent(let recipeContent):
             
-            let addCell = contents.removeLast()
-            
             if let index = contents.firstIndex(where: { $0.id == recipeContent.id }) {
                 contents[index] = recipeContent
             } else {
                 contents.append(recipeContent)
             }
             
-            contents.append(addCell)
             output.onNext(.applySnapShot)
             
         case .updateTime(let time):
@@ -159,12 +157,8 @@ final class EditPostViewModel: ViewModelProtocol {
             return ingredients.map { .ingredientContent($0) }
             
         case .content:
-            
-            
             if contents.isEmpty {
-                contents.append(RecipeContent(thumbnailImage: nil,
-                                              content: "",
-                                              isAddCell: true))
+               return []
             }
             
             return contents.map { .content($0) }

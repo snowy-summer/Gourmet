@@ -48,23 +48,31 @@ extension EditRecipeViewController {
 }
 
 //MARK: - Edit View Delegate
-extension EditRecipeViewController: EditContentViewDelegate,
-                                    EditRecipeTitleCellDelegate,
+extension EditRecipeViewController: EditRecipeTitleCellDelegate,
                                     EditRecipeIngredientAddCellDelegate,
-                                    EditRecipeTimeDelegate {
+                                    EditRecipeTimeDelegate,
+                                    EditRecipeContentAddCellDelegate {
     
-    func dismissView(item: RecipeContent) {
-        viewModel.apply(.addContent(item))
+    // EditRecipeContentAddCellDelegate
+    func presentPhotoPicker(picker: UIViewController) {
+        present(picker, animated: true)
     }
     
+    func addContent(_ value: RecipeContent) {
+        viewModel.apply(.addContent(value))
+    }
+    
+    //EditRecipeIngredientAddCellDelegate
     func addIngredient(_ value: IngredientContent) {
         viewModel.apply(.addIngredient(value))
     }
     
+    //EditRecipeTitleCellDelegate
     func updateTitle(_ value: String) {
         viewModel.apply(.updateTitle(value))
     }
     
+    //EditRecipeTimeDelegate
     func updateTime(_ value: String) {
         viewModel.apply(.updateTime(value))
     }
@@ -75,9 +83,13 @@ extension EditRecipeViewController {
     
     typealias registerationHeaderCell = UICollectionView.CellRegistration<EditRecipeHeaderCell, String?>
     typealias registerationTitle = UICollectionView.CellRegistration<EditRecipeTitleCell, String?>
+    
     typealias registerationIngredientAddCell = UICollectionView.CellRegistration<EditRecipeIngredientAddCell, String>
     typealias registerationIngredientContent = UICollectionView.CellRegistration<IngredientContentCell, IngredientContent>
+    
+    typealias registerationContentAddCell = UICollectionView.CellRegistration<RecipeContentAddCell, String>
     typealias registerationContent = UICollectionView.CellRegistration<EditRecipeContentCell, RecipeContent>
+    
     typealias registerationTime = UICollectionView.CellRegistration<EditRecipeTimeCell, String>
     typealias header = UICollectionView.SupplementaryRegistration<TitleHeaderView>
     
@@ -120,10 +132,23 @@ extension EditRecipeViewController {
     }
     
     
+    private func registContentAddCell() -> registerationContentAddCell {
+        
+        let cellRegistration = registerationContentAddCell { cell, indexPath, itemIdentifier in
+            cell.delegate = self
+        }
+        
+        return cellRegistration
+    }
+    
     private func registContentCell() -> registerationContent {
         
         let cellRegistration = registerationContent { cell, indexPath, itemIdentifier in
             
+            var backgroundConfig = UIBackgroundConfiguration.listGroupedCell()
+            backgroundConfig.backgroundColor = .lightGray.withAlphaComponent(0.3)
+            backgroundConfig.cornerRadius = 8
+            cell.backgroundConfiguration = backgroundConfig
         }
         
         return cellRegistration
@@ -152,9 +177,13 @@ extension EditRecipeViewController {
         
         let headerRegistration = registHeader()
         let titleRegistration = registTitleCell()
+        
         let ingredientRegistration = registIngredientAddCell()
         let ingredientContentRegistration = registIngredientContentCell()
+        
+        let contentAddCellRegistration = registContentAddCell()
         let contentRegistration = registContentCell()
+        
         let timeRegistration = registTimeCell()
         
         dataSource = UICollectionViewDiffableDataSource(collectionView: collectionView,
@@ -181,6 +210,12 @@ extension EditRecipeViewController {
                                                                         item: ingredientContent)
                 guard let ingredientContent = ingredientContent else { return cell }
                 cell.updateContent(item: ingredientContent)
+                return cell
+                
+            case .contentAdd(let content):
+                let cell = collectionView.dequeueConfiguredReusableCell(using: contentAddCellRegistration,
+                                                                        for: indexPath,
+                                                                        item: content)
                 return cell
                 
             case .content(let content):
@@ -230,12 +265,17 @@ extension EditRecipeViewController {
         snapshot.appendSections(EditRecipeSection.allCases)
         snapshot.appendItems(viewModel.generateItems(from: .title(nil)),
                              toSection: .title)
-        snapshot.appendItems([.ingredient("재료추가 칸")],
+        
+        snapshot.appendItems([.ingredient("재료 추가 칸")],
                              toSection: .ingredient)
         snapshot.appendItems(viewModel.generateItems(from: .ingredientContent(nil)),
                              toSection: .ingredientContent)
+        
+        snapshot.appendItems([.contentAdd("레시피 추가 칸")],
+                             toSection: .contentAdd)
         snapshot.appendItems(viewModel.generateItems(from: .content(nil)),
                              toSection: .content)
+        
         snapshot.appendItems(viewModel.generateItems(from: .neededTime("")),
                              toSection: .time)
         
@@ -297,6 +337,7 @@ private enum EditRecipeSection: Int, CaseIterable {
     case title
     case ingredient
     case ingredientContent
+    case contentAdd
     case content
     case time
     case difficulty
@@ -310,7 +351,7 @@ private enum EditRecipeSection: Int, CaseIterable {
         case .ingredient:
             return "재료"
             
-        case .content:
+        case .contentAdd:
             return "내용"
             
         case .time:
@@ -367,6 +408,48 @@ private enum EditRecipeSection: Int, CaseIterable {
             return section
             
         case .ingredientContent:
+            var configuration = UICollectionLayoutListConfiguration(appearance: .insetGrouped)
+            configuration.backgroundColor = .clear
+            let section = NSCollectionLayoutSection.list(using: configuration,
+                                                         layoutEnvironment: layoutEnvironment)
+            
+            
+            section.contentInsets = NSDirectionalEdgeInsets(top: 8,
+                                                            leading: 16,
+                                                            bottom: 8,
+                                                            trailing: 16)
+            return section
+            
+        case .contentAdd:
+            let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
+                                                  heightDimension: .fractionalHeight(1.0))
+            let item = NSCollectionLayoutItem(layoutSize: itemSize)
+            
+            
+            let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
+                                                   heightDimension: .estimated(300))
+            let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize,
+                                                           subitems: [item])
+            let section = NSCollectionLayoutSection(group: group)
+            
+            section.contentInsets = NSDirectionalEdgeInsets(top: 8,
+                                                            leading: 16,
+                                                            bottom: 8,
+                                                            trailing: 16)
+            
+            let headerSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
+                                                    heightDimension: .absolute(44))
+            let header = NSCollectionLayoutBoundarySupplementaryItem(
+                layoutSize: headerSize,
+                elementKind: UICollectionView.elementKindSectionHeader,
+                alignment: .top
+            )
+            
+            section.boundarySupplementaryItems = [header]
+            
+            return section
+            
+        case .content:
             var configuration = UICollectionLayoutListConfiguration(appearance: .insetGrouped)
             configuration.backgroundColor = .clear
             let section = NSCollectionLayoutSection.list(using: configuration,

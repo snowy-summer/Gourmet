@@ -39,8 +39,8 @@ extension EditRecipeTimeCell {
     }
     
     @objc private func doneButtonTapped() {
-            timeTextField.resignFirstResponder()
-        }
+        timeTextField.resignFirstResponder()
+    }
 }
 
 //MARK: - Configuraion

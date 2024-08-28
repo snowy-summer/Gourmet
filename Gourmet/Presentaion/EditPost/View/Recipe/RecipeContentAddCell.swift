@@ -1,8 +1,8 @@
 //
-//  EditContentViewController.swift
+//  RecipeContentAddCell.swift
 //  Gourmet
 //
-//  Created by 최승범 on 8/23/24.
+//  Created by 최승범 on 8/28/24.
 //
 
 import UIKit
@@ -11,45 +11,35 @@ import SnapKit
 import RxSwift
 import RxCocoa
 
-protocol EditContentViewDelegate: AnyObject {
-    func dismissView(item: RecipeContent)
+protocol EditRecipeContentAddCellDelegate: AnyObject {
+    func presentPhotoPicker(picker: UIViewController)
+    func addContent(_ value: RecipeContent)
 }
 
-final class EditContentViewController: UIViewController {
+final class RecipeContentAddCell: UICollectionViewCell {
     
     private let stackview = UIStackView()
     private let imageView = ImageComponent()
     private let contentTextView = UITextView()
     private let saveButton = UIButton()
     
-    private var recipeContent: RecipeContent
-    
-    weak var delegate: EditContentViewDelegate?
+    private let viewModel = IngredientViewModel()
+    weak var delegate: EditRecipeContentAddCellDelegate?
     private let disposeBag = DisposeBag()
     
-    init(content: RecipeContent) {
-        self.recipeContent = content.isAddCell ? RecipeContent(thumbnailImage: nil, content: "") : content
-        super.init(nibName: nil, bundle: nil)
+    override init(frame: CGRect) {
+        super.init(frame: frame)
         
+        configureView()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        configureView()
-    }
-    
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        view.endEditing(true)
-    }
-    
 }
 
-extension EditContentViewController {
+extension RecipeContentAddCell {
     
     @objc private func openPhotoPicker() {
         var configuration = PHPickerConfiguration()
@@ -58,7 +48,7 @@ extension EditContentViewController {
         
         let picker = PHPickerViewController(configuration: configuration)
         picker.delegate = self
-        present(picker, animated: true)
+        delegate?.presentPhotoPicker(picker: picker)
     }
     
     @objc private func removeImageView() {
@@ -69,20 +59,18 @@ extension EditContentViewController {
     
 }
 
-// MARK: - Configuration
-extension EditContentViewController: BaseViewProtocol {
+//MARK: - Configuraion
+extension RecipeContentAddCell: BaseViewProtocol {
     
     func configureHierarchy() {
         
-        view.addSubview(stackview)
+        contentView.addSubview(stackview)
         stackview.addArrangedSubview(imageView)
         stackview.addArrangedSubview(contentTextView)
-        view.addSubview(saveButton)
+        contentView.addSubview(saveButton)
     }
     
     func configureUI() {
-        
-        view.backgroundColor = .white
         
         saveButton.normalStyle(title: "저장",
                                back: .main,
@@ -93,24 +81,19 @@ extension EditContentViewController: BaseViewProtocol {
         
         stackview.axis = .vertical
         stackview.alignment = .leading
-        stackview.spacing = 8
+        stackview.spacing = 16
         
-        if recipeContent.thumbnailImage == nil {
-            imageView.isHidden = true
-        } else {
-            imageView.updateContent(image: recipeContent.thumbnailImage)
-        }
+        imageView.isHidden = true
         
-        contentTextView.backgroundColor = .lightGray
+        contentTextView.backgroundColor = .lightGray.withAlphaComponent(0.3)
         contentTextView.layer.cornerRadius = 16
         contentTextView.clipsToBounds = true
         contentTextView.font = .systemFont(ofSize: 18)
         contentTextView.autocorrectionType = .no
         contentTextView.spellCheckingType = .no
         
-        if !recipeContent.isAddCell {
-            contentTextView.text = recipeContent.content
-        }
+        contentView.layer.borderWidth = 1
+        contentView.layer.cornerRadius = 8
     }
     
     private func setupToolbar() {
@@ -122,7 +105,7 @@ extension EditContentViewController: BaseViewProtocol {
             target: self,
             action: #selector(openPhotoPicker)
         )
-        
+
         toolbar.sizeToFit()
         photoButton.tintColor = .black
         
@@ -134,18 +117,18 @@ extension EditContentViewController: BaseViewProtocol {
         
         saveButton.snp.makeConstraints { make in
             make.height.equalTo(44)
-            make.bottom.equalTo(view.safeAreaLayoutGuide).inset(40)
-            make.directionalHorizontalEdges.equalTo(view.safeAreaLayoutGuide).inset(20)
+            make.bottom.equalTo(contentView.snp.bottom).inset(16)
+            make.directionalHorizontalEdges.equalTo(contentView.snp.directionalHorizontalEdges).inset(20)
         }
         
         stackview.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).offset(20)
+            make.top.equalTo(contentView.snp.top).offset(20)
             make.bottom.equalTo(saveButton.snp.top).offset(-20)
-            make.directionalHorizontalEdges.equalTo(view.safeAreaLayoutGuide).inset(16)
+            make.directionalHorizontalEdges.equalTo(contentView.snp.directionalHorizontalEdges).inset(20)
         }
         
         imageView.snp.makeConstraints { make in
-            make.size.equalTo(100)
+            make.size.equalTo(80)
         }
         
         contentTextView.snp.makeConstraints { make in
@@ -164,20 +147,16 @@ extension EditContentViewController: BaseViewProtocol {
         saveButton.rx.tap
             .withLatestFrom(contentTextView.rx.text.orEmpty)
             .bind(with: self) { owner, content in
-                owner.recipeContent.content = content
-                owner.dismiss(animated: true) {
-                    owner.delegate?.dismissView(item: owner.recipeContent)
-                }
+                owner.delegate?.addContent(RecipeContent(thumbnailImage: owner.imageView.imageView.image,
+                                                         content: content))
                 
             }.disposed(by: disposeBag)
-        
-        
+
     }
-    
 }
 
 //MARK: - ImagePicker
-extension EditContentViewController: PHPickerViewControllerDelegate {
+extension RecipeContentAddCell: PHPickerViewControllerDelegate {
     
     func picker(_ picker: PHPickerViewController,
                 didFinishPicking results: [PHPickerResult]) {
@@ -190,11 +169,10 @@ extension EditContentViewController: PHPickerViewControllerDelegate {
                     guard let self = self else { return }
                     imageView.updateContent(image: image)
                     imageView.isHidden = false
-                    recipeContent.thumbnailImage = image
                 }
             }
         }
-        dismiss(animated: true)
+        picker.dismiss(animated: true)
     }
 }
 

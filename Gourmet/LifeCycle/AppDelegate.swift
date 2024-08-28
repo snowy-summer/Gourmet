@@ -6,17 +6,21 @@
 //
 
 import UIKit
+import IQKeyboardManagerSwift
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
 
-    func application(_ application: UIApplication,
-                     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        UINavigationBar.appearance().tintColor = .black
-        return true
-    }
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+           
+           IQKeyboardManager.shared.enable = true
+           IQKeyboardManager.shared.enableAutoToolbar = false
+           IQKeyboardManager.shared.resignOnTouchOutside = true
+         
+           return true
+       }
 
     // MARK: UISceneSession Lifecycle
 

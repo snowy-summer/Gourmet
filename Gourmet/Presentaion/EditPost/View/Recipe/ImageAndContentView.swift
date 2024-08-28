@@ -1,5 +1,5 @@
 //
-//  IconAndTitleVIew.swift
+//  ImageAndContentView.swift
 //  Gourmet
 //
 //  Created by 최승범 on 8/28/24.
@@ -8,12 +8,11 @@
 import UIKit
 import SnapKit
 
-final class IconAndTitleView: UIView {
+final class ImageAndContentView: UIView {
     
     private let titleLabel = UILabel()
     private let iconView = UIView()
     private let iconImageView = UIImageView()
-    private let contentLabel = UILabel()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -27,12 +26,11 @@ final class IconAndTitleView: UIView {
     
 }
  
-extension IconAndTitleView: BaseViewProtocol {
+extension ImageAndContentView: BaseViewProtocol {
     
     func configureHierarchy() {
         
         addSubview(titleLabel)
-        addSubview(contentLabel)
         addSubview(iconView)
         iconView.addSubview(iconImageView)
     }
@@ -41,8 +39,10 @@ extension IconAndTitleView: BaseViewProtocol {
         
         titleLabel.font = .systemFont(ofSize: 17,
                                       weight: .semibold)
+        titleLabel.numberOfLines = .zero
         
         iconView.layer.cornerRadius = 8
+        iconView.clipsToBounds = true
         iconView.backgroundColor = .systemBackground
     }
     
@@ -55,26 +55,20 @@ extension IconAndTitleView: BaseViewProtocol {
         }
         
         iconImageView.snp.makeConstraints { make in
-            make.directionalEdges.equalToSuperview().inset(4)
+            make.directionalEdges.equalToSuperview()
         }
         
         titleLabel.snp.makeConstraints { make in
             make.leading.equalTo(iconView.snp.trailing).offset(8)
             make.verticalEdges.equalToSuperview()
-        }
-        
-        contentLabel.snp.makeConstraints { make in
-            make.trailing.equalTo(self.snp.trailing).inset(20)
-            make.verticalEdges.equalToSuperview()
+            make.trailing.equalTo(self.snp.trailing).inset(16)
         }
     }
     
     func updateContent(image: UIImage?,
-                       name: String,
-                       value: String) {
+                       content: String) {
         
-        titleLabel.text = name
-        contentLabel.text = value
+        titleLabel.text = content
         iconImageView.image = image
     }
 }
