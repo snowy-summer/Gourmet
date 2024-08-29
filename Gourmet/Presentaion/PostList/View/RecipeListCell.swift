@@ -42,6 +42,11 @@ extension RecipeListCell {
         
         foodNameLabel.text = item.title
         descriptionLabel.text = item.content
+        likeView.updateContent(content: "\(item.likes.count)")
+        
+        if let time = item.time {
+            timeView.updateContent(content: time)
+        }
         
         if !item.files.isEmpty {
             NetworkManager.shared.fetchImage(file: item.files.first!) { [weak self] data in
@@ -68,7 +73,6 @@ extension RecipeListCell: BaseViewProtocol {
         
         contentView.layer.cornerRadius = 8
         contentView.layer.borderWidth = 1
-        contentView.layer.borderColor = UIColor.gray.withAlphaComponent(0.2).cgColor
 
         foodImageView.contentMode = .scaleAspectFill
         

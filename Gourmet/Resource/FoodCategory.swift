@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum FoodCategory: CaseIterable {
+enum FoodCategory: Int, CaseIterable {
     
     case main
     case dessert
@@ -138,6 +138,13 @@ enum FoodCategory: CaseIterable {
             return "Drink"
         case .normal:
             return "Normal"
+        }
+    }
+    
+    var iconName: String {
+        switch self {
+        default:
+            return "testBird"
         }
     }
 }

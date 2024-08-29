@@ -24,6 +24,16 @@ final class InformationDetailView: UIView {
     }
 }
 
+extension InformationDetailView {
+    
+    func updateContent(image: UIImage?,
+                       text: String?) {
+        
+        iconImageView.image = image
+        nameLabel.text = text
+    }
+}
+
 extension InformationDetailView: BaseViewProtocol {
     
     func configureHierarchy() {
@@ -34,9 +44,6 @@ extension InformationDetailView: BaseViewProtocol {
     
     func configureUI() {
     
-        iconImageView.image = UIImage(systemName: "star")
-        
-        nameLabel.text = "20 min"
         nameLabel.font = UIFont.systemFont(ofSize: 14)
         nameLabel.textAlignment = .center
     }

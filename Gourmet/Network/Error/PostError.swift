@@ -26,7 +26,7 @@ enum PostError: Int, Error, CaseIterable {
             return "필수값을 채워주세요."
             
         case .invalidAccessToken:
-            return "엑세스 토큰의 유효기간이 만료되었습니다"
+            return "유효하지 않은 엑세스 토큰입니다"
             
         case .forbidden:
             return "접근권한이 없습니다"

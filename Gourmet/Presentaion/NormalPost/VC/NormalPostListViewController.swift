@@ -14,6 +14,7 @@ final class NormalPostListViewController: UIViewController {
     
     private lazy var collectionView = UICollectionView(frame: .zero,
                                                        collectionViewLayout: createLayout())
+    private var dataSource: UICollectionViewDiffableDataSource<NormalPostSection,PostDTO>!
     private let viewModel = NormalViewModel(networkManager: NetworkManager.shared)
     private let disposeBag = DisposeBag()
     
@@ -21,7 +22,10 @@ final class NormalPostListViewController: UIViewController {
         super.viewDidLoad()
         
         configureView()
+        configureDataSource()
         bindOutput()
+        viewModel.apply(.refreshData)
+        
     }
     
 }
@@ -31,26 +35,86 @@ extension NormalPostListViewController {
     
     private func bindOutput() {
         
-        let input = NormalViewModel.Input(reload: Observable.just(()))
-        let output = viewModel.transform(input)
+        //        let input = NormalViewModel.Input(reload: Observable.just(()))
+        //        let output = viewModel.transform(input)
+        //
+        //        output.items
+        //            .bind(to: collectionView.rx.items(cellIdentifier: NormalPostCell.identifier,
+        //                                              cellType: NormalPostCell.self)) { row, item, cell in
+        //                cell.updateContent(item: item)
+        //            }
+        //            .disposed(by: disposeBag)
+        //
+        //        output.needReLogin
+        //            .bind(with: self) { owner, value in
+        //                if value {
+        //                    owner.resetViewController(vc: LoginViewController())
+        //                }
+        //            }
+        //            .disposed(by: disposeBag)
         
-        output.items
-            .bind(to: collectionView.rx.items(cellIdentifier: NormalPostCell.identifier,
-                                              cellType: NormalPostCell.self)) { row, item, cell in
-                cell.updateContent(item: item)
+        viewModel.output.bind(with: self) { owner, output in
+            
+            switch output {
+            case .noValue:
+                return
+                
+            case .reloadView(let item):
+                owner.updateSnapshot(postList: item)
+                
+            case .needReLogin:
+                owner.resetViewController(vc: LoginViewController())
             }
-            .disposed(by: disposeBag)
-        
-        output.needReLogin
-            .bind(with: self) { owner, value in
-                if value {
-                    owner.resetViewController(vc: LoginViewController())
-                }
-            }
-            .disposed(by: disposeBag)
+        }
+        .disposed(by: disposeBag)
     }
     
 }
+
+//MARK: - CollectionView
+extension NormalPostListViewController {
+    
+    typealias postRegisteration = UICollectionView.CellRegistration<NormalPostCell, PostDTO>
+    
+    //MARK: - CollectoinView Configuraion
+    private func registPostCell() -> postRegisteration {
+        
+        let cellRegistration = postRegisteration { cell, indexPath, itemIdentifier in
+            
+        }
+        
+        return cellRegistration
+    }
+    
+    private func configureDataSource() {
+        
+        let postRegistraion = registPostCell()
+        
+        dataSource = UICollectionViewDiffableDataSource(collectionView: collectionView,
+                                                        cellProvider: { collectionView, indexPath, itemIdentifier in
+            
+            let cell = collectionView.dequeueConfiguredReusableCell(using: postRegistraion,
+                                                                    for: indexPath,
+                                                                    item: itemIdentifier)
+            cell.updateContent(item: itemIdentifier)
+            return cell
+        })
+        
+        
+    }
+    
+    private func updateSnapshot(postList: [PostDTO]) {
+        
+        var normalPostSnapshot = NSDiffableDataSourceSnapshot<NormalPostSection,PostDTO>()
+        normalPostSnapshot.appendSections(NormalPostSection.allCases)
+        normalPostSnapshot.appendItems(postList,
+                                       toSection: .post)
+        
+        dataSource.apply(normalPostSnapshot)
+    }
+    
+}
+
 
 // MARK: - Configuration
 extension NormalPostListViewController: BaseViewProtocol {
@@ -62,6 +126,20 @@ extension NormalPostListViewController: BaseViewProtocol {
     func configureUI() {
         collectionView.register(NormalPostCell.self,
                                 forCellWithReuseIdentifier: NormalPostCell.identifier)
+        configureRefreshControl()
+    }
+    
+    func configureRefreshControl () {
+        
+        let refreshControl = UIRefreshControl()
+        refreshControl.tintColor = .main
+        collectionView.refreshControl = refreshControl
+        refreshControl.rx.controlEvent(.valueChanged)
+            .subscribe(with: self) { owner, _ in
+                owner.viewModel.apply(.refreshData)
+                refreshControl.endRefreshing()
+            }
+            .disposed(by: disposeBag)
     }
     
     func configureLayout() {
@@ -102,4 +180,8 @@ extension NormalPostListViewController: BaseViewProtocol {
         return layout
     }
     
+}
+
+private enum NormalPostSection: Int, CaseIterable {
+    case post
 }

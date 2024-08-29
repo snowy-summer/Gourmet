@@ -12,11 +12,11 @@ struct PostDTO: Decodable, Hashable {
     let productID: String?
     let title: String?
     let content: String?
-    let subTitle: String? // 서브 타이틀
-    let ingredients: String? // 재료
-    let recipe: String? // 레시피
-    let content4: String?
-    let content5: String?
+    let subTitle: String?
+    let ingredients: String?
+    let recipe: String?
+    let time: String?
+    let difficulty: String?
     let createdAt: String
     let creator: CreatorDTO
     let files: [String]
@@ -33,8 +33,8 @@ struct PostDTO: Decodable, Hashable {
         case subTitle = "content1"
         case ingredients = "content2"
         case recipe = "content3"
-        case content4
-        case content5
+        case time = "content4"
+        case difficulty = "content5"
         case createdAt, creator
         case files, likes, hashTags, comments
         case likes2

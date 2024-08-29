@@ -14,21 +14,28 @@ final class EditPostViewModel: ViewModelProtocol {
     enum Input {
         case noValue
         case updateTitle(String)
-        case addIngredient(RecipeIngredient)
+        case selectCategory(Int)
+        case addIngredient(IngredientContent)
         case addContent(RecipeContent)
+        case updateTime(String)
         case saveContet
     }
     
     enum Output {
         case noValue
         case applySnapShot
+        case needReLogin
     }
     
     enum Item: Hashable {
         case title(String?)
-        case ingredient(RecipeIngredient?)
+        case category(String)
+        case ingredient(String)
+        case ingredientContent(IngredientContent?)
+        case contentAdd(String)
         case content(RecipeContent?)
         case neededTime(String)
+        case difficulty(String)
         case price(Int)
     }
     
@@ -37,15 +44,19 @@ final class EditPostViewModel: ViewModelProtocol {
     
     private(set)var output = BehaviorSubject(value: Output.noValue)
     
-    private let category = FoodCategory.main
+    private(set) var category = FoodCategory.main
+    private(set) var categoryArr = FoodCategory.allCases.map { EditRecipeFoodCategory(category: $0) }
     private(set) var title = ""
-    private(set) var ingredients = [RecipeIngredient]()
+    private(set) var subTitle = "부제"
+    private(set) var ingredients = [IngredientContent]()
     private(set) var contents = [RecipeContent]()
     private(set) var time = ""
+    private(set) var difficultyLevel = ""
     private(set) var price = 0
     
     init(networkManager: NetworkManagerProtocol) {
         self.networkManager = networkManager
+        categoryArr[0].isSelected = true
     }
     
     func apply(_ input: Input) {
@@ -57,9 +68,12 @@ final class EditPostViewModel: ViewModelProtocol {
         case .updateTitle(let text):
             title = text
             
-        case .addIngredient(let recipeIngredient):
+        case .selectCategory(let index):
+            if let item = FoodCategory(rawValue: index) {
+                category = item
+            }
             
-            let addCell = ingredients.removeLast()
+        case .addIngredient(let recipeIngredient):
             
             if let index = ingredients.firstIndex(where: { $0.id == recipeIngredient.id }) {
                 ingredients[index] = recipeIngredient
@@ -67,12 +81,9 @@ final class EditPostViewModel: ViewModelProtocol {
                 ingredients.append(recipeIngredient)
             }
             
-            ingredients.append(addCell)
             output.onNext(.applySnapShot)
             
         case .addContent(let recipeContent):
-            
-            let addCell = contents.removeLast()
             
             if let index = contents.firstIndex(where: { $0.id == recipeContent.id }) {
                 contents[index] = recipeContent
@@ -80,7 +91,10 @@ final class EditPostViewModel: ViewModelProtocol {
                 contents.append(recipeContent)
             }
             
-            contents.append(addCell)
+            output.onNext(.applySnapShot)
+            
+        case .updateTime(let value):
+            time = value
             output.onNext(.applySnapShot)
             
         case .saveContet:
@@ -111,18 +125,29 @@ final class EditPostViewModel: ViewModelProtocol {
                 networkManager.uploadPost(item: createUploadPostBody(files: success.files))
                     .subscribe { result in
             
+                        
                     }
                     .disposed(by: disposeBag)
                 
-            case .failure(let failure):
-                print(failure)
+            case .failure(let error):
+                if error == .expiredAccessToken {
+                    networkManager.refreshAccessToken { result in
+                        switch result {
+                        case .success(let success):
+                            self.uploadPost()
+                            
+                        case .failure(let failure):
+                            self.output.onNext(.needReLogin)
+                        }
+                    }
+                }
             }
         }
         
     }
     
     private func createUploadPostBody(files: [String]) -> UploadPostBodyModel {
-        let ingredientStr = ingredients.enumerated().map { "\($0.element.name) \($0.element.value)" }
+        let ingredientStr = ingredients.enumerated().map { "@\($0.element.type.rawValue)@\($0.element.name)@\($0.element.value)" }
             .joined(separator: "\n")
         
         let recipeContent = contents.enumerated().map { "\($0.offset).\($0.element.content)" }
@@ -130,11 +155,11 @@ final class EditPostViewModel: ViewModelProtocol {
         
         return UploadPostBodyModel(title: title,
                                    content: "#\(title)",
-                                   subTitle: "부제",
+                                   subTitle: "",
                                    ingredients: ingredientStr,
                                    recipe: recipeContent,
-                                   content4: time,
-                                   content5: nil,
+                                   time: time,
+                                   difficulty: difficultyLevel,
                                    productID: category.productId,
                                    files: files)
     }
@@ -142,25 +167,18 @@ final class EditPostViewModel: ViewModelProtocol {
     func generateItems(from item: Item) -> [Item] {
         switch item {
         case .title:
-            return [.title(title)]
+            return [ .title(title) ]
             
-        case .ingredient:
-            
+        case .ingredientContent:
             if ingredients.isEmpty {
-                ingredients.append(RecipeIngredient(name: "",
-                                                    value: "",
-                                                    isAddCell: true))
+               return []
             }
             
-            return ingredients.map { .ingredient($0) }
+            return ingredients.map { .ingredientContent($0) }
             
         case .content:
-            
-            
             if contents.isEmpty {
-                contents.append(RecipeContent(thumbnailImage: nil,
-                                              content: "",
-                                              isAddCell: true))
+               return []
             }
             
             return contents.map { .content($0) }
@@ -168,7 +186,13 @@ final class EditPostViewModel: ViewModelProtocol {
         case .neededTime:
             return [.neededTime(time)]
             
+        case .difficulty:
+            return [.difficulty(difficultyLevel)]
+            
         case .price:
+            return []
+            
+        default:
             return []
         }
     }

@@ -14,11 +14,14 @@ final class PostDetailViewModel: ViewModelProtocol {
     enum Input {
         case noValue
         case viewDidLoad
+        case deletePost
     }
     
     enum Output {
         case noValue
         case reloadCollectionView(PostDTO)
+        case deleteSuccess
+        case deleteFail(PostError)
     }
     
     enum Item: Hashable {
@@ -31,10 +34,14 @@ final class PostDetailViewModel: ViewModelProtocol {
     private let recipe: PostDTO
     private(set) var ingredients = [Item]()
     private(set) var recipeStep = [Item]()
+    
+    private let networkManager: NetworkManagerProtocol
     private let disposeBag = DisposeBag()
     
-    init(recipe: PostDTO) {
+    init(recipe: PostDTO,
+         networkManger: NetworkManagerProtocol) {
         self.recipe = recipe
+        self.networkManager = networkManger
         saveIngredients()
         saveRecipeStep()
     }
@@ -47,7 +54,10 @@ final class PostDetailViewModel: ViewModelProtocol {
             
         case .viewDidLoad:
             output.onNext(.reloadCollectionView(recipe))
-
+            
+        case .deletePost:
+            deletePost()
+            
         }
     }
     
@@ -62,12 +72,16 @@ final class PostDetailViewModel: ViewModelProtocol {
         let lines = content.split(separator: "\n")
 
         for line in lines {
-            let components = line.split(separator: " ").map { String($0) }
+            let components = line.split(separator: "@").map { String($0) }
             if components.count >= 2 {
-                let item = components[0]
+                guard let index = Int(components[0]),
+                      let type = IngredientType(rawValue: index) else { return }
+                let name = components[1]
                 let quantity = components[1]
                 
-                ingredients.append(.ingredient(RecipeIngredient(name: item, value: quantity)))
+                ingredients.append(.ingredient(RecipeIngredient(type: type,
+                                                                name: name,
+                                                                value: quantity)))
             }
         }
     }
@@ -99,6 +113,22 @@ final class PostDetailViewModel: ViewModelProtocol {
                 
             }
         }
+    }
+    
+    func deletePost() {
+        
+        networkManager.deletePost(id: recipe.postId) { [weak self] result in
+            guard let self = self else { return }
+            
+            switch result {
+            case .success:
+                output.onNext(.deleteSuccess)
+                
+            case .failure(let error):
+                output.onNext(.deleteFail(error))
+            }
+        }
+
     }
 }
 

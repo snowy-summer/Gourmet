@@ -13,4 +13,9 @@ protocol ViewModelProtocol: AnyObject {
     associatedtype Output
     
     func transform(_ input: Input) -> Output
+    func apply(_ input: Input)
+}
+
+extension ViewModelProtocol {
+    func apply(_ input: Input) { }
 }

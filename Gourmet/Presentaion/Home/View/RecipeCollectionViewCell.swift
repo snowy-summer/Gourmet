@@ -59,9 +59,9 @@ extension RecipeCollectionViewCell: BaseViewProtocol {
     func configureUI() {
         
         thumbnailImageView.backgroundColor = .lightGray
-        thumbnailImageView.contentMode = .scaleAspectFill
-        contentView.layer.cornerRadius = 8
-        contentView.layer.masksToBounds = true
+        thumbnailImageView.contentMode = .scaleToFill
+        thumbnailImageView.layer.cornerRadius = 8
+        thumbnailImageView.clipsToBounds = true
     }
     
     func configureLayout() {
@@ -70,6 +70,7 @@ extension RecipeCollectionViewCell: BaseViewProtocol {
             make.top.equalTo(contentView.snp.top)
             make.directionalHorizontalEdges.equalTo(contentView.snp.directionalHorizontalEdges)
         }
+        
         titleLabel.snp.makeConstraints { make in
             make.top.equalTo(thumbnailImageView.snp.bottom).offset(8)
             make.directionalHorizontalEdges.equalTo(contentView.snp.directionalHorizontalEdges)

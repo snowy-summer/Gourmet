@@ -7,17 +7,17 @@
 
 import Foundation
 
-struct RecipeIngredient: Hashable {
+struct RecipeIngredient: Hashable, Identifiable {
     let id = UUID()
+    var type: IngredientType
     var name: String
     var value: String
-    let isAddCell: Bool
     
-    init(name: String,
-         value: String,
-         isAddCell: Bool = false) {
+    init(type: IngredientType,
+         name: String,
+         value: String) {
+        self.type = type
         self.name = name
         self.value = value
-        self.isAddCell = isAddCell
     }
 }

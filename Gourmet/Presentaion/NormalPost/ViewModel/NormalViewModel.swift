@@ -11,16 +11,21 @@ import RxCocoa
 
 final class NormalViewModel: ViewModelProtocol {
     
-    struct Input {
-        let reload: Observable<Void>
+    enum Input {
+        case noValue
+        case refreshData
     }
     
-    struct Output {
-        let items: PublishSubject<[PostDTO]>
-        let needReLogin: PublishSubject<Bool>
+    enum Output {
+        case noValue
+        case reloadView([PostDTO])
+        case needReLogin
     }
     
     private let networkManager: NetworkManagerProtocol
+    
+    private(set)var output = BehaviorSubject(value: Output.noValue)
+    private var normalPostList = [PostDTO]()
     private var category = Category(id: .normal)
     private let disposeBag = DisposeBag()
     
@@ -28,67 +33,57 @@ final class NormalViewModel: ViewModelProtocol {
         self.networkManager = networkManager
     }
     
+    func apply(_ input: Input) {
+        
+        switch input {
+        case .noValue:
+            return
+            
+        case .refreshData:
+            fetchPost()
+        }
+    }
+    
     func transform(_ input: Input) -> Output {
+        return Output.noValue
+    }
+    
+    private func fetchPost() {
         
-        let items = PublishSubject<[PostDTO]>()
-        let needReLogin = PublishSubject<Bool>()
-        
-        input.reload
-            .flatMapLatest { [weak self] _ -> Single<Result<PostListDTO, PostError>> in
-                guard let self = self else { return .just(.failure(.forbidden)) }
-                return networkManager.fetchPost(category: category)
-            }
-            .bind(with: self) { owner, value in
+        networkManager.fetchPost(category: category)
+            .subscribe(with: self) { owner, result in
                 
-                switch value {
+                switch result {
                 case .success(let data):
-                    
-                    items.onNext(data.data)
+                    owner.normalPostList = data.data
                     owner.category.nextCursor = data.nextCursor
+                    owner.output.onNext(.reloadView(owner.normalPostList))
                     
                 case .failure(let error):
                     if error == .expiredAccessToken {
-                
-                        let isSuccess = owner.networkManager.refreshAccessToken()
-                        owner.refreshToken(isSuccess: isSuccess,
-                                     items: items,
-                                     needReLogin: needReLogin)
-                        
+                        owner.refreshAccessToken()
                     } else {
-                        print(error)
-                        needReLogin.onNext(true)
+                        PrintDebugger.logError(error)
                     }
                     
                 }
             }
             .disposed(by: disposeBag)
-        
-        return Output(items: items,
-                      needReLogin: needReLogin)
     }
     
-    private func refreshToken(isSuccess: Single<Bool>,
-                              items: PublishSubject<[PostDTO]>,
-                              needReLogin: PublishSubject<Bool>) {
+    private func refreshAccessToken() {
         
-        isSuccess.subscribe(with: self) { owner, value in
-            if value {
-                owner.networkManager.fetchPost(category: owner.category)
-                    .subscribe(with: self) { owner, result in
-                        
-                        switch result {
-                        case .success(let data):
-                            owner.category.nextCursor = data.nextCursor
-                            items.onNext(data.data)
-                            
-                        case .failure:
-                            needReLogin.onNext(true)
-                        }
-                    }.disposed(by: owner.disposeBag)
-                    
-            } else {
-                needReLogin.onNext(true)
+        networkManager.refreshAccessToken {[weak self] result in
+            guard let self = self else { return }
+            switch result {
+            case .success:
+                fetchPost()
+                return
+                
+            case .failure(let error):
+                PrintDebugger.logError(error)
+                output.onNext(.needReLogin)
             }
-        }.disposed(by: disposeBag)
+        }
     }
 }

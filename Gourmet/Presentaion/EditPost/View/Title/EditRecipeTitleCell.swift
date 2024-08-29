@@ -16,7 +16,7 @@ protocol EditRecipeTitleCellDelegate: AnyObject {
 
 final class EditRecipeTitleCell: UICollectionViewCell {
     
-    private let titleTextField = UITextField()
+    private(set) var titleTextField = UITextField()
     weak var delegate: EditRecipeTitleCellDelegate?
     private let disposeBag = DisposeBag()
     
@@ -41,7 +41,12 @@ extension EditRecipeTitleCell {
     
     func updateContent(item: String?) {
         
-        titleTextField.text = item
+        if let text = item,
+            !text.isEmpty {
+            titleTextField.text = text
+        } else {
+            titleTextField.text = ""
+        }
     }
 }
 
@@ -56,9 +61,7 @@ extension EditRecipeTitleCell: BaseViewProtocol {
         
         titleTextField.placeholder = "제목을 입력해주세요"
         titleTextField.font = .systemFont(ofSize: 24, weight: .bold)
-        contentView.backgroundColor = .systemBackground
-        contentView.layer.cornerRadius = 8
-        contentView.clipsToBounds = true
+        titleTextField.backgroundColor = .clear
     }
     
     func configureLayout() {
@@ -66,9 +69,8 @@ extension EditRecipeTitleCell: BaseViewProtocol {
         titleTextField.snp.makeConstraints { make in
             make.directionalVerticalEdges.equalTo(contentView.snp.directionalVerticalEdges)
             make.directionalHorizontalEdges.equalTo(contentView.snp.directionalHorizontalEdges).inset(8)
+            make.height.equalTo(60)
         }
     }
     
 }
-
-

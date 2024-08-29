@@ -12,6 +12,7 @@ import RxSwift
 protocol NetworkManagerProtocol {
     var session: Session { get }
     
+    //user
     func checkEmail(email: String) -> Single<Bool>
     
     func signUp(email: String,
@@ -21,14 +22,20 @@ protocol NetworkManagerProtocol {
     func login(email: String,
                password: String) -> Single<Result<LoginDTO, LoginError>>
     
-    func refreshAccessToken() -> Single<Bool>
+    func refreshAccessToken(completion: @escaping (Result<Bool, TokenError>) -> Void)
     
+    //post
     func fetchPost(category: Category) -> Single<Result<PostListDTO,PostError>>
     
     func uploadPost(item: UploadPostBodyModel) -> Single<Result<Bool, PostError>>
+    
     func uploadImage(_ images: [Data?],
                      completion: @escaping (Result<UploadFileDTO, PostError>) -> Void)
+    
     func fetchImage(file: String,
                     completion: @escaping (Data?) -> Void)
+    
+    func deletePost(id: String,
+                    completion: @escaping (Result<Bool, PostError>) -> Void)
 }
 

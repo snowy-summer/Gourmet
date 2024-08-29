@@ -10,11 +10,11 @@ import Foundation
 struct UploadPostBodyModel: Encodable {
     let title: String?
     let content: String?
-    let subTitle: String? // 내용
-    let ingredients: String? // 시간
+    let subTitle: String?
+    let ingredients: String?
     let recipe: String?
-    let content4: String?
-    let content5: String?
+    let time: String?
+    let difficulty: String?
     let productID: String?
     let files: [String]
     
@@ -24,8 +24,8 @@ struct UploadPostBodyModel: Encodable {
         case subTitle = "content1"
         case ingredients = "content2"
         case recipe = "content3"
-        case content4
-        case content5
+        case time = "content4"
+        case difficulty = "content5"
         case productID = "product_id"
         case files
     }
