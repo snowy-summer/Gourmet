@@ -37,11 +37,11 @@ extension PostDetailImageCell {
     func updateContent(item: PostDTO) {
         
         foodNameLabel.text = item.title
-        difficultLevelView.updateContent(image: UIImage(systemName: "flame.fill"),
+        difficultLevelView.updateContent(image: UIImage(systemName: IconConmponent.difficultyLevel.iconName),
                                          text: item.difficulty)
         timeView.updateContent(image: UIImage(systemName: IconConmponent.time.iconName),
-                                         text: item.difficulty)
-        starView.updateContent(image: UIImage(systemName: IconConmponent.grade.iconName),
+                                         text: item.time)
+        starView.updateContent(image: UIImage(systemName: IconConmponent.like.iconName),
                                text: "\(item.likes.count)")
         
         if !item.files.isEmpty {

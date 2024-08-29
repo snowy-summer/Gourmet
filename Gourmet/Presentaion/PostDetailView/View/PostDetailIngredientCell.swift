@@ -27,6 +27,7 @@ final class PostDetailIngredientCell: UICollectionViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         
+        imageView.image = nil
         nameLabel.text = ""
         valueLabel.text = ""
     }
@@ -37,6 +38,7 @@ extension PostDetailIngredientCell {
     
     func updateContent(item: RecipeIngredient) {
         
+        imageView.image = UIImage(named: item.type.imageName)
         nameLabel.text = item.name
         valueLabel.text = item.value
     }
@@ -54,7 +56,6 @@ extension PostDetailIngredientCell: BaseViewProtocol {
     
     func configureUI() {
         
-        imageView.image = UIImage(systemName: "star")
         nameLabel.font = .systemFont(ofSize: 16, weight: .medium)
         valueLabel.font = .systemFont(ofSize: 14, weight: .regular)
         valueLabel.textColor = .lightGray

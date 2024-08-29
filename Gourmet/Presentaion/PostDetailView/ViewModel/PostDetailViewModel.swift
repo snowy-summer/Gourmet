@@ -72,12 +72,16 @@ final class PostDetailViewModel: ViewModelProtocol {
         let lines = content.split(separator: "\n")
 
         for line in lines {
-            let components = line.split(separator: " ").map { String($0) }
+            let components = line.split(separator: "@").map { String($0) }
             if components.count >= 2 {
-                let item = components[0]
+                guard let index = Int(components[0]),
+                      let type = IngredientType(rawValue: index) else { return }
+                let name = components[1]
                 let quantity = components[1]
                 
-                ingredients.append(.ingredient(RecipeIngredient(name: item, value: quantity)))
+                ingredients.append(.ingredient(RecipeIngredient(type: type,
+                                                                name: name,
+                                                                value: quantity)))
             }
         }
     }

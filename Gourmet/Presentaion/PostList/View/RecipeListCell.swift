@@ -45,7 +45,7 @@ extension RecipeListCell {
         likeView.updateContent(content: "\(item.likes.count)")
         
         if let time = item.time {
-            timeView.updateContent(content: "30 min") // 예시
+            timeView.updateContent(content: time)
         }
         
         if !item.files.isEmpty {

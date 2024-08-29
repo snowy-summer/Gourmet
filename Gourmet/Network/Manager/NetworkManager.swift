@@ -222,8 +222,13 @@ extension NetworkManager {
                 completion(.success(data))
                 
             case .failure(let error):
-                PrintDebugger.logError(error)
-                completion(.failure(.forbidden))
+                if let statusCode = response.response?.statusCode,
+                   let postError = PostError(rawValue: statusCode) {
+                    completion(.failure(postError))
+                } else {
+                    PrintDebugger.logError(error)
+                    completion(.failure(PostError.serverError))
+                }
             }
         }
     }

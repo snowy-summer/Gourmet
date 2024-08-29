@@ -24,6 +24,7 @@ final class EditPostViewModel: ViewModelProtocol {
     enum Output {
         case noValue
         case applySnapShot
+        case needReLogin
     }
     
     enum Item: Hashable {
@@ -124,18 +125,29 @@ final class EditPostViewModel: ViewModelProtocol {
                 networkManager.uploadPost(item: createUploadPostBody(files: success.files))
                     .subscribe { result in
             
+                        
                     }
                     .disposed(by: disposeBag)
                 
-            case .failure(let failure):
-                print(failure)
+            case .failure(let error):
+                if error == .expiredAccessToken {
+                    networkManager.refreshAccessToken { result in
+                        switch result {
+                        case .success(let success):
+                            self.uploadPost()
+                            
+                        case .failure(let failure):
+                            self.output.onNext(.needReLogin)
+                        }
+                    }
+                }
             }
         }
         
     }
     
     private func createUploadPostBody(files: [String]) -> UploadPostBodyModel {
-        let ingredientStr = ingredients.enumerated().map { "\($0.element.name) \($0.element.value)" }
+        let ingredientStr = ingredients.enumerated().map { "@\($0.element.type.rawValue)@\($0.element.name)@\($0.element.value)" }
             .joined(separator: "\n")
         
         let recipeContent = contents.enumerated().map { "\($0.offset).\($0.element.content)" }
@@ -143,11 +155,11 @@ final class EditPostViewModel: ViewModelProtocol {
         
         return UploadPostBodyModel(title: title,
                                    content: "#\(title)",
-                                   subTitle: subTitle,
+                                   subTitle: "",
                                    ingredients: ingredientStr,
                                    recipe: recipeContent,
                                    time: time,
-                                   difficulty: nil,
+                                   difficulty: difficultyLevel,
                                    productID: category.productId,
                                    files: files)
     }

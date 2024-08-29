@@ -181,7 +181,6 @@ extension PostListViewController: BaseViewProtocol {
     func configureRefreshControl () {
         
         let refreshControl = UIRefreshControl()
-        refreshControl.tintColor = .main
         recipeCollectionView.refreshControl = refreshControl
         refreshControl.rx.controlEvent(.valueChanged)
             .subscribe(with: self) { owner, _ in

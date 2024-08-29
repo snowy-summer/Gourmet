@@ -31,7 +31,6 @@ extension InformationDetailView {
         
         iconImageView.image = image
         nameLabel.text = text
-        nameLabel.text = "설정 필요"
     }
 }
 

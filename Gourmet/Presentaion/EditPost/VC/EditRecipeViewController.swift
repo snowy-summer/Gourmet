@@ -41,6 +41,9 @@ extension EditRecipeViewController {
             case .applySnapShot:
                 owner.updateSnapshot()
                 
+            case .needReLogin:
+                owner.resetViewController(vc: LoginViewController())
+                
             }
         }.disposed(by: disposeBag)
     }
