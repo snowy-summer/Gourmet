@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct RecipeIngredient: Hashable {
+struct RecipeIngredient: Hashable, Identifiable {
     let id = UUID()
     var name: String
     var value: String

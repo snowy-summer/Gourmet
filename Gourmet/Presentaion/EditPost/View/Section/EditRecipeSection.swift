@@ -75,6 +75,8 @@ enum EditRecipeSection: Int, CaseIterable {
     
     var iconColor: UIColor {
         switch self {
+        case .category:
+            return .black
         case .ingredientAdd:
             return .orange
         case .contentAdd:
@@ -104,13 +106,11 @@ enum EditRecipeSection: Int, CaseIterable {
             let item = NSCollectionLayoutItem(layoutSize: itemSize)
             
             
-            let groupSize = NSCollectionLayoutSize(widthDimension: .absolute(80),
-                                                   heightDimension: .estimated(100))
+            let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
+                                                   heightDimension: .estimated(200))
             let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize,
                                                            subitems: [item])
             let section = NSCollectionLayoutSection(group: group)
-            section.orthogonalScrollingBehavior = .continuous
-            section.interGroupSpacing = 8
             
             section.contentInsets = NSDirectionalEdgeInsets(top: 8,
                                                             leading: 20,

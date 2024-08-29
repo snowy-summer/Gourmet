@@ -18,7 +18,7 @@ final class EditRecipeIngredientAddCell: UICollectionViewCell {
     
     private lazy var ingredientImageCollectionView = UICollectionView(frame: .zero,
                                                                       collectionViewLayout: createLayout())
-    private var dataSource: UICollectionViewDiffableDataSource<IngredientImageSection, IngredientType>!
+    private var dataSource: UICollectionViewDiffableDataSource<IngredientImageSection, EditRecipeIngredient>!
     
     private let headerView = HeaderView()
     private let containerView = UIView()
@@ -37,6 +37,7 @@ final class EditRecipeIngredientAddCell: UICollectionViewCell {
         
         configureView()
         configureDataSource()
+        bindingOutput()
         updateSnapshot()
     }
     
@@ -46,9 +47,27 @@ final class EditRecipeIngredientAddCell: UICollectionViewCell {
     
 }
 
+extension EditRecipeIngredientAddCell {
+    
+    private func bindingOutput() {
+        
+        viewModel.output.bind(with: self) { owner, output in
+            
+            switch output {
+            case .noValue:
+                return
+                
+            case .reloadView:
+                owner.updateSnapshot()
+            }
+        }
+        .disposed(by: disposeBag)
+    }
+}
+
 extension EditRecipeIngredientAddCell: UICollectionViewDelegate {
     
-    typealias registerationImageCell = UICollectionView.CellRegistration<IngredientImageCell, IngredientType>
+    typealias registerationImageCell = UICollectionView.CellRegistration<IngredientImageCell, EditRecipeIngredient>
     
     //MARK: - Delegate Method
     func collectionView(_ collectionView: UICollectionView,
@@ -86,9 +105,9 @@ extension EditRecipeIngredientAddCell: UICollectionViewDelegate {
     
     private func updateSnapshot() {
         
-        var snapshot = NSDiffableDataSourceSnapshot<IngredientImageSection, IngredientType>()
+        var snapshot = NSDiffableDataSourceSnapshot<IngredientImageSection, EditRecipeIngredient>()
         snapshot.appendSections(IngredientImageSection.allCases)
-        snapshot.appendItems(IngredientType.allCases,
+        snapshot.appendItems(viewModel.ingredients,
                              toSection: .image)
         
         dataSource.apply(snapshot)
@@ -143,15 +162,13 @@ extension EditRecipeIngredientAddCell: BaseViewProtocol {
         
         ingredientImageCollectionView.backgroundColor = .lightGray.withAlphaComponent(0.3)
         ingredientImageCollectionView.layer.cornerRadius = 8
+        ingredientImageCollectionView.delegate = self
         
         containerView.backgroundColor = .lightGray.withAlphaComponent(0.3)
         containerView.layer.cornerRadius = 8
         
         nameLabel.text = "이름:"
         valueLabel.text = "용량:"
-        
-        nameTextField.setUnderLine(color: .black)
-        valueTextField.setUnderLine(color: .black)
         
         addButton.backgroundColor = .main
         addButton.setTitle("추가", for: .normal)
@@ -220,6 +237,8 @@ extension EditRecipeIngredientAddCell: BaseViewProtocol {
                 owner.delegate?.addIngredient(IngredientContent(type: owner.viewModel.selectIngredientType,
                                                                 name: value.0,
                                                                 value: value.1))
+                owner.nameTextField.text = .none
+                owner.valueTextField.text = .none
             }
             .disposed(by: disposeBag)
     }

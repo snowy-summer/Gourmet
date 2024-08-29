@@ -14,6 +14,7 @@ final class EditPostViewModel: ViewModelProtocol {
     enum Input {
         case noValue
         case updateTitle(String)
+        case selectCategory(Int)
         case addIngredient(IngredientContent)
         case addContent(RecipeContent)
         case updateTime(String)
@@ -27,7 +28,7 @@ final class EditPostViewModel: ViewModelProtocol {
     
     enum Item: Hashable {
         case title(String?)
-        case category(FoodCategory?)
+        case category(String)
         case ingredient(String)
         case ingredientContent(IngredientContent?)
         case contentAdd(String)
@@ -42,7 +43,8 @@ final class EditPostViewModel: ViewModelProtocol {
     
     private(set)var output = BehaviorSubject(value: Output.noValue)
     
-    private let category = FoodCategory.main
+    private(set) var category = FoodCategory.main
+    private(set) var categoryArr = FoodCategory.allCases.map { EditRecipeFoodCategory(category: $0) }
     private(set) var title = ""
     private(set) var subTitle = "부제"
     private(set) var ingredients = [IngredientContent]()
@@ -53,6 +55,7 @@ final class EditPostViewModel: ViewModelProtocol {
     
     init(networkManager: NetworkManagerProtocol) {
         self.networkManager = networkManager
+        categoryArr[0].isSelected = true
     }
     
     func apply(_ input: Input) {
@@ -63,6 +66,11 @@ final class EditPostViewModel: ViewModelProtocol {
             
         case .updateTitle(let text):
             title = text
+            
+        case .selectCategory(let index):
+            if let item = FoodCategory(rawValue: index) {
+                category = item
+            }
             
         case .addIngredient(let recipeIngredient):
             
@@ -147,13 +155,7 @@ final class EditPostViewModel: ViewModelProtocol {
     func generateItems(from item: Item) -> [Item] {
         switch item {
         case .title:
-            return [
-                .title(title),
-//                .title(subTitle)
-            ]
-            
-        case .category:
-            return FoodCategory.allCases.map { .category($0) }
+            return [ .title(title) ]
             
         case .ingredientContent:
             if ingredients.isEmpty {

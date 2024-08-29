@@ -7,7 +7,7 @@
 
 import UIKit
 
-struct RecipeContent: Hashable {
+struct RecipeContent: Hashable, Identifiable {
     let id = UUID()
     var thumbnailImage: UIImage?
     var content: String

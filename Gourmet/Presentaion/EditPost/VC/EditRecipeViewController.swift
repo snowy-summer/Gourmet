@@ -49,9 +49,15 @@ extension EditRecipeViewController {
 
 //MARK: - Edit View Delegate
 extension EditRecipeViewController: EditRecipeTitleCellDelegate,
+                                    EditRecipeCategoryCellDelegate,
                                     EditRecipeIngredientAddCellDelegate,
                                     EditRecipeTimeDelegate,
                                     EditRecipeContentAddCellDelegate {
+    
+    // Category
+    func selectFoodCategory(item: Int) {
+        viewModel.apply(.selectCategory(item))
+    }
     
     // EditRecipeContentAddCellDelegate
     func presentPhotoPicker(picker: UIViewController) {
@@ -83,7 +89,7 @@ extension EditRecipeViewController {
     
     typealias registerationHeaderCell = UICollectionView.CellRegistration<EditRecipeHeaderCell, String?>
     typealias registerationTitle = UICollectionView.CellRegistration<EditRecipeTitleCell, String?>
-    typealias registerationCategory = UICollectionView.CellRegistration<EditRecipeCategoryCell, FoodCategory>
+    typealias registerationCategory = UICollectionView.CellRegistration<EditRecipeCategoryCell, String>
     
     typealias registerationIngredientAddCell = UICollectionView.CellRegistration<EditRecipeIngredientAddCell, String>
     typealias registerationIngredientContent = UICollectionView.CellRegistration<IngredientContentCell, IngredientContent>
@@ -114,6 +120,7 @@ extension EditRecipeViewController {
         let cellRegistration = registerationCategory { [weak self] cell, indexPath, itemIdentifier in
             
             guard let self = self else { return }
+            cell.delegate = self
             cellBackgroundConfigure(cell: cell,
                                     color: .lightGray.withAlphaComponent(0.5))
         }
@@ -237,8 +244,7 @@ extension EditRecipeViewController {
                 let cell = collectionView.dequeueConfiguredReusableCell(using: categoryRegistration,
                                                                         for: indexPath,
                                                                         item: category)
-                guard let category = category else { return cell }
-                cell.updateContent(item: category)
+
                 return cell
                 
             case .ingredient(let ingredient):
@@ -309,7 +315,7 @@ extension EditRecipeViewController {
         snapshot.appendSections(EditRecipeSection.allCases)
         snapshot.appendItems(viewModel.generateItems(from: .title(nil)),
                              toSection: .title)
-        snapshot.appendItems(viewModel.generateItems(from: .category(nil)),
+        snapshot.appendItems([.category("카테고리 선택 칸")],
                              toSection: .category)
         
         snapshot.appendItems([.ingredient("재료 추가 칸")],

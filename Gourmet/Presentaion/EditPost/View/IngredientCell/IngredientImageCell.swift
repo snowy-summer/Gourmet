@@ -26,14 +26,20 @@ final class IngredientImageCell: UICollectionViewCell {
         super.prepareForReuse()
         
         imageView.image = nil
+        contentView.layer.borderWidth = 0
     }
 }
 
 extension IngredientImageCell {
     
-    func updateContent(item: IngredientType) {
+    func updateContent(item: EditRecipeIngredient) {
         
-        imageView.image = UIImage(named: item.imageName)
+        imageView.image = UIImage(named: item.type.imageName)
+        
+        if item.isSelected {
+            contentView.layer.borderWidth = 2
+            contentView.layer.cornerRadius = 8
+        }
     }
 }
 
@@ -49,8 +55,8 @@ extension IngredientImageCell: BaseViewProtocol {
     func configureUI() {
         
         imageView.image = UIImage(systemName: "star")
+        contentView.backgroundColor = .systemBackground
         contentView.layer.cornerRadius = 8
-        contentView.layer.borderWidth = 1
     }
     
     func configureLayout() {

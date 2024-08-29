@@ -149,7 +149,6 @@ extension NetworkManager {
     }
 }
 
-
 extension NetworkManager {
     
     func fetchPost(category: Category) -> Single<Result<PostListDTO,PostError>> {

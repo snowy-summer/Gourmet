@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum FoodCategory: CaseIterable {
+enum FoodCategory: Int, CaseIterable {
     
     case main
     case dessert
