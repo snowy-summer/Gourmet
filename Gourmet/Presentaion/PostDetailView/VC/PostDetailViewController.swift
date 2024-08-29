@@ -9,6 +9,7 @@ import UIKit
 import RxSwift
 import RxCocoa
 import SnapKit
+import Toast
 
 final class PostDetailViewController: UIViewController {
     
@@ -19,7 +20,8 @@ final class PostDetailViewController: UIViewController {
     private let disposeBag = DisposeBag()
     
     init(recipe: PostDTO) {
-        self.viewModel = PostDetailViewModel(recipe: recipe)
+        self.viewModel = PostDetailViewModel(recipe: recipe,
+                                             networkManger: NetworkManager.shared)
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -53,6 +55,13 @@ extension PostDetailViewController {
                 case .reloadCollectionView(let recipe):
                     owner.updateSnapshot(recipe: recipe)
                     
+                case .deleteSuccess:
+                    owner.view.makeToast("삭제 성공") { _ in
+                            owner.navigationController?.popViewController(animated: true)
+                    }
+                    
+                case .deleteFail(let error):
+                    owner.view.makeToast(error.description)
                 }
                 
             }.disposed(by: disposeBag)
@@ -159,7 +168,37 @@ extension PostDetailViewController: BaseViewProtocol {
     
     func configureNavigationBar() {
         
-        navigationItem.title = "Recipe"
+        let menuButton = UIBarButtonItem(image: UIImage(systemName: "ellipsis"),
+                                         style: .plain,
+                                         target: self,
+                                         action: nil)
+        
+        menuButton.menu = UIMenu(children: configureMenu())
+        
+        navigationItem.rightBarButtonItem = menuButton
+    }
+    
+    private func configureMenu() -> [UIAction] {
+    
+        let edit = UIAction(title: "수정",
+                            image: UIImage(systemName: "pencil")) { [weak self] _ in
+            guard let self = self else { return }
+
+        }
+        
+        let delete = UIAction(title: "삭제",
+                              image: UIImage(systemName: "trash")) { [weak self] _ in
+            guard let self = self else { return }
+            
+            viewModel.apply(.deletePost)
+        }
+        
+        let items = [
+          edit,
+          delete
+        ]
+    
+        return items
     }
     
     func configureHierarchy() {

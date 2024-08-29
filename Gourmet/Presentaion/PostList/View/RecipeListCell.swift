@@ -43,8 +43,9 @@ extension RecipeListCell {
         foodNameLabel.text = item.title
         descriptionLabel.text = item.content
         likeView.updateContent(content: "\(item.likes.count)")
+        
         if let time = item.time {
-            timeView.updateContent(content: time)
+            timeView.updateContent(content: "30 min") // 예시
         }
         
         if !item.files.isEmpty {
@@ -72,7 +73,6 @@ extension RecipeListCell: BaseViewProtocol {
         
         contentView.layer.cornerRadius = 8
         contentView.layer.borderWidth = 1
-        contentView.layer.borderColor = UIColor.gray.withAlphaComponent(0.2).cgColor
 
         foodImageView.contentMode = .scaleAspectFill
         

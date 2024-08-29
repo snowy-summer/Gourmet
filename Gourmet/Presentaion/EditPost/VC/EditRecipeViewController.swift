@@ -83,6 +83,7 @@ extension EditRecipeViewController {
     
     typealias registerationHeaderCell = UICollectionView.CellRegistration<EditRecipeHeaderCell, String?>
     typealias registerationTitle = UICollectionView.CellRegistration<EditRecipeTitleCell, String?>
+    typealias registerationCategory = UICollectionView.CellRegistration<EditRecipeCategoryCell, FoodCategory>
     
     typealias registerationIngredientAddCell = UICollectionView.CellRegistration<EditRecipeIngredientAddCell, String>
     typealias registerationIngredientContent = UICollectionView.CellRegistration<IngredientContentCell, IngredientContent>
@@ -97,13 +98,24 @@ extension EditRecipeViewController {
     //MARK: - CollectoinView Configuraion
     private func registTitleCell() -> registerationTitle {
         
-        let cellRegistration = registerationTitle { cell, indexPath, itemIdentifier in
-            cell.delegate = self
+        let cellRegistration = registerationTitle { [weak self] cell, indexPath, itemIdentifier in
             
-            var backgroundConfig = UIBackgroundConfiguration.listGroupedCell()
-            backgroundConfig.backgroundColor = .lightGray.withAlphaComponent(0.5)
-            backgroundConfig.cornerRadius = 8
-            cell.backgroundConfiguration = backgroundConfig
+            guard let self = self else { return }
+            cell.delegate = self
+            cellBackgroundConfigure(cell: cell,
+                                    color: .lightGray.withAlphaComponent(0.5))
+        }
+        
+        return cellRegistration
+    }
+    
+    private func registCategoryCell() -> registerationCategory {
+        
+        let cellRegistration = registerationCategory { [weak self] cell, indexPath, itemIdentifier in
+            
+            guard let self = self else { return }
+            cellBackgroundConfigure(cell: cell,
+                                    color: .lightGray.withAlphaComponent(0.5))
         }
         
         return cellRegistration
@@ -199,6 +211,7 @@ extension EditRecipeViewController {
         
         let headerRegistration = registHeader()
         let titleRegistration = registTitleCell()
+        let categoryRegistration = registCategoryCell()
         
         let ingredientRegistration = registIngredientAddCell()
         let ingredientContentRegistration = registIngredientContentCell()
@@ -218,6 +231,14 @@ extension EditRecipeViewController {
                                                                         for: indexPath,
                                                                         item: title)
                 cell.updateContent(item: title)
+                return cell
+                
+            case .category(let category):
+                let cell = collectionView.dequeueConfiguredReusableCell(using: categoryRegistration,
+                                                                        for: indexPath,
+                                                                        item: category)
+                guard let category = category else { return cell }
+                cell.updateContent(item: category)
                 return cell
                 
             case .ingredient(let ingredient):
@@ -288,6 +309,8 @@ extension EditRecipeViewController {
         snapshot.appendSections(EditRecipeSection.allCases)
         snapshot.appendItems(viewModel.generateItems(from: .title(nil)),
                              toSection: .title)
+        snapshot.appendItems(viewModel.generateItems(from: .category(nil)),
+                             toSection: .category)
         
         snapshot.appendItems([.ingredient("재료 추가 칸")],
                              toSection: .ingredientAdd)

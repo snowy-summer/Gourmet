@@ -17,14 +17,13 @@ final class TabBarController: UITabBarController {
         configure()
         
         addViewController(vc: HomeViewController(),
-                          selectImage: UIImage(systemName: "star"),
-                          unselectImage: UIImage(systemName: "star.fill"))
+                          component: .home)
         addViewController(vc: PostListViewController(),
-                          selectImage: UIImage(systemName: "star"),
-                          unselectImage: UIImage(systemName: "star.fill"))
+                          component: .recipe)
         addViewController(vc: NormalPostListViewController(),
-                          selectImage: UIImage(systemName: "rectangle.3.group.bubble"),
-                          unselectImage: UIImage(systemName: "rectangle.3.group.bubble"))
+                          component: .community)
+        addViewController(vc: NormalPostListViewController(),
+                          component: .profile)
         
         setViewControllers(components,
                            animated: false)
@@ -35,18 +34,18 @@ final class TabBarController: UITabBarController {
 extension TabBarController {
     
     private func configure() {
+        
         tabBar.tintColor = .black
         tabBar.unselectedItemTintColor = .lightGray
     }
     
     private func addViewController(vc: UIViewController,
-                                   selectImage: UIImage?,
-                                   unselectImage: UIImage?) {
+                                   component: TabBarComponent) {
         
         let nc = UINavigationController(rootViewController: vc)
         nc.tabBarItem = UITabBarItem(title: nil,
-                                     image: unselectImage,
-                                     selectedImage: selectImage)
+                                     image: UIImage(systemName: component.icon),
+                                     selectedImage: UIImage(systemName: component.icon))
         
         components.append(nc)
     }

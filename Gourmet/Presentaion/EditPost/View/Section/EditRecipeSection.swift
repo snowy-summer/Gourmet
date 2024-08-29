@@ -9,6 +9,7 @@ import UIKit
 
 enum EditRecipeSection: Int, CaseIterable {
     case title
+    case category
     case ingredientAdd
     case ingredientContent
     case contentAdd
@@ -21,6 +22,9 @@ enum EditRecipeSection: Int, CaseIterable {
         switch self {
         case .title:
             return "제목"
+            
+        case .category:
+            return "카테고리"
             
         case .ingredientAdd:
             return "재료"
@@ -54,6 +58,8 @@ enum EditRecipeSection: Int, CaseIterable {
     
     var iconName: String {
         switch self {
+        case .category:
+            return "fork.knife"
         case .ingredientAdd:
             return "carrot.fill"
         case .contentAdd:
@@ -90,6 +96,26 @@ enum EditRecipeSection: Int, CaseIterable {
             configuration.backgroundColor = .clear
             let section = NSCollectionLayoutSection.list(using: configuration,
                                                          layoutEnvironment: layoutEnvironment)
+            return section
+            
+        case .category:
+            let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
+                                                  heightDimension: .fractionalHeight(1.0))
+            let item = NSCollectionLayoutItem(layoutSize: itemSize)
+            
+            
+            let groupSize = NSCollectionLayoutSize(widthDimension: .absolute(80),
+                                                   heightDimension: .estimated(100))
+            let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize,
+                                                           subitems: [item])
+            let section = NSCollectionLayoutSection(group: group)
+            section.orthogonalScrollingBehavior = .continuous
+            section.interGroupSpacing = 8
+            
+            section.contentInsets = NSDirectionalEdgeInsets(top: 8,
+                                                            leading: 20,
+                                                            bottom: 8,
+                                                            trailing: 20)
             return section
             
         case .ingredientAdd:

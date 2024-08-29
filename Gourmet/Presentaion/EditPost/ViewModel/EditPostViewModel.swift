@@ -27,6 +27,7 @@ final class EditPostViewModel: ViewModelProtocol {
     
     enum Item: Hashable {
         case title(String?)
+        case category(FoodCategory?)
         case ingredient(String)
         case ingredientContent(IngredientContent?)
         case contentAdd(String)
@@ -150,6 +151,9 @@ final class EditPostViewModel: ViewModelProtocol {
                 .title(title),
 //                .title(subTitle)
             ]
+            
+        case .category:
+            return FoodCategory.allCases.map { .category($0) }
             
         case .ingredientContent:
             if ingredients.isEmpty {

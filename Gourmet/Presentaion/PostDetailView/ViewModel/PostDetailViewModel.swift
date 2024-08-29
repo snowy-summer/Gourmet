@@ -14,11 +14,14 @@ final class PostDetailViewModel: ViewModelProtocol {
     enum Input {
         case noValue
         case viewDidLoad
+        case deletePost
     }
     
     enum Output {
         case noValue
         case reloadCollectionView(PostDTO)
+        case deleteSuccess
+        case deleteFail(PostError)
     }
     
     enum Item: Hashable {
@@ -31,10 +34,14 @@ final class PostDetailViewModel: ViewModelProtocol {
     private let recipe: PostDTO
     private(set) var ingredients = [Item]()
     private(set) var recipeStep = [Item]()
+    
+    private let networkManager: NetworkManagerProtocol
     private let disposeBag = DisposeBag()
     
-    init(recipe: PostDTO) {
+    init(recipe: PostDTO,
+         networkManger: NetworkManagerProtocol) {
         self.recipe = recipe
+        self.networkManager = networkManger
         saveIngredients()
         saveRecipeStep()
     }
@@ -47,7 +54,10 @@ final class PostDetailViewModel: ViewModelProtocol {
             
         case .viewDidLoad:
             output.onNext(.reloadCollectionView(recipe))
-
+            
+        case .deletePost:
+            deletePost()
+            
         }
     }
     
@@ -99,6 +109,22 @@ final class PostDetailViewModel: ViewModelProtocol {
                 
             }
         }
+    }
+    
+    func deletePost() {
+        
+        networkManager.deletePost(id: recipe.postId) { [weak self] result in
+            guard let self = self else { return }
+            
+            switch result {
+            case .success:
+                output.onNext(.deleteSuccess)
+                
+            case .failure(let error):
+                output.onNext(.deleteFail(error))
+            }
+        }
+
     }
 }
 

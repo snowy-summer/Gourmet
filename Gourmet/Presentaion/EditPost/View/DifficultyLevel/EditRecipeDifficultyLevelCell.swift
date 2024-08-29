@@ -89,8 +89,7 @@ extension EditRecipeDifficultyLevelCell: BaseViewProtocol {
     }
     
     private func configureMenu() -> [UIAction] {
-        
-
+    
         let low = UIAction(title: "쉬움") { [weak self] _ in
             guard let self = self else { return }
 //            viewModel?.applyInput(.selectPriority(1))

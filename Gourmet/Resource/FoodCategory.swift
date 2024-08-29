@@ -140,4 +140,11 @@ enum FoodCategory: CaseIterable {
             return "Normal"
         }
     }
+    
+    var iconName: String {
+        switch self {
+        default:
+            return "testBird"
+        }
+    }
 }
