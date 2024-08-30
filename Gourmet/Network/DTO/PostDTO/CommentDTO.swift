@@ -1,5 +1,5 @@
 //
-//  ComentsDTO.swift
+//  CommentDTO.swift
 //  Gourmet
 //
 //  Created by 최승범 on 8/16/24.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct ComentsDTO: Decodable, Hashable {
+struct CommentDTO: Decodable, Hashable {
     let commentId: String
     let content: String
     let createAt: String

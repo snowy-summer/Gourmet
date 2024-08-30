@@ -23,7 +23,7 @@ struct PostDTO: Decodable, Hashable {
     let likes: [String]
     let likes2: [String]
     let hashTags: [String]
-    let comments: [ComentsDTO]
+    let comments: [CommentDTO]
     
     enum CodingKeys: String, CodingKey {
         case postId = "post_id"

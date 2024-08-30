@@ -24,7 +24,6 @@ final class RecipeContentAddCell: UICollectionViewCell {
     private let contentTextView = UITextView()
     private let saveButton = UIButton()
     
-    private let viewModel = IngredientViewModel()
     weak var delegate: EditRecipeContentAddCellDelegate?
     private let disposeBag = DisposeBag()
     

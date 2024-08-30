@@ -76,13 +76,14 @@ extension HomeViewController {
     }
 }
 
-extension HomeViewController: UICollectionViewDelegate, ChoiceCategoryViewDelegate {
+extension HomeViewController: UICollectionViewDelegate,
+                              ChoiceCategoryViewDelegate {
     func pushEditRecipeView() {
         navigationController?.pushViewController(EditRecipeViewController(), animated: true)
     }
     
     func pushEditNormalView() {
-//        navigationController?.pushViewController(EditRecipeViewController(), animated: true)
+        navigationController?.pushViewController(NormalPostEditViewController(), animated: true)
     }
     
     

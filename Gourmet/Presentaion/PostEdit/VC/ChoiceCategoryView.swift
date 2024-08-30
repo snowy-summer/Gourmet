@@ -35,6 +35,12 @@ extension ChoiceCategoryView {
         }
     }
     
+    @objc private func pushEditNormalPostView() {
+        dismiss(animated: true) { [weak self] in
+            self?.delgate?.pushEditNormalView()
+        }
+    }
+    
     
 }
 
@@ -76,6 +82,10 @@ extension ChoiceCategoryView: BaseViewProtocol {
     }
     
     func configureGestureAndButtonActions() {
+        
+        normalPostButton.addTarget(self,
+                                   action: #selector(pushEditNormalPostView),
+                                   for: .touchUpInside)
         
         recipePostButton.addTarget(self,
                                    action: #selector(pushEditRecipeView),

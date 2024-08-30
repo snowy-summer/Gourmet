@@ -8,72 +8,54 @@
 import Foundation
 
 enum IngredientType: Int, CaseIterable {
+    case crab
+    case shellfish
     case beef       // 소고기
     case chicken    // 닭고기
-    case pork       // 돼지고기
     case fish       // 생선
     case shrimp     // 새우
-    case water      // 물
     case salt       // 소금
     case oil        // 오일 (예: 식용유)
     case onion      // 양파
-    case garlic     // 마늘
     case tomato     // 토마토
     case potato     // 감자
     case carrot     // 당근
     case bellPepper // 파프리카
-    case spinach    // 시금치
-    case broccoli   // 브로콜리
     case mushroom   // 버섯
     case hub
-    case lemon      // 레몬
-    case butter     // 버터
-    case cheese     // 치즈
     
     var imageName: String {
         switch self {
+        case .crab:
+            return "crab"
+        case .shellfish:
+            return "shellfish"
         case .beef:
-            return "corn"
+            return "beef"
         case .chicken:
-            return "rice"
-        case .pork:
-            return "pumpkin"
+            return "chicken"
         case .fish:
-            return "bellPepper"
+            return "fish"
         case .shrimp:
-            return "recipe"
-        case .water:
-            return "recipe"
+            return "shrimp"
         case .salt:
-            return "recipe"
+            return "salt"
         case .oil:
-            return "recipe"
+            return "oil"
         case .onion:
-            return "recipe"
-        case .garlic:
-            return "recipe"
+            return "onion"
         case .tomato:
-            return "recipe"
+            return "tomato"
         case .potato:
-            return "recipe"
+            return "potato"
         case .carrot:
-            return ""
+            return "carrot"
         case .bellPepper:
-            return ""
-        case .spinach:
-            return ""
-        case .broccoli:
-            return ""
+            return "bellPepper"
         case .mushroom:
-            return ""
+            return "mushroom"
         case .hub:
-            return ""
-        case .lemon:
-            return ""
-        case .butter:
-            return ""
-        case .cheese:
-            return ""
+            return "hub"
         }
     }
 }

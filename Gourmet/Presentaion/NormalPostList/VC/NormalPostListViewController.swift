@@ -35,24 +35,6 @@ extension NormalPostListViewController {
     
     private func bindOutput() {
         
-        //        let input = NormalViewModel.Input(reload: Observable.just(()))
-        //        let output = viewModel.transform(input)
-        //
-        //        output.items
-        //            .bind(to: collectionView.rx.items(cellIdentifier: NormalPostCell.identifier,
-        //                                              cellType: NormalPostCell.self)) { row, item, cell in
-        //                cell.updateContent(item: item)
-        //            }
-        //            .disposed(by: disposeBag)
-        //
-        //        output.needReLogin
-        //            .bind(with: self) { owner, value in
-        //                if value {
-        //                    owner.resetViewController(vc: LoginViewController())
-        //                }
-        //            }
-        //            .disposed(by: disposeBag)
-        
         viewModel.output.bind(with: self) { owner, output in
             
             switch output {
@@ -64,17 +46,27 @@ extension NormalPostListViewController {
                 
             case .needReLogin:
                 owner.resetViewController(vc: LoginViewController())
+                
+            case .showDetailView(let post):
+                owner.navigationController?.pushViewController(NormalPostDetailViewController(postId: post.postId),
+                                                               animated: true)
             }
         }
         .disposed(by: disposeBag)
+        
     }
     
 }
 
 //MARK: - CollectionView
-extension NormalPostListViewController {
+extension NormalPostListViewController: UICollectionViewDelegate {
     
     typealias postRegisteration = UICollectionView.CellRegistration<NormalPostCell, PostDTO>
+    
+    func collectionView(_ collectionView: UICollectionView,
+                        didSelectItemAt indexPath: IndexPath) {
+        viewModel.apply(.selectDetailView(indexPath.item))
+    }
     
     //MARK: - CollectoinView Configuraion
     private func registPostCell() -> postRegisteration {
@@ -124,6 +116,8 @@ extension NormalPostListViewController: BaseViewProtocol {
     }
     
     func configureUI() {
+        
+        collectionView.delegate = self
         collectionView.register(NormalPostCell.self,
                                 forCellWithReuseIdentifier: NormalPostCell.identifier)
         configureRefreshControl()

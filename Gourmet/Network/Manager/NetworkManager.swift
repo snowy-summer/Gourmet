@@ -178,6 +178,43 @@ extension NetworkManager {
         }
     }
     
+    func fetchPostById(id: String,
+                       completion: @escaping (Result<PostDTO,PostError>) -> Void) {
+        
+        session.request(PostRouter.fetchPostByPostId(postId: id))
+        .validate(statusCode: 200..<300)
+        .responseDecodable(of: PostDTO.self) { response in
+            switch response.result {
+            case .success(let data):
+                completion(.success(data))
+                
+            case .failure(let error):
+                if let statusCode = response.response?.statusCode,
+                   let postError = PostError(rawValue: statusCode) {
+                    completion(.failure(postError))
+                } else {
+                    PrintDebugger.logError(error)
+                }
+            }
+        }
+    }
+    
+    func fetchImage(file: String, completion: @escaping (Data?) -> Void) {
+        
+        session.request(PostRouter.fetchImage(file))
+            .validate(statusCode: 200..<300)
+            .response { response in
+                switch response.result {
+                case .success(let data):
+                    completion(data)
+                    
+                case .failure(let error):
+                    PrintDebugger.logError(error)
+                    completion(nil)
+                }
+            }
+    }
+    
     func uploadPost(item: UploadPostBodyModel) -> Single<Result<Bool, PostError>> {
         
         return Single.create { [weak self] single -> Disposable in
@@ -231,22 +268,6 @@ extension NetworkManager {
                 }
             }
         }
-    }
-    
-    func fetchImage(file: String, completion: @escaping (Data?) -> Void) {
-        
-        session.request(PostRouter.fetchImage(file))
-            .validate(statusCode: 200..<300)
-            .response { response in
-                switch response.result {
-                case .success(let data):
-                    completion(data)
-                    
-                case .failure(let error):
-                    PrintDebugger.logError(error)
-                    completion(nil)
-                }
-            }
     }
     
     func deletePost(id: String,

@@ -178,7 +178,7 @@ extension PostListViewController: BaseViewProtocol {
         configureRefreshControl()
     }
     
-    func configureRefreshControl () {
+    private func configureRefreshControl () {
         
         let refreshControl = UIRefreshControl()
         recipeCollectionView.refreshControl = refreshControl

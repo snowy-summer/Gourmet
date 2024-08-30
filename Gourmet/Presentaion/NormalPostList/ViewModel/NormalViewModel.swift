@@ -14,12 +14,14 @@ final class NormalViewModel: ViewModelProtocol {
     enum Input {
         case noValue
         case refreshData
+        case selectDetailView(Int)
     }
     
     enum Output {
         case noValue
         case reloadView([PostDTO])
         case needReLogin
+        case showDetailView(PostDTO)
     }
     
     private let networkManager: NetworkManagerProtocol
@@ -41,6 +43,9 @@ final class NormalViewModel: ViewModelProtocol {
             
         case .refreshData:
             fetchPost()
+            
+        case .selectDetailView(let index):
+            output.onNext(.showDetailView(normalPostList[index]))
         }
     }
     
