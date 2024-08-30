@@ -55,7 +55,8 @@ extension EditRecipeViewController: EditRecipeTitleCellDelegate,
                                     EditRecipeCategoryCellDelegate,
                                     EditRecipeIngredientAddCellDelegate,
                                     EditRecipeTimeDelegate,
-                                    EditRecipeContentAddCellDelegate {
+                                    EditRecipeContentAddCellDelegate,
+                                    EditRecipeDifficultyLevelCellDelegate {
     
     // Category
     func selectFoodCategory(item: Int) {
@@ -84,6 +85,11 @@ extension EditRecipeViewController: EditRecipeTitleCellDelegate,
     //EditRecipeTimeDelegate
     func updateTime(_ value: String) {
         viewModel.apply(.updateTime(value))
+    }
+    
+    // difficultyLevel
+    func changeLevel(_ value: String) {
+        viewModel.apply(.updateDifficultyLevel(value))
     }
 }
 
@@ -200,6 +206,7 @@ extension EditRecipeViewController {
         let cellRegistration = registerationDifficultyLevel { [weak self] cell, indexPath, itemIdentifier in
             
             guard let self = self else { return }
+            cell.delegate = self
             cellBackgroundConfigure(cell: cell,
                                     color: .lightGray.withAlphaComponent(0.5))       
         }

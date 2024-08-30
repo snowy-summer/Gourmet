@@ -198,18 +198,23 @@ extension NetworkManager {
         }
     }
     
-    func fetchImage(file: String, completion: @escaping (Data?) -> Void) {
+    func fetchImage(file: String,
+                    completion: @escaping (Result<Data?, PostError>) -> Void) {
         
         session.request(PostRouter.fetchImage(file))
             .validate(statusCode: 200..<300)
             .response { response in
                 switch response.result {
                 case .success(let data):
-                    completion(data)
+                    completion(.success(data))
                     
                 case .failure(let error):
-                    PrintDebugger.logError(error)
-                    completion(nil)
+                    if let statusCode = response.response?.statusCode,
+                       let postError = PostError(rawValue: statusCode) {
+                        completion(.failure(postError))
+                    } else {
+                        PrintDebugger.logError(error)
+                    }
                 }
             }
     }

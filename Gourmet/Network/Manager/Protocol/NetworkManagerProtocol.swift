@@ -40,7 +40,7 @@ protocol NetworkManagerProtocol {
                        completion: @escaping (Result<Bool, PostError>) -> Void)
     
     func fetchImage(file: String,
-                    completion: @escaping (Data?) -> Void)
+                    completion: @escaping (Result<Data?, PostError>) -> Void)
     
     func deletePost(id: String,
                     completion: @escaping (Result<Bool, PostError>) -> Void)

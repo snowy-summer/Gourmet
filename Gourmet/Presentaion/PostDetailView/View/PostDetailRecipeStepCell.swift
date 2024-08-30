@@ -10,6 +10,7 @@ import SnapKit
 
 final class PostDetailRecipeStepCell: UICollectionViewCell {
     
+    private let stackView = UIStackView()
     private let stepImageView = UIImageView()
     private let valueLabel = UILabel()
     
@@ -27,6 +28,7 @@ final class PostDetailRecipeStepCell: UICollectionViewCell {
         super.prepareForReuse()
         
         stepImageView.image = nil
+        stepImageView.isHidden = true
         valueLabel.text = ""
     }
     
@@ -36,11 +38,10 @@ extension PostDetailRecipeStepCell {
     
     func updateContent(item: RecipeContent) {
         
-        // 0.고기 200g\n
-        
-//        valueLabel.text = item.content
-        
-        stepImageView.image = item.thumbnailImage
+        if let image = item.thumbnailImage {
+            stepImageView.image = image
+            stepImageView.isHidden = false
+        }
         valueLabel.text = item.content
     }
 }
@@ -50,15 +51,22 @@ extension PostDetailRecipeStepCell: BaseViewProtocol {
     
     func configureHierarchy() {
         
-        contentView.addSubview(stepImageView)
-        contentView.addSubview(valueLabel)
+        contentView.addSubview(stackView)
+        stackView.addArrangedSubview(stepImageView)
+        stackView.addArrangedSubview(valueLabel)
     }
     
     func configureUI() {
         
-        stepImageView.contentMode = .scaleAspectFit
-        valueLabel.font = .systemFont(ofSize: 16, weight: .regular)
+        stackView.axis = .vertical
+        stackView.distribution = .fill
+        stackView.alignment = .center
+        valueLabel.font = .systemFont(ofSize: 16,
+                                      weight: .medium)
         valueLabel.numberOfLines = .zero
+        stepImageView.isHidden = true
+        stepImageView.layer.cornerRadius = 8
+        stepImageView.clipsToBounds = true
         
         contentView.layer.cornerRadius = 8
         contentView.clipsToBounds = true
@@ -67,15 +75,13 @@ extension PostDetailRecipeStepCell: BaseViewProtocol {
     
     func configureLayout() {
         
-        stepImageView.snp.makeConstraints { make in
-            make.top.equalTo(contentView.snp.top)
-            make.directionalHorizontalEdges.equalTo(contentView.snp.directionalHorizontalEdges).inset(16)
+        stackView.snp.makeConstraints { make in
+            make.directionalEdges.equalTo(contentView.snp.directionalEdges).inset(16)
         }
         
-        valueLabel.snp.makeConstraints { make in
-            make.top.equalTo(stepImageView.snp.bottom).offset(16)
-            make.directionalHorizontalEdges.equalTo(contentView.snp.directionalHorizontalEdges).inset(16)
-            make.bottom.equalTo(contentView.snp.bottom).inset(16)
+        stepImageView.snp.makeConstraints { make in
+            make.width.equalTo(stackView.snp.width).multipliedBy(0.5)
+            make.height.equalTo(stepImageView.snp.width).multipliedBy(0.75)
         }
     }
     

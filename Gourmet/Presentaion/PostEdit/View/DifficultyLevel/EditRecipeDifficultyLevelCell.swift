@@ -8,11 +8,17 @@
 import UIKit
 import SnapKit
 
+protocol EditRecipeDifficultyLevelCellDelegate: AnyObject {
+    func changeLevel(_ value: String)
+}
+
 final class EditRecipeDifficultyLevelCell: UICollectionViewCell {
     
     private let iconAndTitleView = HeaderView()
     private let contentLabel = UILabel()
     private let menuButton = UIButton()
+    
+    weak var delegate: EditRecipeDifficultyLevelCellDelegate?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -29,16 +35,8 @@ final class EditRecipeDifficultyLevelCell: UICollectionViewCell {
 extension EditRecipeDifficultyLevelCell {
     
     func updateContent(item: String) {
-        
-//        if item.isAddCell {
-//            addImageView.isHidden = false
-//            nameLabel.isHidden = true
-//            valueLabel.isHidden = true
-//            return
-//        }
-//        
-//        nameLabel.text = item.name
-//        valueLabel.text = item.value
+ 
+        contentLabel.text = item
     }
 }
 
@@ -92,17 +90,17 @@ extension EditRecipeDifficultyLevelCell: BaseViewProtocol {
     
         let low = UIAction(title: "쉬움") { [weak self] _ in
             guard let self = self else { return }
-//            viewModel?.applyInput(.selectPriority(1))
+            delegate?.changeLevel("쉬움")
         }
         
         let middle = UIAction(title: "보통") { [weak self] _ in
             guard let self = self else { return }
-//            viewModel?.applyInput(.selectPriority(2))
+            delegate?.changeLevel("보통")
         }
         
         let high = UIAction(title: "어려움") { [weak self] _ in
             guard let self = self else { return }
-//            viewModel?.applyInput(.selectPriority(3))
+            delegate?.changeLevel("어려움")
         }
         
         let items = [
@@ -116,67 +114,3 @@ extension EditRecipeDifficultyLevelCell: BaseViewProtocol {
     
 }
 
-
-final class HeaderView: UIView {
-    
-    private let titleLabel = UILabel()
-    private let iconView = UIView()
-    private let iconImageView = UIImageView()
-    
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        
-        configureView()
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-  
-    
-    func configureContent(type: EditRecipeSection) {
-        
-        titleLabel.text = type.headerTitle
-        iconImageView.image = UIImage(systemName: type.iconName)
-        iconView.backgroundColor = type.iconColor
-    }
-}
- 
-extension HeaderView: BaseViewProtocol {
-    
-    func configureHierarchy() {
-        
-        addSubview(titleLabel)
-        addSubview(iconView)
-        iconView.addSubview(iconImageView)
-    }
-    
-    func configureUI() {
-        
-        titleLabel.font = .systemFont(ofSize: 17,
-                                      weight: .semibold)
-        
-        iconView.layer.cornerRadius = 8
-        iconView.backgroundColor = .systemBackground
-        iconImageView.tintColor = .systemBackground
-    }
-    
-    func configureLayout() {
-        
-        iconView.snp.makeConstraints { make in
-            make.leading.equalTo(self.snp.leading).offset(8)
-            make.verticalEdges.equalTo(self.snp.verticalEdges).inset(8)
-            make.width.equalTo(iconView.snp.height)
-        }
-        
-        iconImageView.snp.makeConstraints { make in
-            make.directionalEdges.equalToSuperview().inset(4)
-        }
-        
-        titleLabel.snp.makeConstraints { make in
-            make.leading.equalTo(iconView.snp.trailing).offset(8)
-            make.verticalEdges.equalToSuperview()
-            make.trailing.equalTo(self.snp.trailing).inset(8)
-        }
-    }
-}

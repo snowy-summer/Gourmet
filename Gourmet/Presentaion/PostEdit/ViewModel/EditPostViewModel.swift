@@ -18,6 +18,7 @@ final class EditPostViewModel: ViewModelProtocol {
         case addIngredient(IngredientContent)
         case addContent(RecipeContent)
         case updateTime(String)
+        case updateDifficultyLevel(String)
         case saveContet
     }
     
@@ -97,6 +98,10 @@ final class EditPostViewModel: ViewModelProtocol {
             time = value
             output.onNext(.applySnapShot)
             
+        case .updateDifficultyLevel(let level):
+            difficultyLevel = level
+            output.onNext(.applySnapShot)
+            
         case .saveContet:
             uploadPost()
         }
@@ -133,10 +138,10 @@ final class EditPostViewModel: ViewModelProtocol {
                 if error == .expiredAccessToken {
                     networkManager.refreshAccessToken { result in
                         switch result {
-                        case .success(let success):
+                        case .success:
                             self.uploadPost()
                             
-                        case .failure(let failure):
+                        case .failure:
                             self.output.onNext(.needReLogin)
                         }
                     }

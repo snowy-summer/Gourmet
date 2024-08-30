@@ -1,5 +1,5 @@
 //
-//  PostDetailImageCell.swift
+//  PostDetailTitleCell.swift
 //  Gourmet
 //
 //  Created by 최승범 on 8/26/24.
@@ -7,8 +7,14 @@
 
 import UIKit
 import SnapKit
+import RxSwift
+import RxCocoa
 
-final class PostDetailImageCell: UICollectionViewCell {
+protocol PostDetailTitleCellDelegate: AnyObject {
+    func resetViewController()
+}
+
+final class PostDetailTitleCell: UICollectionViewCell {
 
     private let foodImageView = UIImageView()
     
@@ -17,13 +23,18 @@ final class PostDetailImageCell: UICollectionViewCell {
     private let difficultLevelView = InformationDetailView()
     private let timeView = InformationDetailView()
     private let starView = InformationDetailView()
-    
     private let foodNameLabel = UILabel()
+    
+    private let viewModel = PostDetailTitleViewModel(networkManger: NetworkManager.shared)
+    private let disposeBag = DisposeBag()
+    
+    weak var delegate: PostDetailTitleCellDelegate?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
         
         configureView()
+        bindingOutput()
     }
 
     required init?(coder: NSCoder) {
@@ -32,29 +43,43 @@ final class PostDetailImageCell: UICollectionViewCell {
 
 }
 
-extension PostDetailImageCell {
+extension PostDetailTitleCell {
+    
+    private func bindingOutput() {
+        
+        viewModel.output.bind(with: self) { owner, output in
+            
+            switch output {
+            case .noValue:
+                return
+                
+            case.fetchImage(let data):
+                owner.foodImageView.image = UIImage(data: data)
+                
+            case .needReLogin:
+                owner.delegate?.resetViewController()
+            }
+        }
+        .disposed(by: disposeBag)
+    }
     
     func updateContent(item: PostDTO) {
         
         foodNameLabel.text = item.title
-        difficultLevelView.updateContent(image: UIImage(systemName: IconConmponent.difficultyLevel.iconName),
+        difficultLevelView.updateContent(type: .difficultyLevel,
                                          text: item.difficulty)
-        timeView.updateContent(image: UIImage(systemName: IconConmponent.time.iconName),
+        timeView.updateContent(type: .time,
                                          text: item.time)
-        starView.updateContent(image: UIImage(systemName: IconConmponent.like.iconName),
+        starView.updateContent(type: .like,
                                text: "\(item.likes.count)")
         
         if !item.files.isEmpty {
-            NetworkManager.shared.fetchImage(file: item.files.first!) { [weak self] data in
-                if let data = data {
-                    self?.foodImageView.image = UIImage(data: data)
-                }
-            }
+            viewModel.apply(.requestImage(item.files.last!))
         }
     }
 }
 
-extension PostDetailImageCell: BaseViewProtocol {
+extension PostDetailTitleCell: BaseViewProtocol {
     
     func configureHierarchy() {
         
