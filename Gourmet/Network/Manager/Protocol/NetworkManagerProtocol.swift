@@ -30,7 +30,8 @@ protocol NetworkManagerProtocol {
     func fetchPostById(id: String,
                        completion: @escaping (Result<PostDTO,PostError>) -> Void)
     
-    func uploadPost(item: UploadPostBodyModel) -> Single<Result<Bool, PostError>>
+    func uploadPost(item: UploadPostBodyModel,
+                    completion: @escaping (Result<Bool,PostError>) -> Void)
     
     func uploadImage(_ images: [Data?],
                      completion: @escaping (Result<UploadFileDTO, PostError>) -> Void)

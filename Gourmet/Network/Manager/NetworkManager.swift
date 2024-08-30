@@ -118,7 +118,7 @@ extension NetworkManager {
             return Disposables.create()
         }
     }
- 
+    
     func refreshAccessToken(completion: @escaping (Result<Bool, TokenError>) -> Void) {
         
         let keychainManager = KeychainManager.shared
@@ -181,21 +181,21 @@ extension NetworkManager {
                        completion: @escaping (Result<PostDTO,PostError>) -> Void) {
         
         session.request(PostRouter.fetchPostByPostId(postId: id))
-        .validate(statusCode: 200..<300)
-        .responseDecodable(of: PostDTO.self) { response in
-            switch response.result {
-            case .success(let data):
-                completion(.success(data))
-                
-            case .failure(let error):
-                if let statusCode = response.response?.statusCode,
-                   let postError = PostError(rawValue: statusCode) {
-                    completion(.failure(postError))
-                } else {
-                    PrintDebugger.logError(error)
+            .validate(statusCode: 200..<300)
+            .responseDecodable(of: PostDTO.self) { response in
+                switch response.result {
+                case .success(let data):
+                    completion(.success(data))
+                    
+                case .failure(let error):
+                    if let statusCode = response.response?.statusCode,
+                       let postError = PostError(rawValue: statusCode) {
+                        completion(.failure(postError))
+                    } else {
+                        PrintDebugger.logError(error)
+                    }
                 }
             }
-        }
     }
     
     func fetchImage(file: String,
@@ -219,28 +219,26 @@ extension NetworkManager {
             }
     }
     
-    func uploadPost(item: UploadPostBodyModel) -> Single<Result<Bool, PostError>> {
+    func uploadPost(item: UploadPostBodyModel,
+                    completion: @escaping (Result<Bool,PostError>) -> Void) {
         
-        return Single.create { [weak self] single -> Disposable in
-            
-            self?.session.request(PostRouter.uploadPost(item))
-                .validate(statusCode: 200..<300)
-                .responseDecodable(of: PostDTO.self) { response in
-                    switch response.result {
-                    case .success:
-                        single(.success(.success(true)))
-                        
-                    case .failure(let error):
-                        if let statusCode = response.response?.statusCode,
-                           let postError = PostError(rawValue: statusCode) {
-                            single(.success(.failure(postError)))
-                        } else {
-                            PrintDebugger.logError(error)
-                        }
+        session.request(PostRouter.uploadPost(item))
+            .validate(statusCode: 200..<300)
+            .responseDecodable(of: PostDTO.self) { response in
+                switch response.result {
+                case .success:
+                    completion(.success(true))
+                    
+                case .failure(let error):
+                    if let statusCode = response.response?.statusCode,
+                       let postError = PostError(rawValue: statusCode) {
+                        completion(.failure(postError))
+                    } else {
+                        PrintDebugger.logError(error)
                     }
                 }
-            return Disposables.create()
-        }
+            }
+        
     }
     
     func uploadImage(_ images: [Data?],

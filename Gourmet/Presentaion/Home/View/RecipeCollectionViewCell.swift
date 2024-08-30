@@ -83,7 +83,7 @@ extension RecipeCollectionViewCell: BaseViewProtocol {
     func configureUI() {
         
         thumbnailImageView.backgroundColor = .lightGray
-        thumbnailImageView.contentMode = .scaleToFill
+        thumbnailImageView.contentMode = .scaleAspectFill
         thumbnailImageView.layer.cornerRadius = 8
         thumbnailImageView.clipsToBounds = true
     }

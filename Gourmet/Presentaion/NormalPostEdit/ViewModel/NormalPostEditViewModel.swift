@@ -72,12 +72,15 @@ final class NormalPostEditViewModel: ViewModelProtocol {
             switch result {
             case .success(let success):
                 
-                networkManager.uploadPost(item: createUploadPostBody(files: success.files))
-                    .subscribe { result in
+                networkManager.uploadPost(item: createUploadPostBody(files: success.files)) { [ weak self ] result in
+                    switch result {
+                    case .success:
+                        self?.output.onNext(.uploadSuccess)
                         
-                        self.output.onNext(.uploadSuccess)
+                    case .failure(let error):
+                        print(error)
                     }
-                    .disposed(by: disposeBag)
+                }
                 
             case .failure(let error):
                 if error == .expiredAccessToken {

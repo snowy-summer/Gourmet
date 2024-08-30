@@ -44,6 +44,9 @@ extension EditRecipeViewController {
             case .needReLogin:
                 owner.resetViewController(vc: LoginViewController())
                 
+            case .popViewController:
+                owner.navigationController?.popViewController(animated: true)
+                
             }
         }.disposed(by: disposeBag)
     }
@@ -380,7 +383,6 @@ extension EditRecipeViewController: BaseViewProtocol {
         saveItem.rx.tap
             .bind(with: self) { owner, _ in
                 owner.viewModel.apply(.saveContet)
-                owner.navigationController?.popViewController(animated: true)
             }
             .disposed(by: disposeBag)
         

@@ -26,6 +26,7 @@ final class EditPostViewModel: ViewModelProtocol {
         case noValue
         case applySnapShot
         case needReLogin
+        case popViewController
     }
     
     enum Item: Hashable {
@@ -115,24 +116,27 @@ final class EditPostViewModel: ViewModelProtocol {
     
     private func uploadPost() {
         
-        var datas = [Data?]()
+        var datas = [Data]()
         for i in contents {
-            let data = i.thumbnailImage?.jpegData(compressionQuality: 1.0)
-            datas.append(data)
+            if let data = i.thumbnailImage?.jpegData(compressionQuality: 1.0) {
+                datas.append(data)
+            }
         }
         
         networkManager.uploadImage(datas) { [weak self] result in
             guard let self = self else { return }
-            
             switch result {
             case .success(let success):
-            
-                networkManager.uploadPost(item: createUploadPostBody(files: success.files))
-                    .subscribe { result in
-            
+        
+                networkManager.uploadPost(item: createUploadPostBody(files: success.files)) { result in
+                    switch result {
+                    case .success:
+                        self.output.onNext(.popViewController)
                         
+                    case .failure(let error):
+                        print(error)
                     }
-                    .disposed(by: disposeBag)
+                }
                 
             case .failure(let error):
                 if error == .expiredAccessToken {
@@ -145,6 +149,8 @@ final class EditPostViewModel: ViewModelProtocol {
                             self.output.onNext(.needReLogin)
                         }
                     }
+                } else {
+                    PrintDebugger.logError(error)
                 }
             }
         }
@@ -160,7 +166,7 @@ final class EditPostViewModel: ViewModelProtocol {
         
         return UploadPostBodyModel(title: title,
                                    content: "#\(title)",
-                                   subTitle: "",
+                                   subTitle: nil,
                                    ingredients: ingredientStr,
                                    recipe: recipeContent,
                                    time: time,
