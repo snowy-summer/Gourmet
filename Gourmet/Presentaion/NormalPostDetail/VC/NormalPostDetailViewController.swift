@@ -14,7 +14,7 @@ final class NormalPostDetailViewController: UIViewController {
     
     private let tableView = UITableView()
     private var dataSource: UITableViewDiffableDataSource<NormalPostDetailSection,NormalPostDetailViewModel.Item>!
-    private let commentEditView = CommentEditView()
+    private let commentEditView = TextFieldWithButtonView()
     
     private let viewModel = NormalPostDetailViewModel(networkManager: NetworkManager.shared)
     private let disposeBag = DisposeBag()
@@ -57,6 +57,13 @@ extension NormalPostDetailViewController {
             }
         }
         .disposed(by: disposeBag)
+    }
+}
+
+extension NormalPostDetailViewController: TextFieldWithButtonViewDelegate {
+    
+    func handleTextFieldText(_ value: String) {
+        viewModel.apply(.uploadComment(value))
     }
 }
 
@@ -129,9 +136,11 @@ extension NormalPostDetailViewController: BaseViewProtocol {
                            forCellReuseIdentifier: NormalPostDetailCell.identifier)
         tableView.register(CommentTableViewCell.self,
                            forCellReuseIdentifier: CommentTableViewCell.identifier)
+        tableView.separatorStyle = .singleLine
         
         commentEditView.backgroundColor = .lightGray.withAlphaComponent(0.3)
         commentEditView.layer.cornerRadius = 8
+        commentEditView.delegate = self
         
         configureRefreshControl()
     }

@@ -14,7 +14,7 @@ final class NormalPostDetailViewModel: ViewModelProtocol {
     enum Input {
         case noValue
         case reloadView
-        case uploadComment(String?)
+        case uploadComment(String)
     }
     
     enum Output {
@@ -28,9 +28,15 @@ final class NormalPostDetailViewModel: ViewModelProtocol {
         case comment(CommentDTO)
     }
     
+    private enum NetworkType {
+        case fetch
+        case uploadComment
+    }
+    
     private let networkManager: NetworkManagerProtocol
     private(set) var output = BehaviorSubject(value: Output.noValue)
     private var postId = ""
+    private var comment = ""
     
     init(networkManager: NetworkManagerProtocol) {
         self.networkManager = networkManager
@@ -45,7 +51,9 @@ final class NormalPostDetailViewModel: ViewModelProtocol {
         case .reloadView:
             fetchPost()
             
-        case .uploadComment(let string):
+        case .uploadComment(let text):
+            comment = text
+            uploadComment()
             return
         }
     }
@@ -67,13 +75,11 @@ extension NormalPostDetailViewModel {
             guard let self = self else { return }
             switch result {
             case .success(let data):
-//                normalPostList = data.data
                 output.onNext(.reloadView(data))
-                return
                 
             case .failure(let error):
                 if error == .expiredAccessToken {
-                    refreshAccessToken()
+                    refreshAccessToken(type: .fetch)
                 } else {
                     PrintDebugger.logError(error)
                 }
@@ -82,15 +88,39 @@ extension NormalPostDetailViewModel {
         }
     }
     
-    private func refreshAccessToken() {
+    private func uploadComment() {
+        networkManager.uploadComment(id: postId,
+                                     content: comment) { [weak self] result in
+            guard let self = self else { return }
+            switch result {
+            case .success(let success):
+                fetchPost()
+                
+            case .failure(let error):
+                if error == .expiredAccessToken {
+                    refreshAccessToken(type: .uploadComment)
+                } else {
+                    PrintDebugger.logError(error)
+                }
+            }
+        }
+    }
+    
+    private func refreshAccessToken(type: NetworkType) {
         
         networkManager.refreshAccessToken {[weak self] result in
             guard let self = self else { return }
             switch result {
             case .success:
-                fetchPost()
-                return
                 
+                switch type {
+                case .fetch:
+                    fetchPost()
+                    
+                case .uploadComment:
+                    uploadComment()
+                }
+            
             case .failure(let error):
                 PrintDebugger.logError(error)
                 output.onNext(.needReLogin)

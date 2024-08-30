@@ -126,7 +126,6 @@ extension NormalPostListViewController: BaseViewProtocol {
     func configureRefreshControl () {
         
         let refreshControl = UIRefreshControl()
-        refreshControl.tintColor = .main
         collectionView.refreshControl = refreshControl
         refreshControl.rx.controlEvent(.valueChanged)
             .subscribe(with: self) { owner, _ in

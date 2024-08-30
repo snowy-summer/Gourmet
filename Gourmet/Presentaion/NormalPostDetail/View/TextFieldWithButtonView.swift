@@ -1,5 +1,5 @@
 //
-//  CommentEditView.swift
+//  TextFieldWithButtonView.swift
 //  Gourmet
 //
 //  Created by 최승범 on 8/30/24.
@@ -7,11 +7,19 @@
 
 import UIKit
 import SnapKit
+import RxSwift
+import RxCocoa
 
-final class CommentEditView: UIView {
+protocol TextFieldWithButtonViewDelegate: AnyObject {
+    func handleTextFieldText(_ value: String)
+}
+final class TextFieldWithButtonView: UIView {
     
     private let commentTextField = UITextField()
     private let uploadButton = UIButton()
+    
+    weak var delegate: TextFieldWithButtonViewDelegate?
+    private let disposeBag = DisposeBag()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -25,7 +33,7 @@ final class CommentEditView: UIView {
 }
 
 //MARK: - Cofiguration
-extension CommentEditView: BaseViewProtocol {
+extension TextFieldWithButtonView: BaseViewProtocol {
     
     func configureHierarchy() {
         
@@ -55,5 +63,14 @@ extension CommentEditView: BaseViewProtocol {
         }
     }
     
+    func configureGestureAndButtonActions() {
+        
+        uploadButton.rx.tap
+            .withLatestFrom(commentTextField.rx.text.orEmpty)
+            .bind(with: self) { owner, text in
+                owner.delegate?.handleTextFieldText(text)
+            }
+            .disposed(by: disposeBag)
+    }
     
 }

@@ -82,9 +82,6 @@ extension NormalPostDetailCell: BaseViewProtocol {
         likeView.configureIcon(icon: .like)
         commentsView.configureIcon(icon: .comments)
         timeView.configureIcon(icon: .time)
-        
-        contentView.layer.cornerRadius = 8
-        contentView.layer.borderWidth = 1
     }
     
     func configureLayout() {

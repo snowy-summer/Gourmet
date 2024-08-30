@@ -38,8 +38,8 @@ extension NormalPostCell {
         
         nicknameLabel.text = item.creator.nick
         titleLabel.text = item.title
-        likeView.updateContent(content: "0")
-        commentsView.updateContent(content: "0")
+        likeView.updateContent(content: "\(item.likes.count)")
+        commentsView.updateContent(content: "\(item.comments.count)")
         
         if let date = dateManager.stringToDate(value: item.createdAt) {
             timeView.updateContent(content: dateManager.dateToString(date: date))

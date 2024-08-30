@@ -35,6 +35,10 @@ protocol NetworkManagerProtocol {
     func uploadImage(_ images: [Data?],
                      completion: @escaping (Result<UploadFileDTO, PostError>) -> Void)
     
+    func uploadComment(id: String,
+                       content: String,
+                       completion: @escaping (Result<Bool, PostError>) -> Void)
+    
     func fetchImage(file: String,
                     completion: @escaping (Data?) -> Void)
     

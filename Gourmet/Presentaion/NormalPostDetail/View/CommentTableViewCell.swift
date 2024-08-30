@@ -12,8 +12,7 @@ final class CommentTableViewCell: UITableViewCell {
     
     private let profileImageView = UIImageView()
     private let nicknameLabel = UILabel()
-    private let titleLabel = UILabel()
-    private let contentsLabel = UILabel()
+    private let commentLabel = UILabel()
     
     override init(style: UITableViewCell.CellStyle,
                   reuseIdentifier: String?) {
@@ -34,7 +33,7 @@ extension CommentTableViewCell {
     func updateContent(item: CommentDTO) {
         
         nicknameLabel.text = item.creator.nick
-        titleLabel.text = item.content
+        commentLabel.text = item.content
     }
 }
 
@@ -46,7 +45,7 @@ extension CommentTableViewCell: BaseViewProtocol {
         
         contentView.addSubview(profileImageView)
         contentView.addSubview(nicknameLabel)
-        contentView.addSubview(titleLabel)
+        contentView.addSubview(commentLabel)
     }
 
     func configureUI() {
@@ -54,11 +53,8 @@ extension CommentTableViewCell: BaseViewProtocol {
         profileImageView.image = UIImage(systemName: "person.fill")
         profileImageView.tintColor = .gray.withAlphaComponent(0.8)
         
-        nicknameLabel.font = .systemFont(ofSize: 16,
-                                         weight: .bold)
-        
-        contentView.layer.cornerRadius = 8
-        contentView.layer.borderWidth = 1
+        nicknameLabel.font = .systemFont(ofSize: 14,
+                                         weight: .semibold)
     }
 
     func configureLayout() {
@@ -66,7 +62,7 @@ extension CommentTableViewCell: BaseViewProtocol {
             profileImageView.snp.makeConstraints { make in
                 make.top.equalTo(contentView.snp.top).offset(16)
                 make.leading.equalTo(contentView.snp.leading).offset(16)
-                make.width.height.equalTo(32)
+                make.width.height.equalTo(24)
             }
             
             nicknameLabel.snp.makeConstraints { make in
@@ -75,10 +71,11 @@ extension CommentTableViewCell: BaseViewProtocol {
                 make.width.equalTo(contentView.snp.width).multipliedBy(0.5)
             }
             
-            titleLabel.snp.makeConstraints { make in
+            commentLabel.snp.makeConstraints { make in
                 make.top.equalTo(profileImageView.snp.bottom).offset(8)
                 make.leading.equalTo(contentView.snp.leading).offset(16)
                 make.trailing.equalTo(contentView.snp.trailing).inset(16)
+                make.bottom.equalTo(contentView.snp.bottom).inset(8)
             }
         }
 }

@@ -170,7 +170,6 @@ extension NetworkManager {
                         single(.success(.failure(postError)))
                     } else {
                         PrintDebugger.logError(error)
-                        single(.success(.failure(PostError.serverError)))
                     }
                 }
             }
@@ -232,7 +231,6 @@ extension NetworkManager {
                             single(.success(.failure(postError)))
                         } else {
                             PrintDebugger.logError(error)
-                            single(.success(.failure(PostError.serverError)))
                         }
                     }
                 }
@@ -264,10 +262,33 @@ extension NetworkManager {
                     completion(.failure(postError))
                 } else {
                     PrintDebugger.logError(error)
-                    completion(.failure(PostError.serverError))
                 }
             }
         }
+    }
+    
+    func uploadComment(id: String,
+                       content: String,
+                       completion: @escaping (Result<Bool, PostError>) -> Void) {
+        let commentBody = UploadCommentBodyModel(content: content)
+        session.request(PostRouter.uploadComment(postId: id,
+                                                 body: commentBody))
+        .validate(statusCode: 200..<300)
+        .response { response in
+            switch response.result {
+            case .success:
+                completion(.success(true))
+                
+            case .failure(let error):
+                if let statusCode = response.response?.statusCode,
+                   let postError = PostError(rawValue: statusCode) {
+                    completion(.failure(postError))
+                } else {
+                    PrintDebugger.logError(error)
+                }
+            }
+        }
+        
     }
     
     func deletePost(id: String,
@@ -285,7 +306,6 @@ extension NetworkManager {
                         completion(.failure(postError))
                     } else {
                         PrintDebugger.logError(error)
-                        completion(.failure(PostError.serverError))
                     }
                 }
             }
