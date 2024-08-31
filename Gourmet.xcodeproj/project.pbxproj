@@ -26,6 +26,7 @@
 		6B126ED62C81E4E1005E52B8 /* RecipeCollectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B126ED52C81E4E1005E52B8 /* RecipeCollectionViewModel.swift */; };
 		6B126ED82C81E7E0005E52B8 /* RecipePostViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B126ED72C81E7E0005E52B8 /* RecipePostViewModel.swift */; };
 		6B126EDA2C81E901005E52B8 /* PostDetailTitleViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B126ED92C81E901005E52B8 /* PostDetailTitleViewModel.swift */; };
+		6B126EDE2C82F10B005E52B8 /* iamport-ios in Frameworks */ = {isa = PBXBuildFile; productRef = 6B126EDD2C82F10B005E52B8 /* iamport-ios */; };
 		6B1B9F872C70AC9C00507FB5 /* BaseViewProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B1B9F862C70AC9C00507FB5 /* BaseViewProtocol.swift */; };
 		6B1B9F8A2C70ACD100507FB5 /* OnboardingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B1B9F892C70ACD100507FB5 /* OnboardingViewController.swift */; };
 		6B1B9F8D2C70B6A300507FB5 /* UILabel+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B1B9F8C2C70B6A300507FB5 /* UILabel+Extension.swift */; };
@@ -250,6 +251,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6B126EDE2C82F10B005E52B8 /* iamport-ios in Frameworks */,
 				6BE48B852C6F2608000B948A /* RxCocoa in Frameworks */,
 				6B24ABF92C7F52D300DD4599 /* IQKeyboardManagerSwift in Frameworks */,
 				6B83266A2C749CAE009D787C /* Differentiator in Frameworks */,
@@ -977,6 +979,7 @@
 				6B83266B2C749CAE009D787C /* RxDataSources */,
 				6B6FFA792C775C5C002AA04E /* Toast */,
 				6B24ABF82C7F52D300DD4599 /* IQKeyboardManagerSwift */,
+				6B126EDD2C82F10B005E52B8 /* iamport-ios */,
 			);
 			productName = Gourmet;
 			productReference = 6BD986402C6CCAD900F563BE /* Gourmet.app */;
@@ -1013,6 +1016,7 @@
 				6B8326682C749CAE009D787C /* XCRemoteSwiftPackageReference "RxDataSources" */,
 				6B6FFA782C775C5C002AA04E /* XCRemoteSwiftPackageReference "Toast-Swift" */,
 				6B24ABF72C7F52D300DD4599 /* XCRemoteSwiftPackageReference "IQKeyboardManager" */,
+				6B126EDC2C82F10B005E52B8 /* XCRemoteSwiftPackageReference "iamport-ios" */,
 			);
 			productRefGroup = 6BD986412C6CCAD900F563BE /* Products */;
 			projectDirPath = "";
@@ -1300,6 +1304,7 @@
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1332,6 +1337,7 @@
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1374,6 +1380,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		6B126EDC2C82F10B005E52B8 /* XCRemoteSwiftPackageReference "iamport-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/iamport/iamport-ios.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.4.2;
+			};
+		};
 		6B24ABF72C7F52D300DD4599 /* XCRemoteSwiftPackageReference "IQKeyboardManager" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/hackiftekhar/IQKeyboardManager.git";
@@ -1425,6 +1439,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		6B126EDD2C82F10B005E52B8 /* iamport-ios */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6B126EDC2C82F10B005E52B8 /* XCRemoteSwiftPackageReference "iamport-ios" */;
+			productName = "iamport-ios";
+		};
 		6B24ABF82C7F52D300DD4599 /* IQKeyboardManagerSwift */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 6B24ABF72C7F52D300DD4599 /* XCRemoteSwiftPackageReference "IQKeyboardManager" */;

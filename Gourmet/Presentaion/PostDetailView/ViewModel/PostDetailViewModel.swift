@@ -32,7 +32,7 @@ final class PostDetailViewModel: ViewModelProtocol {
     }
     
     private(set)var output = BehaviorSubject(value: Output.noValue)
-    private let recipe: PostDTO
+    let recipe: PostDTO
     private(set) var ingredients = [Item]()
     private(set) var recipeStep = [Item]()
     

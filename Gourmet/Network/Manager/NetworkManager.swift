@@ -141,6 +141,7 @@ extension NetworkManager {
                         if tokenError == .expiredRefreshToken {
                             completion(.failure(tokenError))
                         } else {
+                            completion(.failure(tokenError))
                             PrintDebugger.logError(tokenError)
                         }
                     }
