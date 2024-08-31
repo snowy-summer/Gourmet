@@ -14,6 +14,7 @@ final class NormalViewModel: ViewModelProtocol {
     enum Input {
         case noValue
         case refreshData
+        case updateNextData
         case selectDetailView(Int)
     }
     
@@ -27,7 +28,7 @@ final class NormalViewModel: ViewModelProtocol {
     private let networkManager: NetworkManagerProtocol
     
     private(set)var output = BehaviorSubject(value: Output.noValue)
-    private var normalPostList = [PostDTO]()
+    private(set) var normalPostList = [PostDTO]()
     private var category = Category(id: .normal)
     private let disposeBag = DisposeBag()
     
@@ -42,6 +43,9 @@ final class NormalViewModel: ViewModelProtocol {
             return
             
         case .refreshData:
+            fetchPost()
+            
+        case .updateNextData:
             fetchPost()
             
         case .selectDetailView(let index):
@@ -60,7 +64,11 @@ final class NormalViewModel: ViewModelProtocol {
                 
                 switch result {
                 case .success(let data):
-                    owner.normalPostList = data.data
+                    if owner.normalPostList.isEmpty {
+                        owner.normalPostList = data.data
+                    } else if owner.category.nextCursor != "" {
+                        owner.normalPostList += data.data
+                    }
                     owner.category.nextCursor = data.nextCursor
                     owner.output.onNext(.reloadView(owner.normalPostList))
                     

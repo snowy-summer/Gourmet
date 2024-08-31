@@ -152,6 +152,25 @@ extension PostListViewController: UICollectionViewDelegate {
     
 }
 
+extension PostListViewController: UICollectionViewDataSourcePrefetching {
+    
+    func collectionView(_ collectionView: UICollectionView,
+                        prefetchItemsAt indexPaths: [IndexPath]) {
+        
+        guard let lastIndexPath = indexPaths.max() else { return }
+        
+        
+        let itemCount = viewModel.recipeList.data.count
+        
+        
+        if lastIndexPath.item >= itemCount - 3 {
+            viewModel.apply(.updateNextData)
+        }
+        
+    }
+
+}
+
 // MARK: - Configuration
 extension PostListViewController: BaseViewProtocol {
     
@@ -175,6 +194,7 @@ extension PostListViewController: BaseViewProtocol {
         
         categoryCollectionView.delegate = self
         recipeCollectionView.delegate = self
+        recipeCollectionView.prefetchDataSource = self
         configureRefreshControl()
     }
     

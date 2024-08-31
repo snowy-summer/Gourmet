@@ -8,7 +8,7 @@
 import Foundation
 
 struct PostListDTO: Decodable {
-    let data: [PostDTO]
+    var data: [PostDTO]
     let nextCursor: String
     
     enum CodingKeys: String, CodingKey {

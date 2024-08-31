@@ -107,6 +107,24 @@ extension NormalPostListViewController: UICollectionViewDelegate {
     
 }
 
+extension NormalPostListViewController: UICollectionViewDataSourcePrefetching {
+    
+    func collectionView(_ collectionView: UICollectionView,
+                        prefetchItemsAt indexPaths: [IndexPath]) {
+        
+        guard let lastIndexPath = indexPaths.max() else { return }
+        
+        
+        let itemCount = viewModel.normalPostList.count
+        
+        
+        if lastIndexPath.item >= itemCount - 3 {
+            viewModel.apply(.updateNextData)
+        }
+        
+    }
+
+}
 
 // MARK: - Configuration
 extension NormalPostListViewController: BaseViewProtocol {
@@ -118,6 +136,7 @@ extension NormalPostListViewController: BaseViewProtocol {
     func configureUI() {
         
         collectionView.delegate = self
+        collectionView.prefetchDataSource = self
         collectionView.register(NormalPostCell.self,
                                 forCellWithReuseIdentifier: NormalPostCell.identifier)
         configureRefreshControl()

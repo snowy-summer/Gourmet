@@ -14,6 +14,7 @@ final class PostViewModel: ViewModelProtocol {
     enum Input {
         case noValue
         case refreshData
+        case updateNextData
         case selectCategory(Int)
         case selectRecipe(Int)
     }
@@ -30,8 +31,8 @@ final class PostViewModel: ViewModelProtocol {
     var categorys = [Category]()
     var category = Category(id: .main)
     
-    private(set)var output = BehaviorSubject(value: Output.noValue)
-    private var recipeList = PostListDTO(data: [], nextCursor: "")
+    private(set) var output = BehaviorSubject(value: Output.noValue)
+    private(set) var recipeList = PostListDTO(data: [], nextCursor: "")
     private let disposeBag = DisposeBag()
     
     init(networkManager: NetworkManagerProtocol) {
@@ -55,6 +56,9 @@ final class PostViewModel: ViewModelProtocol {
         case .refreshData:
             fetchPost()
             
+        case .updateNextData:
+            fetchPost()
+            
         case .selectCategory(let item):
             if category != categorys[item] {
                 category = categorys[item]
@@ -63,7 +67,7 @@ final class PostViewModel: ViewModelProtocol {
                     categorys[index].isSelected = (categorys[index].id == category.id)
                 }
             }
-            
+            recipeList = PostListDTO(data: [], nextCursor: "")
             fetchPost()
     
         case .selectRecipe(let item):
@@ -84,7 +88,13 @@ final class PostViewModel: ViewModelProtocol {
                 
                 switch result {
                 case .success(let data):
-                    owner.recipeList = data
+                    if owner.recipeList.data.isEmpty {
+                        owner.recipeList = data
+                    } else if owner.category.nextCursor != "" {
+                        return
+                    } else {
+                        owner.recipeList.data += data.data
+                    }
                     owner.category.nextCursor = data.nextCursor
                     owner.output.onNext(.reloadCollectionView(categorys: owner.categorys,
                                                               recipeList: owner.recipeList.data))
