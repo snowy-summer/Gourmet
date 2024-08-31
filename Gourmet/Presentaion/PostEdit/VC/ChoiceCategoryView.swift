@@ -8,17 +8,10 @@
 import UIKit
 import SnapKit
 
-protocol ChoiceCategoryViewDelegate: AnyObject {
-    func pushEditRecipeView()
-    func pushEditNormalView()
-}
-
 final class ChoiceCategoryView: UIViewController {
     
     private let normalPostButton = UIButton()
     private let recipePostButton = UIButton()
-    
-    weak var delgate: ChoiceCategoryViewDelegate?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,15 +23,13 @@ final class ChoiceCategoryView: UIViewController {
 extension ChoiceCategoryView {
     
     @objc private func pushEditRecipeView() {
-        dismiss(animated: true) { [weak self] in
-            self?.delgate?.pushEditRecipeView()
-        }
+        navigationController?.pushViewController(EditRecipeViewController(),
+                                                 animated: true)
     }
     
     @objc private func pushEditNormalPostView() {
-        dismiss(animated: true) { [weak self] in
-            self?.delgate?.pushEditNormalView()
-        }
+        navigationController?.pushViewController(NormalPostEditViewController(),
+                                                 animated: true)
     }
     
     

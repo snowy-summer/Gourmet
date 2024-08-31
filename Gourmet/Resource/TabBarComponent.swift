@@ -10,6 +10,7 @@ import Foundation
 enum TabBarComponent: Int, CaseIterable {
     case home
     case recipe
+    case edit
     case community
     case profile
     
@@ -19,6 +20,8 @@ enum TabBarComponent: Int, CaseIterable {
             return "house.fill"
         case .recipe:
             return "book.closed.fill"
+        case .edit:
+            return "pencil"
         case .community:
             return "rectangle.3.group.bubble"
         case .profile:
@@ -32,6 +35,8 @@ enum TabBarComponent: Int, CaseIterable {
             return "Home"
         case .recipe:
             return "Recipe"
+        case .edit:
+            return "Edit"
         case .community:
             return "Community"
         case .profile:

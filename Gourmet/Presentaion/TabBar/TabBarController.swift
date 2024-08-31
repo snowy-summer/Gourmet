@@ -20,6 +20,8 @@ final class TabBarController: UITabBarController {
                           component: .home)
         addViewController(vc: PostListViewController(),
                           component: .recipe)
+        addViewController(vc: ChoiceCategoryView(),
+                          component: .edit)
         addViewController(vc: NormalPostListViewController(),
                           component: .community)
         addViewController(vc: NormalPostListViewController(),
