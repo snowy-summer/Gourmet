@@ -61,6 +61,7 @@ extension CategorycomponentCell: BaseViewProtocol {
         imageView.layer.cornerRadius = 8
         imageView.clipsToBounds = true
         nameLabel.textAlignment = .center
+        nameLabel.numberOfLines = .zero
     }
     
     func configureLayout() {
@@ -74,7 +75,7 @@ extension CategorycomponentCell: BaseViewProtocol {
         nameLabel.snp.makeConstraints { make in
             make.top.equalTo(imageView.snp.bottom).offset(4)
             make.directionalHorizontalEdges.equalToSuperview().inset(4)
-            make.bottom.equalTo(contentView.snp.bottom).inset(8)
+            make.bottom.equalTo(contentView.snp.bottom).inset(4)
         }
         
     }

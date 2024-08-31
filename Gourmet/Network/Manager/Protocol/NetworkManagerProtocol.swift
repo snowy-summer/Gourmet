@@ -45,5 +45,10 @@ protocol NetworkManagerProtocol {
     
     func deletePost(id: String,
                     completion: @escaping (Result<Bool, PostError>) -> Void)
+    
+    // payment
+    func checkBill(impUID: String,
+                    postID: String,
+                    completion: @escaping (Result<Bool, PostError>) -> Void)
 }
 

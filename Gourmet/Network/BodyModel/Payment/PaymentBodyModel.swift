@@ -8,11 +8,6 @@
 import Foundation
 
 struct PaymentBodyModel: Encodable {
-    let impUID: String
-    let postId: String
-    
-    enum CodingKeys: String, CodingKey {
-        case impUID = "imp_uid"
-        case postId = "post_id"
-    }
+    let imp_uid: String
+    let post_id: String
 }

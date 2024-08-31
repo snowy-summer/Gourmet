@@ -11,7 +11,6 @@ import RxCocoa
 import SnapKit
 import Toast
 import iamport_ios
-import WebKit
 
 final class PostDetailViewController: UIViewController {
     
@@ -68,6 +67,9 @@ extension PostDetailViewController {
                     
                 case .needReLogin:
                     owner.resetViewController(vc: OnboardingViewController())
+                    
+                case .buySuccess:
+                    owner.view.makeToast("결제 성공")
                 }
                 
             }.disposed(by: disposeBag)
@@ -274,7 +276,8 @@ extension PostDetailViewController: BaseViewProtocol {
                                        userCode: "imp57573124",
                                        payment: payment)
                 { [weak self] iamportResponse in
-                    print("종료")
+                    
+                    self?.viewModel.apply(.checkPayment(iamportResponse?.imp_uid))
                 }
             }
             .disposed(by: disposeBag)

@@ -314,4 +314,27 @@ extension NetworkManager {
                 }
             }
     }
+    
+    func checkBill(impUID: String,
+                    postID: String,
+                    completion: @escaping (Result<Bool, PostError>) -> Void) {
+        
+        session.request(PaymentRouter.checkBill(impUID: impUID,
+                                                postId: postID))
+            .validate(statusCode: 200..<300)
+            .response { response in
+                switch response.result {
+                case .success:
+                    completion(.success(true))
+                    
+                case .failure(let error):
+                    if let statusCode = response.response?.statusCode,
+                       let postError = PostError(rawValue: statusCode) {
+                        completion(.failure(postError))
+                    } else {
+                        PrintDebugger.logError(error)
+                    }
+                }
+            }
+    }
 }

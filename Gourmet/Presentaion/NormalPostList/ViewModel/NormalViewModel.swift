@@ -66,7 +66,9 @@ final class NormalViewModel: ViewModelProtocol {
                 case .success(let data):
                     if owner.normalPostList.isEmpty {
                         owner.normalPostList = data.data
-                    } else if owner.category.nextCursor != "" {
+                    }  else if owner.category.nextCursor != "" {
+                        return
+                    } else {
                         owner.normalPostList += data.data
                     }
                     owner.category.nextCursor = data.nextCursor
