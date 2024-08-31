@@ -27,6 +27,7 @@
 		6B126ED82C81E7E0005E52B8 /* RecipePostViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B126ED72C81E7E0005E52B8 /* RecipePostViewModel.swift */; };
 		6B126EDA2C81E901005E52B8 /* PostDetailTitleViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B126ED92C81E901005E52B8 /* PostDetailTitleViewModel.swift */; };
 		6B126EDE2C82F10B005E52B8 /* iamport-ios in Frameworks */ = {isa = PBXBuildFile; productRef = 6B126EDD2C82F10B005E52B8 /* iamport-ios */; };
+		6B126EE12C830BF0005E52B8 /* PaymentBodyModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B126EE02C830BF0005E52B8 /* PaymentBodyModel.swift */; };
 		6B1B9F872C70AC9C00507FB5 /* BaseViewProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B1B9F862C70AC9C00507FB5 /* BaseViewProtocol.swift */; };
 		6B1B9F8A2C70ACD100507FB5 /* OnboardingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B1B9F892C70ACD100507FB5 /* OnboardingViewController.swift */; };
 		6B1B9F8D2C70B6A300507FB5 /* UILabel+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B1B9F8C2C70B6A300507FB5 /* UILabel+Extension.swift */; };
@@ -149,6 +150,7 @@
 		6B126ED52C81E4E1005E52B8 /* RecipeCollectionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeCollectionViewModel.swift; sourceTree = "<group>"; };
 		6B126ED72C81E7E0005E52B8 /* RecipePostViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipePostViewModel.swift; sourceTree = "<group>"; };
 		6B126ED92C81E901005E52B8 /* PostDetailTitleViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostDetailTitleViewModel.swift; sourceTree = "<group>"; };
+		6B126EE02C830BF0005E52B8 /* PaymentBodyModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentBodyModel.swift; sourceTree = "<group>"; };
 		6B1B9F862C70AC9C00507FB5 /* BaseViewProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseViewProtocol.swift; sourceTree = "<group>"; };
 		6B1B9F892C70ACD100507FB5 /* OnboardingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewController.swift; sourceTree = "<group>"; };
 		6B1B9F8C2C70B6A300507FB5 /* UILabel+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UILabel+Extension.swift"; sourceTree = "<group>"; };
@@ -333,6 +335,14 @@
 				6B126EC72C816B43005E52B8 /* NormalPostDetailViewController.swift */,
 			);
 			path = VC;
+			sourceTree = "<group>";
+		};
+		6B126EDF2C830BCA005E52B8 /* Payment */ = {
+			isa = PBXGroup;
+			children = (
+				6B126EE02C830BF0005E52B8 /* PaymentBodyModel.swift */,
+			);
+			path = Payment;
 			sourceTree = "<group>";
 		};
 		6B1B9F852C70AC8600507FB5 /* BaseView */ = {
@@ -885,6 +895,7 @@
 				6BE48BAB2C6F28C5000B948A /* User */,
 				6BE48BAA2C6F28BE000B948A /* Profile */,
 				6BE48BA92C6F28B4000B948A /* Post */,
+				6B126EDF2C830BCA005E52B8 /* Payment */,
 			);
 			path = BodyModel;
 			sourceTree = "<group>";
@@ -1081,6 +1092,7 @@
 				6B6FFA822C78D10C002AA04E /* ImageComponent.swift in Sources */,
 				6BE48BB32C6F2926000B948A /* SignUpBodyModel.swift in Sources */,
 				6B1B9FC22C7346B300507FB5 /* TokenError.swift in Sources */,
+				6B126EE12C830BF0005E52B8 /* PaymentBodyModel.swift in Sources */,
 				6B6FFA662C76C0D0002AA04E /* EditPostViewModel.swift in Sources */,
 				6BE48BA42C6F2719000B948A /* PostListDTO.swift in Sources */,
 				6BD986442C6CCAD900F563BE /* AppDelegate.swift in Sources */,
