@@ -60,6 +60,7 @@ extension HomeViewController {
                 
                 guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: RecipeCollectionViewCell.identifier,
                                                                     for: indexPath) as? RecipeCollectionViewCell else { return RecipeCollectionViewCell() }
+                cell.delegate = self
                 cell.updateContent(item: item)
                 return cell
             },
@@ -76,13 +77,20 @@ extension HomeViewController {
     }
 }
 
-extension HomeViewController: UICollectionViewDelegate, ChoiceCategoryViewDelegate {
+extension HomeViewController: UICollectionViewDelegate,
+                              ChoiceCategoryViewDelegate,
+                              RecipeCollectionViewCellDelegate {
+    
+    func resetViewController() {
+        resetViewController(vc: OnboardingViewController())
+    }
+    
     func pushEditRecipeView() {
         navigationController?.pushViewController(EditRecipeViewController(), animated: true)
     }
     
     func pushEditNormalView() {
-//        navigationController?.pushViewController(EditRecipeViewController(), animated: true)
+        navigationController?.pushViewController(NormalPostEditViewController(), animated: true)
     }
     
     

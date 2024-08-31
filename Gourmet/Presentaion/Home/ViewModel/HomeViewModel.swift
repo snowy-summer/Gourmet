@@ -36,8 +36,6 @@ final class HomeViewModel: ViewModelProtocol {
     func transform(_ input: Input) -> Output {
         let needReLogin = PublishSubject<Bool>()
         
-        // TODO: - 데이터 패치전에 토큰 갱신을 한 번 하고 진행으로 변경하기
-        
         let group = DispatchGroup()
         
         group.enter()

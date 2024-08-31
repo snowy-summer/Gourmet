@@ -118,7 +118,7 @@ extension NetworkManager {
             return Disposables.create()
         }
     }
- 
+    
     func refreshAccessToken(completion: @escaping (Result<Bool, TokenError>) -> Void) {
         
         let keychainManager = KeychainManager.shared
@@ -170,7 +170,6 @@ extension NetworkManager {
                         single(.success(.failure(postError)))
                     } else {
                         PrintDebugger.logError(error)
-                        single(.success(.failure(PostError.serverError)))
                     }
                 }
             }
@@ -178,29 +177,68 @@ extension NetworkManager {
         }
     }
     
-    func uploadPost(item: UploadPostBodyModel) -> Single<Result<Bool, PostError>> {
+    func fetchPostById(id: String,
+                       completion: @escaping (Result<PostDTO,PostError>) -> Void) {
         
-        return Single.create { [weak self] single -> Disposable in
-            
-            self?.session.request(PostRouter.uploadPost(item))
-                .validate(statusCode: 200..<300)
-                .responseDecodable(of: PostDTO.self) { response in
-                    switch response.result {
-                    case .success:
-                        single(.success(.success(true)))
-                        
-                    case .failure(let error):
-                        if let statusCode = response.response?.statusCode,
-                           let postError = PostError(rawValue: statusCode) {
-                            single(.success(.failure(postError)))
-                        } else {
-                            PrintDebugger.logError(error)
-                            single(.success(.failure(PostError.serverError)))
-                        }
+        session.request(PostRouter.fetchPostByPostId(postId: id))
+            .validate(statusCode: 200..<300)
+            .responseDecodable(of: PostDTO.self) { response in
+                switch response.result {
+                case .success(let data):
+                    completion(.success(data))
+                    
+                case .failure(let error):
+                    if let statusCode = response.response?.statusCode,
+                       let postError = PostError(rawValue: statusCode) {
+                        completion(.failure(postError))
+                    } else {
+                        PrintDebugger.logError(error)
                     }
                 }
-            return Disposables.create()
-        }
+            }
+    }
+    
+    func fetchImage(file: String,
+                    completion: @escaping (Result<Data?, PostError>) -> Void) {
+        
+        session.request(PostRouter.fetchImage(file))
+            .validate(statusCode: 200..<300)
+            .response { response in
+                switch response.result {
+                case .success(let data):
+                    completion(.success(data))
+                    
+                case .failure(let error):
+                    if let statusCode = response.response?.statusCode,
+                       let postError = PostError(rawValue: statusCode) {
+                        completion(.failure(postError))
+                    } else {
+                        PrintDebugger.logError(error)
+                    }
+                }
+            }
+    }
+    
+    func uploadPost(item: UploadPostBodyModel,
+                    completion: @escaping (Result<Bool,PostError>) -> Void) {
+        
+        session.request(PostRouter.uploadPost(item))
+            .validate(statusCode: 200..<300)
+            .responseDecodable(of: PostDTO.self) { response in
+                switch response.result {
+                case .success:
+                    completion(.success(true))
+                    
+                case .failure(let error):
+                    if let statusCode = response.response?.statusCode,
+                       let postError = PostError(rawValue: statusCode) {
+                        completion(.failure(postError))
+                    } else {
+                        PrintDebugger.logError(error)
+                    }
+                }
+            }
+        
     }
     
     func uploadImage(_ images: [Data?],
@@ -227,26 +265,33 @@ extension NetworkManager {
                     completion(.failure(postError))
                 } else {
                     PrintDebugger.logError(error)
-                    completion(.failure(PostError.serverError))
                 }
             }
         }
     }
     
-    func fetchImage(file: String, completion: @escaping (Data?) -> Void) {
-        
-        session.request(PostRouter.fetchImage(file))
-            .validate(statusCode: 200..<300)
-            .response { response in
-                switch response.result {
-                case .success(let data):
-                    completion(data)
-                    
-                case .failure(let error):
+    func uploadComment(id: String,
+                       content: String,
+                       completion: @escaping (Result<Bool, PostError>) -> Void) {
+        let commentBody = UploadCommentBodyModel(content: content)
+        session.request(PostRouter.uploadComment(postId: id,
+                                                 body: commentBody))
+        .validate(statusCode: 200..<300)
+        .response { response in
+            switch response.result {
+            case .success:
+                completion(.success(true))
+                
+            case .failure(let error):
+                if let statusCode = response.response?.statusCode,
+                   let postError = PostError(rawValue: statusCode) {
+                    completion(.failure(postError))
+                } else {
                     PrintDebugger.logError(error)
-                    completion(nil)
                 }
             }
+        }
+        
     }
     
     func deletePost(id: String,
@@ -264,7 +309,6 @@ extension NetworkManager {
                         completion(.failure(postError))
                     } else {
                         PrintDebugger.logError(error)
-                        completion(.failure(PostError.serverError))
                     }
                 }
             }

@@ -62,6 +62,9 @@ extension PostDetailViewController {
                     
                 case .deleteFail(let error):
                     owner.view.makeToast(error.description)
+                    
+                case .needReLogin:
+                    owner.resetViewController(vc: OnboardingViewController())
                 }
                 
             }.disposed(by: disposeBag)
@@ -70,10 +73,17 @@ extension PostDetailViewController {
     
 }
 
+extension PostDetailViewController: PostDetailTitleCellDelegate {
+    
+    func resetViewController() {
+         resetViewController(vc: OnboardingViewController())
+    }
+}
+
 //MARK: - CollectionView
 extension PostDetailViewController {
     
-    typealias imageTitleRegisteration = UICollectionView.CellRegistration<PostDetailImageCell, PostDTO>
+    typealias imageTitleRegisteration = UICollectionView.CellRegistration<PostDetailTitleCell, PostDTO>
     typealias ingredientRegisteration = UICollectionView.CellRegistration<PostDetailIngredientCell, RecipeIngredient>
     typealias recipeRegisteration = UICollectionView.CellRegistration<PostDetailRecipeStepCell, RecipeContent>
     
@@ -82,7 +92,7 @@ extension PostDetailViewController {
     private func registImageTitleCell() -> imageTitleRegisteration {
         
         let cellRegistration = imageTitleRegisteration { cell, indexPath, itemIdentifier in
-            
+            cell.delegate = self
         }
         
         return cellRegistration
@@ -137,7 +147,6 @@ extension PostDetailViewController {
                                                                         for: indexPath,
                                                                         item: recipe)
                 cell.updateContent(item: recipe)
-                
                 return cell
             }
             
@@ -159,6 +168,15 @@ extension PostDetailViewController {
                                    toSection: .recipeStap)
         
         dataSource.apply(recipeSnapshot)
+    }
+    
+    private func createLayout() -> UICollectionViewLayout {
+        
+        return UICollectionViewCompositionalLayout { sectionIndex, layoutEnvironment -> NSCollectionLayoutSection? in
+            
+            let section = PostDetailSection(rawValue: sectionIndex)
+            return section?.layout
+        }
     }
     
 }
@@ -208,8 +226,8 @@ extension PostDetailViewController: BaseViewProtocol {
     
     func configureUI() {
         
-        collectionView.register(PostDetailImageCell.self,
-                                forCellWithReuseIdentifier: PostDetailImageCell.identifier)
+        collectionView.register(PostDetailTitleCell.self,
+                                forCellWithReuseIdentifier: PostDetailTitleCell.identifier)
     }
     
     func configureLayout() {
@@ -218,15 +236,6 @@ extension PostDetailViewController: BaseViewProtocol {
         
         collectionView.snp.makeConstraints { make in
             make.directionalEdges.equalTo(view.safeAreaLayoutGuide)
-        }
-    }
-    
-    private func createLayout() -> UICollectionViewLayout {
-        
-        return UICollectionViewCompositionalLayout { sectionIndex, layoutEnvironment -> NSCollectionLayoutSection? in
-            
-            let section = PostDetailSection(rawValue: sectionIndex)
-            return section?.layout
         }
     }
     
@@ -265,21 +274,16 @@ private enum PostDetailSection: Int, CaseIterable {
             
             
             let groupSize = NSCollectionLayoutSize(widthDimension: .absolute(80),
-                                                   heightDimension: .absolute(80))
+                                                   heightDimension: .absolute(120))
             let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize,
                                                            subitems: [item])
-            
-            group.contentInsets = NSDirectionalEdgeInsets(top: 0,
-                                                          leading: 0,
-                                                          bottom: 8,
-                                                          trailing: 0)
             
             let section = NSCollectionLayoutSection(group: group)
             section.interGroupSpacing = 16
             section.orthogonalScrollingBehavior = .continuous
-            section.contentInsets = NSDirectionalEdgeInsets(top: 0,
+            section.contentInsets = NSDirectionalEdgeInsets(top: 16,
                                                             leading: 16,
-                                                            bottom: 0,
+                                                            bottom: 16,
                                                             trailing: 16)
             return section
             

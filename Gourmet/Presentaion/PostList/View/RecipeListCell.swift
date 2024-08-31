@@ -7,6 +7,12 @@
 
 import UIKit
 import SnapKit
+import RxSwift
+import RxCocoa
+
+protocol RecipeListCellDelegate: AnyObject {
+    func resetViewController()
+}
 
 final class RecipeListCell: UICollectionViewCell {
 
@@ -17,11 +23,17 @@ final class RecipeListCell: UICollectionViewCell {
     private let likeView = IconLabelView()
     private let timeView = IconLabelView()
     private let descriptionLabel = UILabel()
+    
+    private let viewModel = RecipePostViewModel(networkManger: NetworkManager.shared)
+    private let disposeBag = DisposeBag()
+    
+    weak var delegate: RecipeListCellDelegate?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
         
         configureView()
+        bindingOutput()
     }
 
     required init?(coder: NSCoder) {
@@ -38,6 +50,24 @@ final class RecipeListCell: UICollectionViewCell {
 
 extension RecipeListCell {
     
+    private func bindingOutput() {
+        
+        viewModel.output.bind(with: self) { owner, output in
+            
+            switch output {
+            case .noValue:
+                return
+                
+            case.fetchImage(let data):
+                owner.foodImageView.image = UIImage(data: data)
+                
+            case .needReLogin:
+                owner.delegate?.resetViewController()
+            }
+        }
+        .disposed(by: disposeBag)
+    }
+    
     func updateContent(item: PostDTO) {
         
         foodNameLabel.text = item.title
@@ -49,11 +79,7 @@ extension RecipeListCell {
         }
         
         if !item.files.isEmpty {
-            NetworkManager.shared.fetchImage(file: item.files.first!) { [weak self] data in
-                if let data = data {
-                    self?.foodImageView.image = UIImage(data: data)
-                }
-            }
+            viewModel.apply(.requestImage(item.files.last!))
         }
     }
 }

@@ -26,10 +26,11 @@ final class InformationDetailView: UIView {
 
 extension InformationDetailView {
     
-    func updateContent(image: UIImage?,
+    func updateContent(type: IconConmponent,
                        text: String?) {
         
-        iconImageView.image = image
+        iconImageView.image = UIImage(systemName: type.iconName)
+        iconImageView.tintColor = type.color
         nameLabel.text = text
     }
 }

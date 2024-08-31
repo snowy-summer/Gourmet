@@ -16,6 +16,7 @@ struct UploadPostBodyModel: Encodable {
     let time: String?
     let difficulty: String?
     let productID: String?
+    let price: Int = 100
     let files: [String]
     
     enum CodingKeys: String, CodingKey {
@@ -27,6 +28,7 @@ struct UploadPostBodyModel: Encodable {
         case time = "content4"
         case difficulty = "content5"
         case productID = "product_id"
+        case price
         case files
     }
 }

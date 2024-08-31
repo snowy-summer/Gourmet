@@ -13,7 +13,7 @@ class PrintDebugger {
                          line: Int = #line,
                          function: String = #function) {
         let fileName = (file as NSString).lastPathComponent
-        print("🔴 [Error] \(error.localizedDescription)")
+        print("🔴 [Error] \(error)")
         print("📂 File: \(fileName)")
         print("📍 Line: \(line)")
         print("🔧 Function: \(function)\n")

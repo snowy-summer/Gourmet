@@ -7,16 +7,26 @@
 
 import UIKit
 import SnapKit
+import RxSwift
+import RxCocoa
+
+protocol RecipeCollectionViewCellDelegate: AnyObject {
+    func resetViewController()
+}
 
 final class RecipeCollectionViewCell: UICollectionViewCell {
     
     private let thumbnailImageView = UIImageView()
     private let titleLabel = UILabel()
+    weak var delegate: RecipeCollectionViewCellDelegate?
+    private let viewModel = RecipeCollectionViewModel(networkManger: NetworkManager.shared)
+    private let disposeBag = DisposeBag()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
         
         configureView()
+        bindingOutput()
     }
     
     required init?(coder: NSCoder) {
@@ -33,14 +43,28 @@ final class RecipeCollectionViewCell: UICollectionViewCell {
 
 extension RecipeCollectionViewCell {
     
+    private func bindingOutput() {
+        
+        viewModel.output.bind(with: self) { owner, output in
+            
+            switch output {
+            case .noValue:
+                return
+                
+            case.fetchImage(let data):
+                owner.thumbnailImageView.image = UIImage(data: data)
+                
+            case .needReLogin:
+                owner.delegate?.resetViewController()
+            }
+        }
+        .disposed(by: disposeBag)
+    }
+    
     func updateContent(item: PostDTO) {
         
         if !item.files.isEmpty {
-            NetworkManager.shared.fetchImage(file: item.files.first!) { [weak self] data in
-                if let data = data {
-                    self?.thumbnailImageView.image = UIImage(data: data)
-                }
-            }
+            viewModel.apply(.requestImage(item.files.last!))
         }
         
         titleLabel.text = item.title
@@ -59,7 +83,7 @@ extension RecipeCollectionViewCell: BaseViewProtocol {
     func configureUI() {
         
         thumbnailImageView.backgroundColor = .lightGray
-        thumbnailImageView.contentMode = .scaleToFill
+        thumbnailImageView.contentMode = .scaleAspectFill
         thumbnailImageView.layer.cornerRadius = 8
         thumbnailImageView.clipsToBounds = true
     }

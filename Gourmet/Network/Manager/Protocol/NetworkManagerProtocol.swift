@@ -27,13 +27,21 @@ protocol NetworkManagerProtocol {
     //post
     func fetchPost(category: Category) -> Single<Result<PostListDTO,PostError>>
     
-    func uploadPost(item: UploadPostBodyModel) -> Single<Result<Bool, PostError>>
+    func fetchPostById(id: String,
+                       completion: @escaping (Result<PostDTO,PostError>) -> Void)
+    
+    func uploadPost(item: UploadPostBodyModel,
+                    completion: @escaping (Result<Bool,PostError>) -> Void)
     
     func uploadImage(_ images: [Data?],
                      completion: @escaping (Result<UploadFileDTO, PostError>) -> Void)
     
+    func uploadComment(id: String,
+                       content: String,
+                       completion: @escaping (Result<Bool, PostError>) -> Void)
+    
     func fetchImage(file: String,
-                    completion: @escaping (Data?) -> Void)
+                    completion: @escaping (Result<Data?, PostError>) -> Void)
     
     func deletePost(id: String,
                     completion: @escaping (Result<Bool, PostError>) -> Void)
