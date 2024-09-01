@@ -1,5 +1,5 @@
 //
-//  ChoiceCategoryView.swift
+//  ChoiceCategoryViewController.swift
 //  Gourmet
 //
 //  Created by 최승범 on 8/22/24.
@@ -8,17 +8,10 @@
 import UIKit
 import SnapKit
 
-protocol ChoiceCategoryViewDelegate: AnyObject {
-    func pushEditRecipeView()
-    func pushEditNormalView()
-}
-
-final class ChoiceCategoryView: UIViewController {
+final class ChoiceCategoryViewController: UIViewController {
     
     private let normalPostButton = UIButton()
     private let recipePostButton = UIButton()
-    
-    weak var delgate: ChoiceCategoryViewDelegate?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,24 +20,22 @@ final class ChoiceCategoryView: UIViewController {
     }
 }
 
-extension ChoiceCategoryView {
+extension ChoiceCategoryViewController {
     
     @objc private func pushEditRecipeView() {
-        dismiss(animated: true) { [weak self] in
-            self?.delgate?.pushEditRecipeView()
-        }
+        navigationController?.pushViewController(EditRecipeViewController(),
+                                                 animated: true)
     }
     
     @objc private func pushEditNormalPostView() {
-        dismiss(animated: true) { [weak self] in
-            self?.delgate?.pushEditNormalView()
-        }
+        navigationController?.pushViewController(NormalPostEditViewController(),
+                                                 animated: true)
     }
     
     
 }
 
-extension ChoiceCategoryView: BaseViewProtocol {
+extension ChoiceCategoryViewController: BaseViewProtocol {
     
     func configureHierarchy() {
         

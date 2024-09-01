@@ -10,11 +10,13 @@ import RxSwift
 import RxCocoa
 import SnapKit
 import Toast
+import iamport_ios
 
 final class PostDetailViewController: UIViewController {
     
     private lazy var collectionView = UICollectionView(frame: .zero,
                                                        collectionViewLayout: createLayout())
+    private let buyButton = UIButton()
     private var dataSource: UICollectionViewDiffableDataSource<PostDetailSection, PostDetailViewModel.Item>!
     private let viewModel: PostDetailViewModel
     private let disposeBag = DisposeBag()
@@ -57,7 +59,7 @@ extension PostDetailViewController {
                     
                 case .deleteSuccess:
                     owner.view.makeToast("삭제 성공") { _ in
-                            owner.navigationController?.popViewController(animated: true)
+                        owner.navigationController?.popViewController(animated: true)
                     }
                     
                 case .deleteFail(let error):
@@ -65,6 +67,9 @@ extension PostDetailViewController {
                     
                 case .needReLogin:
                     owner.resetViewController(vc: OnboardingViewController())
+                    
+                case .buySuccess:
+                    owner.view.makeToast("결제 성공")
                 }
                 
             }.disposed(by: disposeBag)
@@ -76,7 +81,7 @@ extension PostDetailViewController {
 extension PostDetailViewController: PostDetailTitleCellDelegate {
     
     func resetViewController() {
-         resetViewController(vc: OnboardingViewController())
+        resetViewController(vc: OnboardingViewController())
     }
 }
 
@@ -150,7 +155,7 @@ extension PostDetailViewController {
                 return cell
             }
             
-           
+            
         })
         
         
@@ -197,11 +202,11 @@ extension PostDetailViewController: BaseViewProtocol {
     }
     
     private func configureMenu() -> [UIAction] {
-    
+        
         let edit = UIAction(title: "수정",
                             image: UIImage(systemName: "pencil")) { [weak self] _ in
             guard let self = self else { return }
-
+            
         }
         
         let delete = UIAction(title: "삭제",
@@ -212,31 +217,74 @@ extension PostDetailViewController: BaseViewProtocol {
         }
         
         let items = [
-          edit,
-          delete
+            edit,
+            delete
         ]
-    
+        
         return items
     }
     
     func configureHierarchy() {
         
         view.addSubview(collectionView)
+        view.addSubview(buyButton)
     }
     
     func configureUI() {
         
+        view.backgroundColor = .systemBackground
         collectionView.register(PostDetailTitleCell.self,
                                 forCellWithReuseIdentifier: PostDetailTitleCell.identifier)
+        
+        buyButton.setTitle("구매하기", for: .normal)
+        buyButton.backgroundColor = .main
+        buyButton.layer.cornerRadius = 16
     }
     
     func configureLayout() {
         
-        view.backgroundColor = .systemBackground
         
         collectionView.snp.makeConstraints { make in
-            make.directionalEdges.equalTo(view.safeAreaLayoutGuide)
+            make.directionalHorizontalEdges.equalTo(view.safeAreaLayoutGuide)
+            make.top.equalTo(view.safeAreaLayoutGuide)
+            make.bottom.equalTo(buyButton.snp.top).offset(-16)
         }
+        
+        buyButton.snp.makeConstraints { make in
+            make.directionalHorizontalEdges.equalTo(view.safeAreaLayoutGuide).inset(16)
+            make.bottom.equalTo(view.safeAreaLayoutGuide).offset(-16)
+            make.height.equalTo(44)
+        }
+    }
+    
+    func configureGestureAndButtonActions() {
+        
+        let payment = IamportPayment(
+            pg: PG.html5_inicis.makePgRawName(pgId: "INIpayTest"),
+            merchant_uid: "ios_\(Header.sesacKey.value)_\(Int(Date().timeIntervalSince1970))",
+            amount: "100").then {
+                $0.pay_method = PayMethod.card.rawValue
+                $0.name = self.viewModel.recipe.title
+                $0.buyer_name = "최승범"
+                $0.app_scheme = "sesac"
+            }
+        
+        buyButton.rx.tap
+            .bind(with: self) { owner , _ in
+                
+                Iamport.shared.payment(navController: owner.navigationController!,
+                                       userCode: "imp57573124",
+                                       payment: payment)
+                { [weak self] iamportResponse in
+                    
+                    self?.viewModel.apply(.checkPayment(iamportResponse?.imp_uid))
+                }
+            }
+            .disposed(by: disposeBag)
+        
+        
+        
+        
     }
     
 }

@@ -40,6 +40,13 @@ extension HomeViewController {
         let input = HomeViewModel.Input(reload: Observable.just(()))
         let output = viewModel.transform(input)
         
+        collectionView.rx.modelSelected(PostDTO.self)
+            .bind(with: self) { owner, data in
+                owner.navigationController?.pushViewController(PostDetailViewController(recipe: data),
+                                                               animated: true)
+            }
+            .disposed(by: disposeBag)
+        
         output.sections
             .bind(to: collectionView.rx.items(dataSource: dataSource))
             .disposed(by: disposeBag)
@@ -77,29 +84,10 @@ extension HomeViewController {
     }
 }
 
-extension HomeViewController: UICollectionViewDelegate,
-                              ChoiceCategoryViewDelegate,
-                              RecipeCollectionViewCellDelegate {
+extension HomeViewController: RecipeCollectionViewCellDelegate {
     
     func resetViewController() {
         resetViewController(vc: OnboardingViewController())
-    }
-    
-    func pushEditRecipeView() {
-        navigationController?.pushViewController(EditRecipeViewController(), animated: true)
-    }
-    
-    func pushEditNormalView() {
-        navigationController?.pushViewController(NormalPostEditViewController(), animated: true)
-    }
-    
-    
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        
-        let vc = ChoiceCategoryView()
-        vc.delgate = self
-        vc.sheetPresentationController?.prefersGrabberVisible = true
-        present(vc, animated: true)
     }
 }
 
@@ -117,7 +105,6 @@ extension HomeViewController: BaseViewProtocol {
         collectionView.register(TitleHeaderView.self,
                                 forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
                                 withReuseIdentifier: TitleHeaderView.identifier)
-        collectionView.delegate = self
     }
     
     func configureLayout() {

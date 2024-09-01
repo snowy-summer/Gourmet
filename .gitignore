@@ -4,6 +4,7 @@ UserRouter.swift
 ProfileRouter.swift
 TokenRouter.swift
 PostRouter.swift
+PaymentRouter.swift
 Header.swift
 APIKey.xcconfig
 

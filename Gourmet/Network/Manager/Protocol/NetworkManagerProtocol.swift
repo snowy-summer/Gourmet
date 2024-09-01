@@ -22,7 +22,12 @@ protocol NetworkManagerProtocol {
     func login(email: String,
                password: String) -> Single<Result<LoginDTO, LoginError>>
     
+    func withdraw(completion: @escaping (Result<Bool, PostError>) -> Void)
+    
     func refreshAccessToken(completion: @escaping (Result<Bool, TokenError>) -> Void)
+    
+    // profile
+    func fetchProfile(completion: @escaping (Result<UserDTO, PostError>) -> Void)
     
     //post
     func fetchPost(category: Category) -> Single<Result<PostListDTO,PostError>>
@@ -44,6 +49,11 @@ protocol NetworkManagerProtocol {
                     completion: @escaping (Result<Data?, PostError>) -> Void)
     
     func deletePost(id: String,
+                    completion: @escaping (Result<Bool, PostError>) -> Void)
+    
+    // payment
+    func checkBill(impUID: String,
+                    postID: String,
                     completion: @escaping (Result<Bool, PostError>) -> Void)
 }
 

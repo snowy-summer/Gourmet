@@ -15,6 +15,7 @@ final class PostDetailViewModel: ViewModelProtocol {
         case noValue
         case viewDidLoad
         case deletePost
+        case checkPayment(String?)
     }
     
     enum Output {
@@ -23,6 +24,7 @@ final class PostDetailViewModel: ViewModelProtocol {
         case deleteSuccess
         case deleteFail(PostError)
         case needReLogin
+        case buySuccess
     }
     
     enum Item: Hashable {
@@ -32,9 +34,11 @@ final class PostDetailViewModel: ViewModelProtocol {
     }
     
     private(set)var output = BehaviorSubject(value: Output.noValue)
-    private let recipe: PostDTO
+    let recipe: PostDTO
     private(set) var ingredients = [Item]()
     private(set) var recipeStep = [Item]()
+    
+    private var impUID = ""
     
     private let networkManager: NetworkManagerProtocol
     private let disposeBag = DisposeBag()
@@ -58,6 +62,10 @@ final class PostDetailViewModel: ViewModelProtocol {
         case .deletePost:
             deletePost()
             
+        case .checkPayment(let id):
+            guard let id = id else { return }
+            impUID = id
+            checkBill()
         }
     }
     
@@ -124,7 +132,7 @@ final class PostDetailViewModel: ViewModelProtocol {
                                         dispatchGroup.leave()
                                         
                                     case .failure(let failure):
-                                        self?.refreshAccessToken()
+                                        self?.refreshAccessToken(type: .saveRecipeStep)
                                         dispatchGroup.leave()
                                     }
                                     
@@ -164,19 +172,47 @@ final class PostDetailViewModel: ViewModelProtocol {
         
     }
     
-    private func refreshAccessToken() {
+    private func checkBill() {
+        networkManager.checkBill(impUID: impUID,
+                                 postID: recipe.postId) {[weak self] result in
+            guard let self = self else { return }
+            switch result {
+            case .success:
+                output.onNext(.buySuccess)
+                
+            case .failure(let error):
+                
+                if error == .expiredAccessToken {
+                    refreshAccessToken(type: .checkBill)
+                } else {
+                    PrintDebugger.logError(error)
+                }
+            }
+        }
+    }
+    
+    private func refreshAccessToken(type: refreshType) {
         
         networkManager.refreshAccessToken {[weak self] result in
             guard let self = self else { return }
             switch result {
             case .success:
-                saveRecipeStep()
+                if type == .saveRecipeStep {
+                    saveRecipeStep()
+                } else {
+                    checkBill()
+                }
                 
             case .failure(let error):
                 PrintDebugger.logError(error)
                 output.onNext(.needReLogin)
             }
         }
+    }
+    
+    private enum refreshType {
+        case checkBill
+        case saveRecipeStep
     }
 }
 
