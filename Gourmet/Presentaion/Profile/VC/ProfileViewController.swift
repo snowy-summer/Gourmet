@@ -57,11 +57,37 @@ extension ProfileViewController: UITableViewDelegate {
         
         switch ProfileSection(rawValue: indexPath.section) {
         case .normal:
-            viewModel.apply(.selectMode(indexPath.item))
+            if indexPath.item == 1 {
+                profileButtonClicked()
+            } else {
+                viewModel.apply(.selectMode(indexPath.item))
+            }
             
         default:
             return
         }
+    }
+    
+    private func profileButtonClicked() {
+        
+        let profileAlert = UIAlertController(title: "탈퇴하시겠습니까?",
+                                             message: "탈퇴를 하시면 작성하신 모든 내용이 사라집니다",
+                                             preferredStyle: .alert)
+        
+        let confirmAction = UIAlertAction(title: "확인",
+                                          style: .cancel) { [weak self] _ in
+            self?.viewModel.apply(.selectMode(1))
+        }
+        
+        let cancelAction = UIAlertAction(title: "취소",
+                                         style: .default) { _ in
+        }
+        
+        profileAlert.addAction(confirmAction)
+        profileAlert.addAction(cancelAction)
+        
+        self.present(profileAlert,
+                     animated: false)
     }
     
     private func configureDataSource() {

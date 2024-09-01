@@ -61,7 +61,7 @@ extension SignUpViewController {
             .bind(with: self) { owner, value in
                 
                 if value {
-                    owner.resetToTabBar()
+                    owner.resetViewController(vc: LoginViewController())
                 }
                 
             }.disposed(by: disposeBag)
