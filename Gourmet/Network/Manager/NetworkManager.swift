@@ -119,6 +119,46 @@ extension NetworkManager {
         }
     }
     
+    func fetchProfile(completion: @escaping (Result<UserDTO, PostError>) -> Void) {
+        
+        session.request(ProfileRouter.fetchProfile)
+            .responseDecodable(of: UserDTO.self) { response in
+                switch response.result {
+                case .success(let data):
+                    completion(.success(data))
+                    
+                case .failure(let error):
+                    PrintDebugger.logError(error)
+                    if let statusCode = response.response?.statusCode,
+                       let postError = PostError(rawValue: statusCode) {
+                        completion(.failure(postError))
+                    } else {
+                        PrintDebugger.logError(error)
+                    }
+                }
+            }
+    }
+    
+    func withdraw(completion: @escaping (Result<Bool, PostError>) -> Void) {
+        
+        session.request(UserRouter.withdraw)
+            .response { response in
+                switch response.result {
+                case .success:
+                    completion(.success(true))
+                    
+                case .failure(let error):
+                    
+                    if let statusCode = response.response?.statusCode,
+                       let postError = PostError(rawValue: statusCode) {
+                        completion(.failure(postError))
+                    } else {
+                        PrintDebugger.logError(error)
+                    }
+                }
+            }
+    }
+    
     func refreshAccessToken(completion: @escaping (Result<Bool, TokenError>) -> Void) {
         
         let keychainManager = KeychainManager.shared
