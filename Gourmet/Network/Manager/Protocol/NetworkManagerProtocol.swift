@@ -53,7 +53,7 @@ protocol NetworkManagerProtocol {
     
     // payment
     func checkBill(impUID: String,
-                    postID: String,
-                    completion: @escaping (Result<Bool, PostError>) -> Void)
+                   postID: String,
+                   completion: @escaping (Result<Bool, PostError>) -> Void)
 }
 

@@ -356,8 +356,8 @@ extension NetworkManager {
     }
     
     func checkBill(impUID: String,
-                    postID: String,
-                    completion: @escaping (Result<Bool, PostError>) -> Void) {
+                   postID: String,
+                   completion: @escaping (Result<Bool, PostError>) -> Void) {
         
         session.request(PaymentRouter.checkBill(impUID: impUID,
                                                 postId: postID))
